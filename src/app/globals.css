@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primaryRed: #E63946;
+  --color-primaryGreen: #2A9D8F;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.7s ease-out forwards;
+}

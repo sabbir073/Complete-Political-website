@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:images.unsplash.com)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout:*)",
+      "Bash(dir:*)",
+      "WebFetch(domain:localhost)"
+    ],
+    "deny": []
+  }
+}
