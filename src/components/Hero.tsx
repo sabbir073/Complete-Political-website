@@ -56,11 +56,12 @@ export default function Hero() {
         {slidesData.map((slide, index) => (
           <SwiperSlide key={index}>
             <div 
-              className="relative w-full h-full bg-cover bg-center bg-no-repeat"
+              className="relative w-full h-full bg-cover bg-center bg-no-repeat animate-bg-entrance"
               style={{
                 backgroundImage: `url('${slide.backgroundImage}')`,
                 backgroundColor: '#1e293b' // fallback color
               }}
+              key={`bg-${index}`}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-black/70"></div>
               
@@ -69,18 +70,31 @@ export default function Hero() {
                   <div className="w-full h-full flex flex-col lg:flex-row items-center">
                     {/* Content Section - Left */}
                     <div className="flex-1 flex items-center justify-center lg:justify-start px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-                      <div className="text-center lg:text-left space-y-4 sm:space-y-6 max-w-2xl">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
+                      <div 
+                        className="text-center lg:text-left space-y-4 sm:space-y-6 max-w-2xl"
+                        key={`content-${index}`}
+                      >
+                        <h1 
+                          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight animate-title-entrance"
+                          style={{ animationDelay: '0.6s' }}
+                        >
                           {slide.title}
                         </h1>
                         
-                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 leading-relaxed">
+                        <p 
+                          className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 leading-relaxed animate-subtitle-entrance"
+                          style={{ animationDelay: '0.9s' }}
+                        >
                           {slide.subtitle}
                         </p>
                         
-                        <div className="pt-2 sm:pt-4">
-                          <button className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 sm:px-8 lg:px-10 py-2.5 sm:py-3 lg:py-4 text-sm sm:text-base lg:text-lg rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                            Learn More
+                        <div 
+                          className="pt-2 sm:pt-4 animate-button-entrance"
+                          style={{ animationDelay: '1.2s' }}
+                        >
+                          <button className="relative bg-primaryRed text-white px-6 sm:px-8 lg:px-10 py-2.5 sm:py-3 lg:py-4 text-sm sm:text-base lg:text-lg rounded cursor-pointer group transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                            <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded"></span>
+                            <span className="relative z-10 font-semibold">Learn More</span>
                           </button>
                         </div>
                       </div>
@@ -88,7 +102,11 @@ export default function Hero() {
                     
                     {/* Person Image Section - Right */}
                     <div className="hidden lg:flex flex-1 items-center justify-center lg:justify-end">
-                      <div className="relative">
+                      <div 
+                        className="relative animate-image-entrance"
+                        key={`image-${index}`}
+                        style={{ animationDelay: '0.1s' }}
+                      >
                         {/* Desktop: Contained height similar to content */}
                         <div className="relative">
                           <div className="relative w-80 h-96 xl:w-96 xl:h-[500px] bg-gradient-to-br from-white/60 via-white/50 to-white/40 rounded-t-3xl backdrop-blur-lg border border-white/60 shadow-2xl" style={{ padding: '15px 15px 0px 15px' }}>
@@ -138,6 +156,113 @@ export default function Hero() {
         .custom-bullet:hover {
           background: rgba(255, 255, 255, 0.8) !important;
           transform: scale(1.1) !important;
+        }
+        
+        @keyframes titleEntrance {
+          0% {
+            opacity: 0;
+            transform: translateX(-60px) translateY(-10px);
+            filter: blur(10px);
+          }
+          60% {
+            opacity: 0.8;
+            transform: translateX(5px) translateY(0px);
+            filter: blur(2px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) translateY(0);
+            filter: blur(0px);
+          }
+        }
+        
+        @keyframes subtitleEntrance {
+          0% {
+            opacity: 0;
+            transform: translateY(40px);
+            filter: blur(5px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+          }
+        }
+        
+        @keyframes buttonEntrance {
+          0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.8);
+          }
+          70% {
+            opacity: 1;
+            transform: translateY(-5px) scale(1.05);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        
+        @keyframes imageEntrance {
+          0% {
+            opacity: 0;
+            transform: translateX(80px) scale(0.9) rotate(5deg);
+            filter: blur(8px);
+          }
+          60% {
+            opacity: 0.7;
+            transform: translateX(-5px) scale(1.02) rotate(-1deg);
+            filter: blur(2px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) scale(1) rotate(0deg);
+            filter: blur(0px);
+          }
+        }
+        
+        .animate-title-entrance {
+          animation: titleEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          opacity: 0;
+        }
+        
+        .animate-subtitle-entrance {
+          animation: subtitleEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          opacity: 0;
+        }
+        
+        .animate-button-entrance {
+          animation: buttonEntrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          opacity: 0;
+        }
+        
+        .animate-image-entrance {
+          animation: imageEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          opacity: 0;
+        }
+        
+        @keyframes bgEntrance {
+          0% {
+            opacity: 0;
+            transform: scale(1.1);
+            filter: blur(15px) brightness(0.3);
+          }
+          50% {
+            opacity: 0.7;
+            transform: scale(1.05);
+            filter: blur(5px) brightness(0.6);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0px) brightness(1);
+          }
+        }
+        
+        .animate-bg-entrance {
+          animation: bgEntrance 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+          opacity: 0;
         }
         
         @media (max-width: 1024px) {

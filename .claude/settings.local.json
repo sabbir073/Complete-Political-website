@@ -5,7 +5,8 @@
       "Bash(npm run dev:*)",
       "Bash(timeout:*)",
       "Bash(dir:*)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }
