@@ -104,7 +104,7 @@ const PhotoGallery: React.FC = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 md:mb-0">
               Photo Gallery
             </h2>
-            <button className="relative bg-primaryRed text-white px-5 py-2 rounded cursor-pointer group">
+            <button className="hidden md:inline-block relative bg-primaryRed text-white px-5 py-2 rounded cursor-pointer group">
               <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative z-10">View All</span>
             </button>
@@ -225,6 +225,14 @@ const PhotoGallery: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* Mobile View More Button */}
+        <div className="md:hidden text-center mt-8">
+          <button className="relative bg-primaryRed text-white px-6 py-3 rounded cursor-pointer group">
+            <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="relative z-10">View All Photos</span>
+          </button>
+        </div>
       </div>
 
       {/* Lightbox Component */}
@@ -233,31 +241,33 @@ const PhotoGallery: React.FC = () => {
         close={() => setLightboxOpen(false)}
         index={lightboxIndex}
         slides={lightboxSlides}
-        plugins={[]}
-        controller={{ closeOnBackdropClick: true }}
+        controller={{ 
+          closeOnBackdropClick: true,
+          closeOnPullUp: true,
+          closeOnPullDown: true 
+        }}
         carousel={{
           finite: false,
           preload: 2,
         }}
-        render={{
-          buttonPrev: () => (
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
-              <button className="bg-white/90 hover:bg-white text-gray-700 rounded-full p-3 shadow-lg transition-all duration-200">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-            </div>
-          ),
-          buttonNext: () => (
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10">
-              <button className="bg-white/90 hover:bg-white text-gray-700 rounded-full p-3 shadow-lg transition-all duration-200">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          ),
+        styles={{
+          container: { backgroundColor: "rgba(0, 0, 0, 0.9)" },
+          navigationPrev: {
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderRadius: "50%",
+            width: "48px",
+            height: "48px",
+            left: "20px",
+            color: "#374151",
+          },
+          navigationNext: {
+            backgroundColor: "rgba(255, 255, 255, 0.9)", 
+            borderRadius: "50%",
+            width: "48px", 
+            height: "48px",
+            right: "20px",
+            color: "#374151",
+          },
         }}
       />
     </section>

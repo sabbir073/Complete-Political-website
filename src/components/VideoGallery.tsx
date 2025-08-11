@@ -125,7 +125,7 @@ const VideoGallery: React.FC = () => {
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 md:mb-0">
                 Showcase of Stories
               </h2>
-              <button className="relative bg-primaryRed text-white px-5 py-2 rounded cursor-pointer group">
+              <button className="hidden md:inline-block relative bg-primaryRed text-white px-5 py-2 rounded cursor-pointer group">
                 <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <span className="relative z-10">View All</span>
               </button>
@@ -193,6 +193,14 @@ const VideoGallery: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Mobile View More Button */}
+          <div className="md:hidden text-center mt-8">
+            <button className="relative bg-primaryRed text-white px-6 py-3 rounded cursor-pointer group">
+              <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="relative z-10">View All Videos</span>
+            </button>
           </div>
         </div>
       </section>

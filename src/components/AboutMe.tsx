@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface VideoPlayerProps {
   isOpen: boolean;
@@ -95,11 +96,11 @@ const AboutMe: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
+            <div className={`text-center lg:text-left transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
               {/* Header */}
               <div className="mb-8">
                 <p className="text-sm text-red-600 font-semibold mb-2">About Me</p>
-                <div className="w-10 h-[2px] bg-red-600 mb-4 rounded-full" />
+                <div className="w-10 h-[2px] bg-red-600 mb-4 mx-auto lg:mx-0 rounded-full" />
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
                   Foundations for a <br />
                   <span className="text-red-600">Thriving Community</span>
@@ -117,10 +118,12 @@ const AboutMe: React.FC = () => {
                 </p>
 
                 <div className="pt-6">
-                  <button className="relative bg-primaryRed text-white px-8 py-3 rounded-lg cursor-pointer group font-semibold">
-                    <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></span>
-                    <span className="relative z-10">Learn More</span>
-                  </button>
+                  <Link href="/about">
+                    <button className="relative bg-primaryRed text-white px-8 py-3 rounded-lg cursor-pointer group font-semibold">
+                      <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></span>
+                      <span className="relative z-10">বিস্তারিত জানুন</span>
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
