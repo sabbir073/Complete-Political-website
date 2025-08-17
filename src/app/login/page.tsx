@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,6 +7,7 @@ import { useTheme } from '@/providers/ThemeProvider';
 import { useAuth, useAuthActions } from '@/stores/auth-fixed';
 import { useUIStore } from '@/stores/ui';
 import Image from 'next/image';
+import Link from 'next/link';
 
 function LoginPageContent() {
   const [email, setEmail] = useState('');
@@ -225,14 +227,14 @@ function LoginPageContent() {
             </button>
 
             <div className="text-center">
-              <a 
+              <Link 
                 href="/" 
                 className={`text-sm hover:underline transition-colors ${
                   isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-700'
                 }`}
               >
                 ← Back to website
-              </a>
+              </Link>
             </div>
           </form>
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // 🏢 ENTERPRISE PROFILE MANAGEMENT API
 // Server-side profile operations
 

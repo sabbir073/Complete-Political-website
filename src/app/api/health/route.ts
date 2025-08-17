@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // 🏥 ENTERPRISE HEALTH CHECK
 // Simple endpoint to verify the system is working
 

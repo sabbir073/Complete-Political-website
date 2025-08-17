@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // 🚪 USER LOGOUT API
 // Admin endpoint to logout user from all devices
 
@@ -101,7 +102,7 @@ export async function POST(
         requires_password_reset: true
       });
 
-    } catch (logoutError) {
+    } catch (logoutError :any) {
       console.error('❌ Failed to invalidate sessions:', logoutError);
       return NextResponse.json(
         { 

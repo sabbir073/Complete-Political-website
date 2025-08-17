@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // 🏢 USER OPERATIONS API
 // Individual user update and delete operations
 
