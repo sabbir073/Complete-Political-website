@@ -39,3 +39,102 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Development files
+debug-auth.html
+features.txt
+test-auth-functionality.md
+
+# Temporary auth store files (keep only auth-fixed.ts)
+src/stores/auth.ts
+src/stores/auth-simple.ts
+src/stores/auth-working.ts
+src/stores/auth-enterprise.ts
+
+# Test/debug pages
+src/app/auth-test/
+src/app/debug/
+src/app/test/
+src/app/login-simple/
+
+# Logs
+*.log
+logs/
+
+# Cache directories
+.cache/
+.next/cache/
+.nuxt/cache/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# MCP files
+.mcp.json
+
+# User scripts
+create-auth-user.js
+
+# Local configuration
+.env.local.example
+.env.development
+.env.production
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+Dockerfile.dev
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Storybook
+.storybook/build
+storybook-static/
+
+# Bundle analysis
+.bundle-analyzer/
+bundle-report.html
+
+# PWA files
+**/sw.js
+**/workbox-*.js
+**/fallback-*.js
+
+# Temporary files
+*.tmp
+*.temp
+
+# Documentation drafts
+*.draft.md

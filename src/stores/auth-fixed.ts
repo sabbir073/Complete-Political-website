@@ -15,13 +15,13 @@ const ENTERPRISE_CONFIG = {
 
 // Enterprise Cache System
 class EnterpriseCache {
-  private cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+  private cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>();
   
-  set(key: string, data: any, ttl: number = ENTERPRISE_CONFIG.CACHE_TTL) {
+  set(key: string, data: unknown, ttl: number = ENTERPRISE_CONFIG.CACHE_TTL) {
     this.cache.set(key, { data, timestamp: Date.now(), ttl });
   }
   
-  get(key: string): any | null {
+  get(key: string): unknown | null {
     const entry = this.cache.get(key);
     if (!entry) return null;
     
@@ -40,7 +40,7 @@ class EnterpriseCache {
 
 // Enterprise Request Manager
 class EnterpriseRequestManager {
-  private activeRequests = new Map<string, Promise<any>>();
+  private activeRequests = new Map<string, Promise<unknown>>();
   
   async execute<T>(key: string, operation: () => Promise<T>): Promise<T> {
     if (this.activeRequests.has(key)) {
@@ -128,7 +128,7 @@ class EnterpriseSessionManager {
       }
       
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Session validation failed:', error);
       return false;
     }
@@ -221,7 +221,7 @@ const fetchProfileEnterprise = async (userId: string): Promise<Profile | null> =
       
       enterpriseCache.set(cacheKey, defaultProfile);
       return defaultProfile;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Profile fetch via API failed:', error);
       return null;
     }
@@ -278,7 +278,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       console.log('✅ Enterprise Auth: Initialization complete');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Enterprise Auth: Init error:', error);
       set({ user: null, profile: null, loading: false, initialized: true });
     }
@@ -310,7 +310,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       console.log('✅ Enterprise Auth: Sign in successful');
       // Auth listener will handle state updates
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Enterprise Auth: Sign in error:', error);
       throw error;
     }
@@ -335,7 +335,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       
       set({ user: null, profile: null, loading: false, initialized: true });
       console.log('✅ Enterprise Auth: Sign out successful');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Enterprise Auth: Sign out error:', error);
       throw error;
     }

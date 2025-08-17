@@ -54,7 +54,7 @@ const fetchProfile = async (userId: string): Promise<Profile | null> => {
       id: userId,
       email: 'md.sabbir073@gmail.com',
       full_name: 'S M JAHANGIR HOSSAIN',
-      role: 'admin' as any,
+      role: 'admin' as const,
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

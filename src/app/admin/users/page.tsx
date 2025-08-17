@@ -122,13 +122,13 @@ export default function UserManagement() {
       const result = await response.json();
       setUsers(result.users || []);
       console.log(`✅ Loaded ${result.users?.length || 0} users`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Failed to fetch users:', error);
       
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'Failed to load users: ' + error.message,
+        text: 'Failed to load users: ' + (error instanceof Error ? error.message : String(error)),
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
@@ -167,13 +167,13 @@ export default function UserManagement() {
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 User creation failed:', error);
       
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'Failed to create user: ' + error.message,
+        text: 'Failed to create user: ' + (error instanceof Error ? error.message : String(error)),
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
@@ -204,7 +204,7 @@ export default function UserManagement() {
       setLoading(true);
       console.log('🔄 Updating user:', selectedUser.id);
       
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         full_name: formData.full_name,
         role: formData.role,
         is_active: formData.is_active,
@@ -258,13 +258,13 @@ export default function UserManagement() {
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 User update failed:', error);
       
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'Failed to update user: ' + error.message,
+        text: 'Failed to update user: ' + (error instanceof Error ? error.message : String(error)),
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
@@ -336,13 +336,13 @@ export default function UserManagement() {
           confirmButtonColor: '#dc2626'
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 User logout failed:', error);
       
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'Failed to logout user: ' + error.message,
+        text: 'Failed to logout user: ' + (error instanceof Error ? error.message : String(error)),
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
@@ -406,13 +406,13 @@ export default function UserManagement() {
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 User deletion failed:', error);
       
       Swal.fire({
         icon: 'error',
         title: 'Error!',
-        text: 'Failed to delete user: ' + error.message,
+        text: 'Failed to delete user: ' + (error instanceof Error ? error.message : String(error)),
         confirmButtonText: 'OK',
         confirmButtonColor: '#dc2626'
       });

@@ -42,11 +42,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         console.log('🔒 Not authenticated, redirecting to login');
         router.replace('/login');
       } else if (profile && !profile.is_active) {
-        console.log('❌ User is inactive, redirecting to login');
-        router.replace('/login');
+        console.log('❌ User is inactive, signing out and redirecting to login');
+        // Sign out the inactive user to clear session
+        signOut().then(() => {
+          router.replace('/login');
+        });
       }
     }
-  }, [initialized, loading, isAuthenticated, profile, router]);
+  }, [initialized, loading, isAuthenticated, profile, router, signOut]);
 
   // Show loading while auth is being checked
   if (!initialized || loading) {
@@ -65,7 +68,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   // Show loading while redirecting if not authenticated
-  if (!isAuthenticated || (profile && !profile.is_active)) {
+  if (!isAuthenticated) {
     return (
       <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
         isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
@@ -74,6 +77,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             Redirecting to login...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading while signing out inactive user
+  if (profile && !profile.is_active) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
+        isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
+      }`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+            Account inactive. Signing out...
           </p>
         </div>
       </div>
