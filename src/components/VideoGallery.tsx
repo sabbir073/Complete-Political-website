@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useLanguage } from "@/providers/LanguageProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface VideoPlayerProps {
   isOpen: boolean;
@@ -11,11 +13,12 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoId }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const { isDark } = useTheme();
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4">
+    <div className="fixed inset-0 z-[9999999] modal-overlay flex items-center justify-center bg-black bg-opacity-90 p-4">
       <div className="relative w-full max-w-4xl mx-auto">
         {/* Close Button */}
         <button
@@ -28,10 +31,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoId }) =
         </button>
 
         {/* Video Container */}
-        <div className="relative bg-black rounded-lg overflow-hidden shadow-2xl">
+        <div className={`relative rounded-lg overflow-hidden shadow-2xl ${
+          isDark ? "bg-gray-900" : "bg-black"
+        }`}>
           <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
             {isLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+              <div className={`absolute inset-0 flex items-center justify-center ${
+                isDark ? "bg-gray-800" : "bg-gray-900"
+              }`}>
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
               </div>
             )}
@@ -53,6 +60,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoId }) =
 const VideoGallery: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const { t } = useLanguage();
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -76,32 +85,15 @@ const VideoGallery: React.FC = () => {
     };
   }, []);
 
-  const videos = [
-    {
-      id: 1,
-      thumbnail: "/events/event1.jpg",
-      title: "Community Leadership Address",
-      description: "Key policy announcements and community engagement initiatives",
-      videoId: "dQw4w9WgXcQ", // Sample YouTube video ID
-      duration: "15:30"
-    },
-    {
-      id: 2,
-      thumbnail: "/events/event2.jpg", 
-      title: "Economic Development Summit",
-      description: "Strategies for sustainable growth and prosperity",
-      videoId: "dQw4w9WgXcQ", // Sample YouTube video ID
-      duration: "22:45"
-    },
-    {
-      id: 3,
-      thumbnail: "/events/event3.jpg",
-      title: "Youth Empowerment Program",
-      description: "Inspiring the next generation of leaders",
-      videoId: "dQw4w9WgXcQ", // Sample YouTube video ID
-      duration: "18:20"
-    }
-  ];
+  // Dynamic videos from translations
+  const videos = t.videoGallery?.videos?.map((video, index) => ({
+    id: index + 1,
+    thumbnail: `/events/event${index + 1}.jpg`,
+    title: video.title,
+    description: video.description,
+    videoId: "dQw4w9WgXcQ", // Sample YouTube video ID
+    duration: video.duration
+  })) || [];
 
   const openVideo = (videoId: string) => {
     setActiveVideo(videoId);
@@ -115,19 +107,42 @@ const VideoGallery: React.FC = () => {
 
   return (
     <>
-      <section id="video-gallery-section" className="w-full px-6 md:px-16 py-16 bg-gray-50 overflow-hidden">
+      <section 
+        id="video-gallery-section" 
+        className={`w-full px-6 md:px-16 py-16 overflow-hidden transition-colors duration-300 ${
+          isDark ? "bg-gray-900" : "bg-gray-50"
+        }`}
+      >
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className={`text-center md:text-left mb-12 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <p className="text-sm text-red-600 font-semibold mb-2">Media Center</p>
-            <div className="w-10 h-[2px] bg-red-600 mb-4 mx-auto md:mx-0 rounded-full" />
+            <p className={`text-sm font-semibold mb-2 ${
+              isDark ? "text-red-400" : "text-red-600"
+            }`}>
+              {t.videoGallery?.sectionLabel || "Media Center"}
+            </p>
+            <div className={`w-10 h-[2px] mb-4 mx-auto md:mx-0 rounded-full ${
+              isDark ? "bg-red-400" : "bg-red-600"
+            }`} />
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 md:mb-0">
-                Showcase of Stories
+              <h2 className={`text-3xl md:text-4xl font-bold mb-6 md:mb-0 ${
+                isDark ? "text-white" : "text-gray-900"
+              }`}>
+                {t.videoGallery?.title || "Showcase of Stories"}
               </h2>
-              <button className="hidden md:inline-block relative bg-primaryRed text-white px-5 py-2 rounded cursor-pointer group">
-                <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <span className="relative z-10">View All</span>
+              <button className={`hidden md:inline-block relative px-5 py-2 rounded cursor-pointer group transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${
+                isDark 
+                  ? "bg-red-600 hover:bg-red-700 text-white" 
+                  : "bg-primaryRed hover:bg-red-600 text-white"
+              }`}>
+                <span className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded ${
+                  isDark 
+                    ? "bg-gradient-to-r from-red-700 to-red-800" 
+                    : "bg-gradient-to-r from-primaryRed to-red-600"
+                }`}></span>
+                <span className="relative z-10 font-semibold">
+                  {t.videoGallery?.viewAll || "View All"}
+                </span>
               </button>
             </div>
           </div>
@@ -144,9 +159,15 @@ const VideoGallery: React.FC = () => {
                 onClick={() => openVideo(video.videoId)}
               >
                 {/* Video Card */}
-                <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
+                <div className={`rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] overflow-hidden ${
+                  isDark 
+                    ? "bg-gray-800 shadow-gray-900/50 hover:shadow-gray-900/70" 
+                    : "bg-white shadow-gray-500/30 hover:shadow-gray-500/40"
+                }`}>
                   {/* Video Thumbnail */}
-                  <div className="relative h-48 overflow-hidden bg-white">
+                  <div className={`relative h-48 overflow-hidden ${
+                    isDark ? "bg-gray-700" : "bg-white"
+                  }`}>
                     <Image
                       src={video.thumbnail}
                       alt={video.title}
@@ -164,8 +185,14 @@ const VideoGallery: React.FC = () => {
                         <div className="absolute inset-2 rounded-full border-2 border-white border-opacity-50 animate-pulse"></div>
                         
                         {/* Play Button */}
-                        <div className="relative w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center group-hover:bg-opacity-100 transition-all duration-300 transform group-hover:scale-110">
-                          <svg className="w-6 h-6 text-red-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <div className={`relative w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 ${
+                          isDark 
+                            ? "bg-gray-800 bg-opacity-90 group-hover:bg-opacity-100" 
+                            : "bg-white bg-opacity-90 group-hover:bg-opacity-100"
+                        }`}>
+                          <svg className={`w-6 h-6 ml-1 ${
+                            isDark ? "text-red-400" : "text-red-600"
+                          }`} fill="currentColor" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z"/>
                           </svg>
                         </div>
@@ -173,7 +200,9 @@ const VideoGallery: React.FC = () => {
                     </div>
 
                     {/* Duration */}
-                    <div className="absolute bottom-3 right-3 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                    <div className={`absolute bottom-3 right-3 text-xs px-2 py-1 rounded ${
+                      isDark ? "bg-gray-900 bg-opacity-90 text-gray-200" : "bg-black bg-opacity-75 text-white"
+                    }`}>
                       {video.duration}
                     </div>
                   </div>
@@ -181,13 +210,21 @@ const VideoGallery: React.FC = () => {
                   {/* Content */}
                   <div className="p-6">
                     {/* Title */}
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors duration-300 line-clamp-2">
+                    <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 line-clamp-2 ${
+                      isDark 
+                        ? "text-white group-hover:text-red-400" 
+                        : "text-gray-900 group-hover:text-red-600"
+                    }`}>
                       {video.title}
                     </h3>
 
                     {/* Watch Now */}
-                    <div className="mt-2 text-red-600 text-sm font-semibold group-hover:text-red-700 transition-colors duration-300">
-                      Watch Now →
+                    <div className={`mt-2 text-sm font-semibold transition-colors duration-300 ${
+                      isDark 
+                        ? "text-red-400 group-hover:text-red-300" 
+                        : "text-red-600 group-hover:text-red-700"
+                    }`}>
+                      {t.videoGallery?.watchNow || "Watch Now"} →
                     </div>
                   </div>
                 </div>
@@ -197,9 +234,19 @@ const VideoGallery: React.FC = () => {
 
           {/* Mobile View More Button */}
           <div className="md:hidden text-center mt-8">
-            <button className="relative bg-primaryRed text-white px-6 py-3 rounded cursor-pointer group">
-              <span className="absolute inset-0 bg-gradient-to-r from-primaryRed to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="relative z-10">View All Videos</span>
+            <button className={`relative px-6 py-3 rounded cursor-pointer group transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl ${
+              isDark 
+                ? "bg-red-600 hover:bg-red-700 text-white" 
+                : "bg-primaryRed hover:bg-red-600 text-white"
+            }`}>
+              <span className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded ${
+                isDark 
+                  ? "bg-gradient-to-r from-red-700 to-red-800" 
+                  : "bg-gradient-to-r from-primaryRed to-red-600"
+              }`}></span>
+              <span className="relative z-10 font-semibold">
+                {t.videoGallery?.viewAllVideos || "View All Videos"}
+              </span>
             </button>
           </div>
         </div>

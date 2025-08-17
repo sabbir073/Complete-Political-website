@@ -1,0 +1,45 @@
+1. Supabase Database Setup & Schema Creation
+2. Supabase Authentication Configuration (User roles)
+3. AWS S3 Storage Setup & CloudFront CDN
+4. Language Switcher (Bangla/English)
+5. Dark/Light Theme Switcher
+6. Admin Panel System (User roles, Authentication)
+7. Bilingual Content Management (Tab-based input, Validation)
+8. Contact/Complaint Box
+9. Anonymous Submission Option
+10. Contact/Complaint Submissions Management (Admin)
+11. User Management (Admin only)
+12. System Settings (Admin only)
+13. About Page Content Management (Admin)
+14. Footer Content Management (Admin)
+15. Hero Slider Management (Admin)
+16. Events Management (Admin)
+17. News/Blog Management (Admin)
+18. Great Leaders Section Management (Admin)
+19. Photo Gallery Management (Admin)
+20. Video Stories Management (Admin)
+21. SEO Management
+22. Email/SMS Templates
+23. Activity Logs
+24. Analytics Dashboard (Admin)
+25. Backup & Maintenance (Admin)
+26. WhatsApp/SMS Integration (Business API, SMS updates)
+27. Area-Specific Problem Tracker (Interactive map, Pin problems)
+28. Public Problem Board
+29. Promise Tracker (Public commitments, Progress tracking)
+30. Smart Notification System
+31. Live Polling & Surveys
+32. Ask Me Anything (AMA) System
+33. Emergency Response System
+34. Volunteer Hub
+35. Virtual Town Hall
+36. Gamification System
+37. Citizen Journalism Portal
+38. Campaign Challenge System
+39. Community Forum
+40. Virtual Coffee Sessions
+41. Public Meeting Calendar
+42. Progressive Web App (PWA)
+43. Campaign Merchandise Store
+44. Testimonial System
+45. Advanced Analytics Dashboard

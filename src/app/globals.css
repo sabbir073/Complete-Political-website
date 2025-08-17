@@ -9,6 +9,25 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
+/* Custom Scrollbar for Modal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #e63946, #c2303c);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #c2303c, #a02329);
+}
+
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -22,4 +41,25 @@ body {
 
 .animate-fadeInDown {
   animation: fadeInDown 0.7s ease-out forwards;
+}
+
+/* Z-Index Hierarchy - Ensure proper layering */
+/* Lightbox should be above everything except critical system modals */
+.yarl__root {
+  z-index: 9999999 !important;
+}
+
+/* Header should always be visible but below fullscreen modals */
+header {
+  z-index: 9999 !important;
+}
+
+/* Ensure dropdown menus are above other content but below modals */
+nav .group:hover .absolute {
+  z-index: 99999 !important;
+}
+
+/* Critical system modals (like AboutMe, VideoGallery) should be topmost */
+.modal-overlay {
+  z-index: 99999999 !important;
 }

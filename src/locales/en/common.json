@@ -1,0 +1,380 @@
+{
+  "navigation": {
+    "home": "Home",
+    "about": "About",
+    "activities": "Activities",
+    "services": "Services",
+    "more": "More"
+  },
+  "about": {
+    "personalInfo": "Personal Info",
+    "politicalJourney": "Political Journey",
+    "education": "Education",
+    "partyPosition": "Party Position",
+    "awards": "Awards"
+  },
+  "activities": {
+    "events": "Events & Meetings",
+    "upcomingEvents": "Upcoming Events",
+    "pastEvents": "Past Events", 
+    "meetingCalendar": "Meeting Calendar",
+    "virtualTownHall": "Virtual Town Hall",
+    "news": "News & Updates",
+    "latestNews": "Latest News",
+    "pressReleases": "Press Releases",
+    "announcements": "Announcements",
+    "mediaCoverage": "Media Coverage",
+    "gallery": "Gallery",
+    "photoGallery": "Photo Gallery",
+    "videoStories": "Video Stories",
+    "eventPhotos": "Event Photos",
+    "downloads": "Downloads",
+    "leadership": "Leadership"
+  },
+  "services": {
+    "contactComplaints": "Contact & Complaints",
+    "contactUs": "Contact Us",
+    "complaintBox": "Complaint Box",
+    "areaProblems": "Area Problems",
+    "emergencyHelp": "Emergency Help",
+    "publicParticipation": "Public Participation",
+    "pollsSurveys": "Polls & Surveys",
+    "askMeAnything": "Ask Me Anything",
+    "communityForum": "Community Forum",
+    "volunteer": "Volunteer",
+    "promisesProgress": "Promises & Progress",
+    "promiseTracker": "Promise Tracker",
+    "achievements": "Achievements",
+    "testimonials": "Testimonials"
+  },
+  "more": {
+    "digitalTools": "Digital Tools",
+    "livePolling": "Live Polling",
+    "challenges": "Challenges",
+    "gamification": "Gamification",
+    "store": "Store",
+    "helpInfo": "Help & Info",
+    "help": "Help",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "accessibility": "Accessibility",
+    "siteMap": "Site Map",
+    "installApp": "Install App"
+  },
+  "buttons": {
+    "whatsapp": "WhatsApp",
+    "contact": "Contact Us",
+    "language": "Language",
+    "theme": "Theme",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "toggle": "Toggle Theme"
+  },
+  "404": {
+    "title": "Page Not Found",
+    "subtitle": "404 Error",
+    "description": "Sorry, the page you are looking for doesn't exist or has been moved.",
+    "homeButton": "Go Back Home",
+    "contactButton": "Contact Us",
+    "searchPlaceholder": "Search for something...",
+    "popularPages": "Popular Pages",
+    "helpText": "If you think this is an error, please contact us."
+  },
+  "hero": {
+    "slides": [
+      {
+        "title": "A Country That Belongs to Everyone",
+        "subtitle": "We fight for our citizen rights, so join us and make our country more beautiful & natural for all our citizens."
+      },
+      {
+        "title": "Empowering the People",
+        "subtitle": "Together, we can create a nation where every voice is heard and every citizen matters."
+      },
+      {
+        "title": "Unity in Diversity",
+        "subtitle": "Our strength lies in our diversity. Let's build a future where everyone belongs."
+      },
+      {
+        "title": "A Vision for Tomorrow",
+        "subtitle": "Join us in shaping a brighter future for our country and its people."
+      }
+    ],
+    "learnMore": "Learn More"
+  },
+  "leaders": {
+    "sectionLabel": "Our Leaders",
+    "title": "The Great Leaders",
+    "viewMore": "View More",
+    "names": [
+      "Shaheed President Ziaur Rahman",
+      "Chairperson Begum Khaleda Zia",
+      "Acting Chairman Tarique Rahman"
+    ]
+  },
+  "events": {
+    "sectionLabel": "Humanity & Country",
+    "title": "Recent Events & Activities",
+    "viewAll": "View All",
+    "viewAllEvents": "View All Events",
+    "eventList": [
+      {
+        "title": "National Unity Rally: Standing Together for Bangladesh",
+        "description": "A massive gathering bringing together citizens from all walks of life to demonstrate unity and solidarity for our beloved nation.",
+        "date": "December 15, 2024",
+        "category": "Political Rally"
+      },
+      {
+        "title": "Community Development Initiative Launch",
+        "description": "Launching new programs focused on grassroots development and empowering local communities.",
+        "date": "December 10, 2024",
+        "category": "Community Program"
+      },
+      {
+        "title": "Youth Leadership Summit 2024",
+        "description": "Engaging young leaders in meaningful dialogue about the future of our country.",
+        "date": "December 8, 2024",
+        "category": "Youth Program"
+      },
+      {
+        "title": "Economic Development Forum",
+        "description": "Discussing strategies for sustainable economic growth and prosperity.",
+        "date": "December 5, 2024",
+        "category": "Economic Forum"
+      },
+      {
+        "title": "Rural Development Conference",
+        "description": "Focusing on improving infrastructure and opportunities in rural areas.",
+        "date": "December 3, 2024",
+        "category": "Rural Development"
+      },
+      {
+        "title": "Education Reform Summit",
+        "description": "Addressing educational challenges and proposing innovative solutions.",
+        "date": "November 30, 2024",
+        "category": "Education"
+      },
+      {
+        "title": "Healthcare Initiative Launch",
+        "description": "Introducing new healthcare programs for underserved communities.",
+        "date": "November 28, 2024",
+        "category": "Healthcare"
+      }
+    ]
+  },
+  "aboutMe": {
+    "sectionLabel": "About Me",
+    "title": "Foundations for a",
+    "titleHighlight": "Thriving Community",
+    "paragraph1": "Our commitment to building stronger communities starts with understanding the needs of every citizen. Through decades of dedicated service, we have worked tirelessly to create opportunities, foster growth, and ensure prosperity for all.",
+    "paragraph2": "From rural development initiatives to urban infrastructure projects, our vision encompasses comprehensive progress that touches every aspect of community life. We believe in transparent governance, inclusive policies, and sustainable development that benefits future generations.",
+    "learnMore": "Learn More",
+    "videoTitle": "Watch Our Story",
+    "videoSubtitle": "Discover the journey of community transformation"
+  },
+  "photoGallery": {
+    "sectionLabel": "Visual Chapters",
+    "title": "Photo Gallery",
+    "viewAll": "View All",
+    "viewAllPhotos": "View All Photos",
+    "images": [
+      {
+        "alt": "Community Meeting",
+        "caption": "Discussion meeting with local community"
+      },
+      {
+        "alt": "Public Address",
+        "caption": "Addressing the public gathering"
+      },
+      {
+        "alt": "Rally Event",
+        "caption": "Participating in political rally"
+      },
+      {
+        "alt": "Community Service",
+        "caption": "Engaged in community service"
+      },
+      {
+        "alt": "Leadership Meeting",
+        "caption": "Consultation with party leaders"
+      },
+      {
+        "alt": "Public Event",
+        "caption": "Attending public welfare program"
+      },
+      {
+        "alt": "Community Event",
+        "caption": "Social development activities"
+      },
+      {
+        "alt": "Leadership Address",
+        "caption": "Providing guidance on important matters"
+      },
+      {
+        "alt": "Public Rally",
+        "caption": "Speaking at large public gathering"
+      }
+    ]
+  },
+  "blog": {
+    "sectionLabel": "Stay Informed",
+    "title": "Latest News",
+    "viewAll": "View All",
+    "viewAllNews": "View All News",
+    "readMore": "Read More",
+    "posts": [
+      {
+        "title": "Building Stronger Communities Through Unity",
+        "excerpt": "Our commitment to fostering community bonds continues to strengthen relationships across all sectors of society, creating lasting positive change.",
+        "date": "December 15, 2024",
+        "author": "Editorial Team",
+        "readTime": "3 min read"
+      },
+      {
+        "title": "Economic Development Initiatives Show Promise",
+        "excerpt": "Recent policy implementations demonstrate significant progress in rural development and infrastructure improvement across the nation.",
+        "date": "December 12, 2024",
+        "author": "Policy Analysis",
+        "readTime": "5 min read"
+      },
+      {
+        "title": "Youth Engagement in Democratic Processes",
+        "excerpt": "Encouraging young voices in political discourse ensures a brighter future for democratic values and participatory governance.",
+        "date": "December 10, 2024",
+        "author": "Youth Affairs",
+        "readTime": "4 min read"
+      }
+    ]
+  },
+  "videoGallery": {
+    "sectionLabel": "Media Center",
+    "title": "Showcase of Stories",
+    "viewAll": "View All",
+    "viewAllVideos": "View All Videos",
+    "watchNow": "Watch Now",
+    "videos": [
+      {
+        "title": "Community Leadership Address",
+        "description": "Key policy announcements and community engagement initiatives",
+        "duration": "15:30"
+      },
+      {
+        "title": "Economic Development Summit",
+        "description": "Strategies for sustainable growth and prosperity",
+        "duration": "22:45"
+      },
+      {
+        "title": "Youth Empowerment Program",
+        "description": "Inspiring the next generation of leaders",
+        "duration": "18:20"
+      }
+    ]
+  },
+  "footer": {
+    "cta": {
+      "title": "Join the Nationalists",
+      "subtitle": "Join the Fight for Democracy & Voting Rights",
+      "joinButton": "Join Now"
+    },
+    "followUs": "Follow us",
+    "sections": {
+      "aboutUs": {
+        "title": "About Us",
+        "links": {
+          "ourLeaders": "Our Leaders",
+          "constitution": "Constitution"
+        }
+      },
+      "resources": {
+        "title": "Resources",
+        "links": {
+          "vision2030": "Vision 2030",
+          "19points": "19 Points"
+        }
+      },
+      "updates": {
+        "title": "Updates",
+        "links": {
+          "pressReleases": "Press Releases",
+          "announcements": "Announcements"
+        }
+      },
+      "joinUs": {
+        "title": "Join Us",
+        "buttons": {
+          "membership": "Membership Free",
+          "generalMembership": "General Membership Free",
+          "donate": "Donate"
+        }
+      }
+    },
+    "copyright": "© 2023 to 2025 Bangladesh Nationalist Party - BNP",
+    "developer": "Develop And Maintained By Md Sabbir Ahmed"
+  },
+  "aboutPage": {
+    "hero": {
+      "badge": "Political Leader & Social Activist",
+      "name": "S M Jahangir",
+      "lastName": "Hossain",
+      "position": "Joint Convener",
+      "organization": "BNP Dhaka Metropolitan North",
+      "description": "A dedicated leader enriched with 35 years of political experience. A long successful journey from student politics to the national level.",
+      "detailsButton": "View Details",
+      "contactButton": "Contact",
+      "experienceYears": "35+",
+      "experienceLabel": "Years of Experience",
+      "currentYear": "2025",
+      "currentLabel": "Current"
+    },
+    "stats": [
+      { "number": "35+", "label": "Years of Experience" },
+      { "number": "10+", "label": "Important Positions" },
+      { "number": "2020", "label": "MP Candidate" },
+      { "number": "2025", "label": "Current Responsibility" }
+    ],
+    "personalInfo": {
+      "title": "Personal Information",
+      "data": [
+        { "label": "Full Name", "value": "S M Jahangir Hossain" },
+        { "label": "Father's Name", "value": "Late A K M Nuruzzaman" },
+        { "label": "Mother's Name", "value": "Late Khayrun Nessa" },
+        { "label": "Date of Birth", "value": "01 January, 1973" },
+        { "label": "Mobile", "value": "01711-563636" },
+        { "label": "Permanent Address", "value": "North Charkumaria, Sakhipur, Shariatpur" },
+        { "label": "Current Address", "value": "House-72, Road-6, Sector-9, Uttara, Dhaka" }
+      ]
+    },
+    "education": {
+      "title": "Educational Qualifications",
+      "data": [
+        { "level": "S.S.C", "degree": "Secondary School Certificate", "institution": "BG Press School", "year": "1987" },
+        { "level": "H.S.C", "degree": "Higher Secondary Certificate", "institution": "Tejgaon College", "year": "1989" },
+        { "level": "B.A", "degree": "Bachelor's Degree", "institution": "Tejgaon College", "year": "1991" }
+      ]
+    },
+    "politicalJourney": {
+      "title": "Political Journey",
+      "timeline": [
+        { "year": "1990", "event": "Started Political Journey", "details": "Member Secretary of Tejgaon College Chhatra Dal" },
+        { "year": "1991", "event": "Student Parliament V.P", "details": "Elected by direct vote of students" },
+        { "year": "2001", "event": "Chhatra Dal President", "details": "Dhaka Metropolitan North & Central Joint Secretary" },
+        { "year": "2017", "event": "Jubo Dal President", "details": "Dhaka Metropolitan North & Central Co-President" },
+        { "year": "2020", "event": "MP Candidate", "details": "Dhaka-18 constituency by-election" },
+        { "year": "2024-2025", "event": "Joint Convener", "details": "BNP Dhaka Metropolitan North (Current)" }
+      ]
+    },
+    "quote": {
+      "text": "Politics is a means of public service. I am always committed to working for the welfare of the people.",
+      "author": "— S M Jahangir Hossain"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subtitle": "Get in touch directly for your opinions and suggestions",
+      "callButton": "Call Now",
+      "homeButton": "Home Page"
+    }
+  }
+}

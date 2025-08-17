@@ -8,8 +8,30 @@
       "WebFetch(domain:localhost)",
       "Bash(mkdir:*)",
       "WebFetch(domain:docs.google.com)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npm install:*)",
+      "Bash(mv:*)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell:*)",
+      "Bash(node:*)",
+      "mcp__supabase__list_tables",
+      "Bash(set SUPABASE_ACCESS_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZobWF0eXV3eHlldHJnaHZjcndkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTExNTMxMCwiZXhwIjoyMDcwNjkxMzEwfQ.F0B7KMYdti14HM59SU2a9M8fBNQhDz1QVjApGHuTYVQ)",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__get_project_url",
+      "mcp__ide__getDiagnostics",
+      "mcp__supabase__get_anon_key",
+      "mcp__supabase__list_migrations",
+      "mcp__ide__executeCode",
+      "mcp__supabase__get_advisors",
+      "mcp__supabase__apply_migration"
     ],
-    "deny": []
-  }
+    "deny": [],
+    "defaultMode": "acceptEdits"
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

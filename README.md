@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# S M JAHANGIR HOSSAIN - Political Campaign Platform
 
-## Getting Started
+## 🚀 Enterprise Campaign Website
 
-First, run the development server:
+Modern political campaign website for **S M JAHANGIR HOSSAIN**, BNP candidate for Dhaka-18 constituency (February 2025 election).
+
+## ✨ Features
+
+### Public Website
+- 🏠 Responsive homepage with hero slider
+- 📖 Biography and political journey
+- 📰 News and updates blog
+- 📅 Campaign events calendar
+- 🖼️ Photo gallery
+- 🎥 Video gallery
+- 🌍 Bengali/English language support
+- 🌓 Dark/Light theme toggle
+
+### Admin Panel
+- 👤 User management (Admin/Moderator/User roles)
+- 📊 Dashboard with statistics
+- ⚙️ Settings management
+- 🔐 Secure authentication
+- 🏢 Enterprise-grade architecture
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15.3.2 (TypeScript)
+- **Database**: Supabase (PostgreSQL)
+- **State**: Zustand
+- **Styling**: Tailwind CSS
+- **Auth**: Supabase Auth
+- **Deployment**: Vercel-ready
+
+## 📦 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔑 Admin Access
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **URL**: `/login`
+- **Email**: `md.sabbir073@gmail.com`
+- **Password**: `sabbir1love`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗️ Architecture
 
-## Learn More
+- API-first design (`/api/admin/*`)
+- Server-side database operations
+- Enterprise caching system
+- No RLS dependencies
+- Optimized for 100k+ users
 
-To learn more about Next.js, take a look at the following resources:
+## 📂 Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/          # Pages and API routes
+├── components/   # React components
+├── stores/       # State management
+├── lib/          # Utilities
+└── types/        # TypeScript types
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Deployment
 
-## Deploy on Vercel
+Ready for Vercel deployment. Just connect your GitHub repository and deploy.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Built for Dhaka-18 Constituency | February 2025 Election**

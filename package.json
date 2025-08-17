@@ -1,21 +1,33 @@
 {
-  "name": "smjahangir",
-  "version": "0.1.0",
+  "name": "smjahangir-campaign",
+  "version": "1.0.0",
+  "description": "Enterprise political campaign website for S M JAHANGIR HOSSAIN",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/postgrest-js": "^1.21.2",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.55.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/pg": "^8.15.5",
+    "bcryptjs": "^3.0.2",
+    "immer": "^10.1.1",
     "keen-slider": "^6.8.6",
     "next": "15.3.2",
+    "pg": "^8.16.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "sweetalert2": "^11.22.4",
     "swiper": "^11.2.6",
-    "yet-another-react-lightbox": "^3.25.0"
+    "yet-another-react-lightbox": "^3.25.0",
+    "zustand": "^5.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
