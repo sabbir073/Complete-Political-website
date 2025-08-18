@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { MediaItem } from '@/types/media.types';
 import { MediaPicker, useMediaPicker } from '@/components/media';
 import { useTheme } from '@/providers/ThemeProvider';
 

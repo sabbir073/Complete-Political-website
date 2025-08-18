@@ -1,18 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { MediaUpdateData } from '@/types/media.types';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Get single media item
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const resolvedParams = await params;
     const supabase = await createClient();
     
     // Check authentication
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         created_at,
         updated_at
       `)
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .single();
 
     if (error || !mediaItem) {
@@ -61,6 +61,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT - Update media item metadata
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const resolvedParams = await params;
     const supabase = await createClient();
     
     // Check authentication
@@ -82,7 +83,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     // Validate update data
     const allowedFields = ['alt_text', 'caption', 'description'];
-    const filteredData: Record<string, any> = {};
+    const filteredData: Record<string, string> = {};
 
     for (const [key, value] of Object.entries(updateData)) {
       if (allowedFields.includes(key)) {
@@ -101,7 +102,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const { data: updatedItem, error } = await supabase
       .from('media_library')
       .update(filteredData)
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .select()
       .single();
 
@@ -129,6 +130,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE - Delete single media item
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const resolvedParams = await params;
     const supabase = await createClient();
     
     // Check authentication
@@ -152,7 +154,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { data: mediaItem, error: fetchError } = await serviceClient
       .from('media_library')
       .select('s3_key, filename')
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .single();
 
     if (fetchError || !mediaItem) {
@@ -163,7 +165,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const { error: dbError } = await serviceClient
       .from('media_library')
       .delete()
-      .eq('id', params.id);
+      .eq('id', resolvedParams.id);
 
     if (dbError) {
       console.error('Database delete error:', dbError);

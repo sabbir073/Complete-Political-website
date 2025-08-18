@@ -83,7 +83,6 @@ export const useSweetAlert = () => {
       showCancelButton: true,
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'Cancel',
-      confirmButtonColor: '#ef4444',
       reverseButtons: true,
       ...getThemeConfig()
     });

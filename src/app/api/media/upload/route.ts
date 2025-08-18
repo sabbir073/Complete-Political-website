@@ -6,8 +6,7 @@ import {
   validateFile, 
   generateFileName, 
   generateS3Key, 
-  fileToBuffer,
-  getFileTypeFromMime 
+  fileToBuffer
 } from '@/lib/media-utils';
 import { BatchUploadResponse } from '@/types/media.types';
 
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Use the RPC function to get user role (avoids RLS recursion)
-    const { data: userRole, error: roleError } = await supabase
+    const { data: userRole } = await supabase
       .rpc('get_user_role', { user_id: user.id });
 
     // Check if user has permission
@@ -185,7 +184,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET - Get upload status or presigned URL (alternative upload method)
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const supabase = await createClient();
     

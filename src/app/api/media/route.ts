@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
-import { MediaFilter, MediaLibraryResponse } from '@/types/media.types';
+import { MediaLibraryResponse } from '@/types/media.types';
 
 // GET - Fetch media library with filters
 export async function GET(request: NextRequest) {
@@ -62,7 +62,6 @@ export async function GET(request: NextRequest) {
     if (year && month) {
       // Filter by specific month and year
       const startDate = `${year}-${month.padStart(2, '0')}-01`;
-      const endDate = `${year}-${month.padStart(2, '0')}-31`;
       query = query.gte('created_at', startDate).lt('created_at', `${year}-${(parseInt(month) + 1).toString().padStart(2, '0')}-01`);
     } else if (year) {
       // Filter by year only
@@ -114,7 +113,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check user permissions using the RPC function to avoid RLS recursion
-    const { data: userRole, error: roleError } = await supabase
+    const { data: userRole } = await supabase
       .rpc('get_user_role', { user_id: user.id });
 
     if (!userRole || !['admin', 'moderator'].includes(userRole)) {
