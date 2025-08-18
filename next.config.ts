@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'dahf45b8zc9m5.cloudfront.net',
+        port: '',
+        pathname: '/media/**',
+      },
+    ],
+  },
   async headers() {
     return [
       {
