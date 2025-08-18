@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { MediaItem, MediaLibraryResponse, MediaFilter } from '@/types/media.types';
 import { formatFileSize } from '@/lib/media-utils';
 import { useTheme } from '@/providers/ThemeProvider';
@@ -423,9 +425,15 @@ function MediaItemCard({ item, isSelected, view, onSelect, onDelete, onEdit, sel
         flex items-center p-3 rounded-lg border transition-all duration-200 cursor-pointer
         ${isSelected ? 'border-blue-500 bg-blue-500/10' : isDark ? 'border-gray-700 hover:border-gray-600 bg-gray-800' : 'border-gray-200 hover:border-gray-300 bg-white'}
       `} onClick={onSelect}>
-        <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+        <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 relative">
           {isImage ? (
-            <img src={displayUrl} alt={item.alt_text || item.filename} className="w-full h-full object-cover" />
+            <Image 
+              src={displayUrl} 
+              alt={item.alt_text || item.filename} 
+              fill
+              className="object-cover"
+              sizes="48px"
+            />
           ) : (
             <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
               <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -488,12 +496,14 @@ function MediaItemCard({ item, isSelected, view, onSelect, onDelete, onEdit, sel
       group relative rounded-lg overflow-hidden cursor-pointer transition-all duration-200 transform hover:scale-105
       ${isSelected ? 'ring-2 ring-blue-500 ring-offset-2' : ''}
     `} onClick={onSelect}>
-      <div className="aspect-square">
+      <div className="aspect-square relative">
         {isImage ? (
-          <img 
+          <Image 
             src={displayUrl} 
             alt={item.alt_text || item.filename} 
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
         ) : (
           <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
