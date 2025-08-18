@@ -152,10 +152,10 @@ export default function MediaSelector({
               
               <button
                 onClick={handleConfirmSelection}
-                disabled={selectedMedia.length === 0 || (maxSelections && selectedMedia.length > maxSelections)}
+                disabled={selectedMedia.length === 0 || (!!maxSelections && selectedMedia.length > maxSelections)}
                 className={`
                   px-6 py-2 rounded-lg font-medium transition-colors
-                  ${selectedMedia.length === 0 || (maxSelections && selectedMedia.length > maxSelections)
+                  ${selectedMedia.length === 0 || (!!maxSelections && selectedMedia.length > maxSelections)
                     ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
                     : 'bg-blue-500 text-white hover:bg-blue-600'
                   }

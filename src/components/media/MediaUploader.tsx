@@ -1,11 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { MediaItem, UploadProgress } from '@/types/media.types';
 import { validateFile, formatFileSize, getImageDimensions, getVideoDuration } from '@/lib/media-utils';
 import { useTheme } from '@/providers/ThemeProvider';
-import { useSweetAlert } from '@/hooks/useSweetAlert';
 
 interface MediaUploaderProps {
   onUploadComplete?: (mediaItems: MediaItem[]) => void;
@@ -21,7 +21,6 @@ export default function MediaUploader({
   onUploadComplete,
   onUploadError,
   onUploadProgress,
-  acceptedTypes = ['image/*', 'video/*'],
   maxFiles = 10,
   className = '',
   showPreview = true
@@ -30,52 +29,7 @@ export default function MediaUploader({
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    if (acceptedFiles.length === 0) return;
-
-    // Validate files and create upload progress items
-    const validFiles: UploadProgress[] = [];
-    const errors: string[] = [];
-
-    for (const file of acceptedFiles) {
-      const validation = validateFile(file);
-      if (validation.isValid) {
-        validFiles.push({
-          file,
-          id: `${Date.now()}-${Math.random()}`,
-          progress: 0,
-          status: 'pending'
-        });
-      } else {
-        errors.push(`${file.name}: ${validation.errors.join(', ')}`);
-      }
-    }
-
-    if (errors.length > 0) {
-      onUploadError?.(errors.join('\n'));
-    }
-
-    if (validFiles.length === 0) return;
-
-    setUploads(validFiles);
-    setIsUploading(true);
-    onUploadProgress?.(validFiles);
-
-    // Upload files one by one
-    await uploadFiles(validFiles);
-  }, [onUploadComplete, onUploadError, onUploadProgress]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
-      'video/*': ['.mp4', '.mov', '.avi']
-    },
-    maxFiles,
-    disabled: isUploading
-  });
-
-  const uploadFiles = async (uploadItems: UploadProgress[]) => {
+  const uploadFiles = useCallback(async (uploadItems: UploadProgress[]) => {
     const completedUploads: MediaItem[] = [];
 
     for (let i = 0; i < uploadItems.length; i++) {
@@ -206,7 +160,52 @@ export default function MediaUploader({
     if (completedUploads.length > 0) {
       onUploadComplete?.(completedUploads);
     }
-  };
+  }, [onUploadComplete, onUploadError, onUploadProgress]);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
+
+    // Validate files and create upload progress items
+    const validFiles: UploadProgress[] = [];
+    const errors: string[] = [];
+
+    for (const file of acceptedFiles) {
+      const validation = validateFile(file);
+      if (validation.isValid) {
+        validFiles.push({
+          file,
+          id: `${Date.now()}-${Math.random()}`,
+          progress: 0,
+          status: 'pending'
+        });
+      } else {
+        errors.push(`${file.name}: ${validation.errors.join(', ')}`);
+      }
+    }
+
+    if (errors.length > 0) {
+      onUploadError?.(errors.join('\n'));
+    }
+
+    if (validFiles.length === 0) return;
+
+    setUploads(validFiles);
+    setIsUploading(true);
+    onUploadProgress?.(validFiles);
+
+    // Upload files one by one
+    await uploadFiles(validFiles);
+  }, [uploadFiles]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif'],
+      'video/*': ['.mp4', '.mov', '.avi']
+    },
+    maxFiles,
+    disabled: isUploading
+  });
 
   const removeUpload = (id: string) => {
     setUploads(prev => prev.filter(u => u.id !== id));

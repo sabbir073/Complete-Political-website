@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { MediaItem } from '@/types/media.types';
 import { useTheme } from '@/providers/ThemeProvider';
 import { formatFileSize } from '@/lib/media-utils';
@@ -120,11 +121,15 @@ export default function MediaEditModal({ mediaItem, isOpen, onClose, onSave }: M
                   isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'
                 }`}>
                   {isImage ? (
-                    <img
-                      src={displayUrl}
-                      alt={mediaItem.original_filename}
-                      className="w-full h-auto max-h-96 object-contain"
-                    />
+                    <div className="relative w-full" style={{ minHeight: '384px' }}>
+                      <Image
+                        src={displayUrl}
+                        alt={mediaItem.original_filename}
+                        fill
+                        className="object-contain"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    </div>
                   ) : (
                     <div className="relative">
                       <video

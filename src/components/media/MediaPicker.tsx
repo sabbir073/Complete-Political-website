@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { MediaItem } from '@/types/media.types';
 import { useTheme } from '@/providers/ThemeProvider';
 import { formatFileSize } from '@/lib/media-utils';
@@ -178,10 +179,12 @@ function MediaPreviewCard({ item, onRemove, large = false }: MediaPreviewCardPro
     `}>
       {/* Media Content */}
       {isImage ? (
-        <img 
+        <Image 
           src={displayUrl} 
           alt={item.alt_text || item.filename} 
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       ) : (
         <div className={`

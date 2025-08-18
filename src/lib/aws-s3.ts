@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // AWS S3 Configuration
@@ -44,12 +44,12 @@ export async function uploadToS3(file: Buffer, key: string, contentType: string)
       cloudFrontUrl,
       success: true,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       s3Url: null,
       cloudFrontUrl: null,
       success: false,
-      error: `S3 Error: ${error.name || 'Unknown'} - ${error.message || 'Upload failed'}`,
+      error: `S3 Error: ${error instanceof Error ? error.name : 'Unknown'} - ${error instanceof Error ? error.message : 'Upload failed'}`,
     };
   }
 }

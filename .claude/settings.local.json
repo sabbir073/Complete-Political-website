@@ -30,7 +30,8 @@
       "Bash(sed:*)",
       "Bash(del create-production-admin.js)",
       "Bash(start http://localhost:3001/test-upload.html)",
-      "Bash(del test-upload.html)"
+      "Bash(del test-upload.html)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
