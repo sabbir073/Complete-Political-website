@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@/providers/ThemeProvider';
-import { useAuth, useAuthActions } from '@/stores/auth-fixed';
+import { useAuth, useAuthActions } from '@/stores/auth-clean';
 import { useUIStore } from '@/stores/ui';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,26 +20,17 @@ function LoginPageContent() {
   const { signIn } = useAuthActions();
   const { loading: uiLoading, setLoading, addNotification } = useUIStore();
 
-  // Debug logs
+  // Auth state tracking
   useEffect(() => {
-    console.log('🔍 Login page state:', {
-      initialized,
-      loading,
-      isAuthenticated,
-      hasUser: !!user,
-      hasProfile: !!profile,
-      profileActive: profile?.is_active
-    });
+    // Auth initialization tracking
   }, [initialized, loading, isAuthenticated, user, profile]);
 
   // Redirect to admin if authenticated and active
   useEffect(() => {
     if (initialized && !loading) {
       if (isAuthenticated && profile?.is_active) {
-        console.log('🔓 Already authenticated and active, redirecting to admin');
         router.replace('/admin');
       } else if (isAuthenticated && profile && !profile.is_active) {
-        console.log('❌ User is inactive, staying on login page');
         setError('Your account is inactive. Please contact an administrator.');
       }
     }
@@ -50,8 +41,6 @@ function LoginPageContent() {
     const message = !initialized || loading 
       ? 'Checking authentication...' 
       : 'Redirecting to dashboard...';
-    
-    console.log('⏳ Loading state:', { initialized, loading, isAuthenticated, message });
     
     return (
       <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${

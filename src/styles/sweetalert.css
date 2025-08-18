@@ -1,0 +1,41 @@
+/* SweetAlert2 Custom Styles */
+
+.dark-popup {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+}
+
+.light-popup {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Dark mode progress bar */
+.dark-popup .swal2-html-container .bg-gray-200 {
+  background-color: #374151 !important;
+}
+
+.dark-popup .swal2-html-container .dark\:bg-gray-700 {
+  background-color: #374151 !important;
+}
+
+/* Ensure proper z-index for SweetAlert */
+.swal2-container {
+  z-index: 99999 !important;
+}
+
+/* Custom button styles */
+.swal2-styled.swal2-confirm {
+  background-color: #3b82f6 !important;
+  border: none !important;
+}
+
+.swal2-styled.swal2-cancel {
+  background-color: #ef4444 !important;
+  border: none !important;
+}
+
+/* Toast positioning */
+.swal2-toast {
+  margin-top: 80px !important; /* Account for header height */
+}

@@ -45,7 +45,6 @@ class EnterpriseRequestManager {
   
   async execute<T>(key: string, operation: () => Promise<T>): Promise<T> {
     if (this.activeRequests.has(key)) {
-      console.log(`⚡ Deduplicating request: ${key}`);
       return this.activeRequests.get(key)! as Promise<T>;
     }
     
@@ -79,7 +78,6 @@ class EnterpriseSessionManager {
   private lastActivity: number = Date.now();
   
   startMonitoring() {
-    console.log('🔐 Starting enterprise session monitoring...');
     this.trackUserActivity();
     
     this.sessionCheckInterval = setInterval(async () => {
@@ -123,7 +121,6 @@ class EnterpriseSessionManager {
       
       const idleTime = Date.now() - this.lastActivity;
       if (idleTime > ENTERPRISE_CONFIG.IDLE_TIMEOUT) {
-        console.log('⏰ Session expired due to inactivity');
         await supabase.auth.signOut();
         return false;
       }
@@ -136,7 +133,6 @@ class EnterpriseSessionManager {
   }
   
   private handleSessionExpired() {
-    console.log('🚨 Session expired - logging out user');
     useAuthStore.setState({
       user: null,
       profile: null,
@@ -188,12 +184,10 @@ const fetchProfileEnterprise = async (userId: string): Promise<Profile | null> =
   
   const cached = enterpriseCache.get(cacheKey) as Profile | null;
   if (cached) {
-    console.log(`🗄️ Cache hit for profile: ${userId}`);
     return cached;
   }
   
   return requestManager.execute(cacheKey, async () => {
-    console.log(`🔍 Fetching profile via API for: ${userId}`);
     
     try {
       const response = await fetch('/api/admin/users');
@@ -204,7 +198,6 @@ const fetchProfileEnterprise = async (userId: string): Promise<Profile | null> =
         
         if (profile) {
           enterpriseCache.set(cacheKey, profile);
-          console.log(`✅ Profile cached: ${profile.full_name}`);
           return profile;
         }
       }
@@ -238,18 +231,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   
   initialize: async () => {
     try {
-      console.log('🚀 Enterprise Auth: Starting initialization...');
       
       const { data: { session }, error } = await requestManager.execute(
         'session_fetch',
         () => supabase.auth.getSession()
       );
-      
-      console.log('📋 Enterprise Auth: Session check result:', { 
-        hasSession: !!session, 
-        hasUser: !!session?.user, 
-        error: error?.message 
-      });
       
       if (error) {
         console.error('❌ Enterprise Auth: Session error:', error);
@@ -258,14 +244,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       if (session?.user) {
-        console.log('👤 Enterprise Auth: Found session for:', session.user.email);
         
         set({ user: session.user, loading: false, initialized: true });
         
         // Fetch profile with enterprise features
         const profile = await fetchProfileEnterprise(session.user.id);
         if (profile) {
-          console.log('✅ Enterprise Auth: Profile loaded:', profile.full_name);
           set(state => ({ ...state, profile }));
         }
         
@@ -274,11 +258,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           sessionManager.startMonitoring();
         }
       } else {
-        console.log('👤 Enterprise Auth: No session found');
         set({ user: null, profile: null, loading: false, initialized: true });
       }
       
-      console.log('✅ Enterprise Auth: Initialization complete');
     } catch (error: unknown) {
       console.error('💥 Enterprise Auth: Init error:', error);
       set({ user: null, profile: null, loading: false, initialized: true });
@@ -287,7 +269,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signIn: async (email: string, password: string) => {
     try {
-      console.log('🔐 Enterprise Auth: Signing in:', email);
       
       const { data, error } = await requestManager.execute(
         `auth:${email}`,
@@ -309,7 +290,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         }
       }
 
-      console.log('✅ Enterprise Auth: Sign in successful');
       // Auth listener will handle state updates
     } catch (error: unknown) {
       console.error('💥 Enterprise Auth: Sign in error:', error);
@@ -319,7 +299,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signOut: async () => {
     try {
-      console.log('🚪 Enterprise Auth: Signing out...');
       
       const { error } = await requestManager.execute(
         'signout',
@@ -335,7 +314,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       enterpriseCache.clear();
       
       set({ user: null, profile: null, loading: false, initialized: true });
-      console.log('✅ Enterprise Auth: Sign out successful');
     } catch (error: unknown) {
       console.error('💥 Enterprise Auth: Sign out error:', error);
       throw error;
@@ -355,7 +333,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   getSessionInfo: () => sessionManager.getSessionInfo(),
   clearCache: () => {
     enterpriseCache.clear();
-    console.log('🗑️ Enterprise cache cleared');
   },
 }));
 
@@ -365,13 +342,10 @@ let authListenerInitialized = false;
 export const setupAuthListener = () => {
   if (authListenerInitialized) return;
   
-  console.log('🎧 Enterprise Auth: Setting up listener...');
   
   supabase.auth.onAuthStateChange(async (event, session) => {
-    console.log('🔄 Enterprise Auth: Event:', event);
     
     if (event === 'SIGNED_IN' && session?.user) {
-      console.log('✅ Enterprise Auth: User signed in:', session.user.email);
       
       useAuthStore.setState({
         user: session.user,
@@ -381,12 +355,10 @@ export const setupAuthListener = () => {
 
       const profile = await fetchProfileEnterprise(session.user.id);
       if (profile) {
-        console.log('👤 Enterprise Auth: Profile loaded:', profile.full_name);
         useAuthStore.setState(state => ({ ...state, profile }));
       }
         
     } else if (event === 'SIGNED_OUT') {
-      console.log('🚪 Enterprise Auth: User signed out');
       enterpriseCache.clear();
       useAuthStore.setState({
         user: null,
@@ -398,7 +370,6 @@ export const setupAuthListener = () => {
   });
   
   authListenerInitialized = true;
-  console.log('✅ Enterprise Auth: Listener ready');
 };
 
 // Helper hooks

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/stores/auth-fixed';
+import { useAuth } from '@/stores/auth-clean';
 import { useTheme } from '@/providers/ThemeProvider';
 import { UserRole } from '@/types/database.types';
 import Swal from 'sweetalert2';

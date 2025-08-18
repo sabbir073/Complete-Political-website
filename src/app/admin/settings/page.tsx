@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useAuthActions } from '@/stores/auth-fixed';
+import { useAuth, useAuthActions } from '@/stores/auth-clean';
 import { useUIStore } from '@/stores/ui';
 import { useTheme } from '@/providers/ThemeProvider';
 

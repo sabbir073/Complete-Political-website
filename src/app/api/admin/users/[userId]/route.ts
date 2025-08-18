@@ -5,17 +5,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Environment variables validation
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('❌ Missing Supabase environment variables');
+}
+
 // Server-side Supabase client with service role key (bypasses RLS)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+const supabaseAdmin = supabaseUrl && supabaseServiceKey ? createClient(
+  supabaseUrl,
+  supabaseServiceKey,
   {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
   }
-);
+) : null;
 
 // PUT - Update user in database
 export async function PUT(
@@ -23,6 +31,15 @@ export async function PUT(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Check if Supabase client is available
+    if (!supabaseAdmin) {
+      console.error('❌ Supabase client not initialized - missing environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     const { userId } = await params;
     const body = await request.json();
     
@@ -84,6 +101,15 @@ export async function DELETE(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
+    // Check if Supabase client is available
+    if (!supabaseAdmin) {
+      console.error('❌ Supabase client not initialized - missing environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     const { userId } = await params;
     
     console.log('🗑️ Deleting user:', userId);

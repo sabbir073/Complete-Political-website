@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/stores/auth';
+import { useAuth } from '@/stores/auth-clean';
 import { useTheme } from '@/providers/ThemeProvider';
 
 interface RouteGuardProps {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth, useAuthActions } from '@/stores/auth-fixed';
+import { useAuth, useAuthActions } from '@/stores/auth-clean';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useLanguage } from '@/providers/LanguageProvider';
 import Image from 'next/image';
@@ -136,6 +136,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      label: 'Media Manager',
+      href: '/admin/media',
+      access: 'moderator+', // Moderator and Admin
+      show: canAccessContent,
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
       ),
@@ -173,7 +184,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className={`min-h-screen transition-colors ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Sidebar for desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out ${
+      <aside className={`fixed inset-y-0 left-0 z-10 w-64 transform transition-transform duration-300 ease-in-out ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0 ${
         isDark ? 'bg-gray-800' : 'bg-white'
@@ -258,7 +269,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <p className={`text-xs transition-colors ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
-                    Administrator
+                    {profile?.role ? profile.role.charAt(0).toUpperCase() + profile.role.slice(1) : 'User'}
                   </p>
                 </div>
               </div>
@@ -270,7 +281,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <div className="lg:ml-64">
         {/* Top Bar */}
-        <header className={`sticky top-0 z-40 transition-colors ${
+        <header className={`relative transition-colors ${
           isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
         } border-b shadow-sm`}>
           <div className="flex items-center justify-between px-4 py-3">
@@ -364,7 +375,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

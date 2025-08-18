@@ -8,23 +8,40 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 // bcrypt import removed - using Supabase Auth API instead
 
+// Environment variables validation
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('❌ Missing Supabase environment variables');
+}
+
 // Server-side Supabase client with service role key (bypasses RLS)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+const supabaseAdmin = supabaseUrl && supabaseServiceKey ? createClient(
+  supabaseUrl,
+  supabaseServiceKey,
   {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
   }
-);
+) : null;
 
 // Password hashing handled by Supabase Auth API
 
 // GET - Fetch all users from database with auth data
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase client is available
+    if (!supabaseAdmin) {
+      console.error('❌ Supabase client not initialized - missing environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     console.log('🔍 Fetching all users from database...');
 
     // Direct database query with service role (bypasses RLS)
@@ -91,6 +108,15 @@ export async function GET(request: NextRequest) {
 // POST - Create new user with both auth and profile
 export async function POST(request: NextRequest) {
   try {
+    // Check if Supabase client is available
+    if (!supabaseAdmin) {
+      console.error('❌ Supabase client not initialized - missing environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+
     const body = await request.json();
     const { email, password, full_name, role, is_active } = body;
 

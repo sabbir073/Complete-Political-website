@@ -25,7 +25,12 @@
       "mcp__supabase__list_migrations",
       "mcp__ide__executeCode",
       "mcp__supabase__get_advisors",
-      "mcp__supabase__apply_migration"
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__search_docs",
+      "Bash(sed:*)",
+      "Bash(del create-production-admin.js)",
+      "Bash(start http://localhost:3001/test-upload.html)",
+      "Bash(del test-upload.html)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
