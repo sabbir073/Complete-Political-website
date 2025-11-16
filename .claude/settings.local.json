@@ -31,7 +31,22 @@
       "Bash(del create-production-admin.js)",
       "Bash(start http://localhost:3001/test-upload.html)",
       "Bash(del test-upload.html)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(move \"[key]\" \"setting\")",
+      "Bash(npx tsc:*)",
+      "Bash(start http://localhost:3000/admin/settings/header)",
+      "Bash(start http://localhost:3000)",
+      "Bash(move Header.tsx HeaderClient.tsx)",
+      "Bash(npm cache clean:*)",
+      "Bash(del node_modules package-lock.json)",
+      "Bash(npm cache:*)",
+      "Bash(npm ci:*)",
+      "Bash(start http://localhost:3000/admin/settings/footer)",
+      "Bash(del \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\api\\footer-menus\\route.ts\")",
+      "Bash(del \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\admin\\settings\\home\\page.tsx\")",
+      "Bash(start http://localhost:3000/admin/settings/homepage/hero)",
+      "Bash(del \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\api\\settings\\home\\route.ts\")",
+      "Bash(start http://localhost:3000/admin/settings/homepage/leaders)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

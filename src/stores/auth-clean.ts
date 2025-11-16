@@ -19,7 +19,7 @@ interface AuthState {
 const isAuthenticated = (state: AuthState) => !!state.user;
 const isAdmin = (state: AuthState) => state.profile?.role === 'admin';
 const canAccessUserManagement = (state: AuthState) => isAdmin(state);
-const canAccessSettings = (state: AuthState) => isAuthenticated(state);
+const canAccessSettings = (state: AuthState) => isAdmin(state);
 const canAccessContent = (state: AuthState) => isAdmin(state) || state.profile?.role === 'moderator';
 
 // Supabase client

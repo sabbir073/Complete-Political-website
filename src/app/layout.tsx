@@ -4,6 +4,7 @@ import "../styles/sweetalert.css";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import AuthInitializer from "@/components/AuthInitializer";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Political Party - A Country That Belongs To Everyone",
@@ -31,11 +32,33 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-white">
+      <body className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors">
         <ThemeProvider>
           <LanguageProvider>
             <AuthInitializer>
               {children}
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                  success: {
+                    duration: 3000,
+                    style: {
+                      background: '#10b981',
+                    },
+                  },
+                  error: {
+                    duration: 5000,
+                    style: {
+                      background: '#ef4444',
+                    },
+                  },
+                }}
+              />
             </AuthInitializer>
           </LanguageProvider>
         </ThemeProvider>

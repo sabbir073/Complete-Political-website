@@ -8,25 +8,94 @@ import { useLanguage } from "@/providers/LanguageProvider";
 import { useTheme } from "@/providers/ThemeProvider";
 import "keen-slider/keen-slider.min.css";
 
+interface LeadersSetting {
+  id: string;
+  setting_key: string;
+  setting_value: any;
+  setting_type: string;
+  is_multilingual: boolean;
+  description: string;
+}
+
+interface Leader {
+  name: string | { en: string; bn: string };
+  image: string;
+}
+
 const GreatLeader: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const { t } = useLanguage();
+  const [settings, setSettings] = useState<LeadersSetting[]>([]);
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [loading, setLoading] = useState(false); // Start with false to prevent loading state issues
+  const { language, t } = useLanguage();
   const { isDark } = useTheme();
 
-  const leaders = [
-    { 
-      nameKey: 0,
-      image: "/leader/zia.png" 
-    },
-    { 
-      nameKey: 1,
-      image: "/leader/khaleda.png" 
-    },
-    { 
-      nameKey: 2,
-      image: "/leader/tareq.png" 
-    },
-  ];
+  // Fetch settings from API
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings/leaders');
+        const data = await response.json();
+        
+        if (data.success) {
+          setSettings(data.data.settings);
+          processLeadersData(data.data.settings);
+        }
+      } catch (error) {
+        console.error('Error fetching leaders settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
+
+  // Process settings to extract leaders data
+  const processLeadersData = (settingsData: LeadersSetting[]) => {
+    const leadersData: Leader[] = [];
+    const leaderCount = getSettingValue(settingsData, 'home_leader_count', 3);
+
+    for (let i = 1; i <= leaderCount; i++) {
+      const nameKey = `home_leader_${i}_name`;
+      const imageKey = `home_leader_${i}_image`;
+      
+      const name = getSettingValue(settingsData, nameKey, `Leader ${i}`);
+      const image = getSettingValue(settingsData, imageKey, `/leader/zia.png`);
+
+      leadersData.push({ name, image });
+    }
+
+    setLeaders(leadersData);
+  };
+
+  // Helper function to get setting value
+  const getSettingValue = (settingsData: LeadersSetting[] | string, key?: string, defaultValue: any = '') => {
+    // If called with just a key (backwards compatibility)
+    if (typeof settingsData === 'string') {
+      const setting = settings.find(s => s.setting_key === settingsData);
+      if (!setting) return key || defaultValue;
+      return setting.setting_value !== null && setting.setting_value !== '' 
+        ? setting.setting_value 
+        : (key || defaultValue);
+    }
+    
+    // If called with settingsData array
+    const setting = settingsData.find(s => s.setting_key === key);
+    if (!setting) return defaultValue;
+    
+    return setting.setting_value !== null && setting.setting_value !== '' 
+      ? setting.setting_value 
+      : defaultValue;
+  };
+
+  // Helper function to get multilingual text
+  const getText = (value: any, fallback: string = '') => {
+    if (typeof value === 'object' && value !== null) {
+      return value[language] || value.en || fallback;
+    }
+    return value || fallback;
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -52,7 +121,7 @@ const GreatLeader: React.FC = () => {
 
   const [sliderRef] = useKeenSlider<HTMLDivElement>(
     {
-      loop: true,
+      loop: leaders.length > 1,
       mode: "free-snap",
       slides: {
         perView: 1.2,
@@ -66,7 +135,7 @@ const GreatLeader: React.FC = () => {
           },
         },
       },
-      drag: true,
+      drag: leaders.length > 1,
       initial: 0,
       created(s) {
         s.moveToIdx(0, true, { duration: 0 });
@@ -74,6 +143,8 @@ const GreatLeader: React.FC = () => {
     },
     [
       (slider) => {
+        if (leaders.length <= 1) return;
+        
         let timeout: any;
         let mouseOver = false;
 
@@ -109,8 +180,22 @@ const GreatLeader: React.FC = () => {
         slider.on("animationEnded", nextTimeout);
         slider.on("updated", nextTimeout);
       },
-    ]
+    ],
+    [leaders]
   );
+
+  // Show loading state - TEMPORARILY DISABLED FOR DEBUGGING
+  // if (loading) {
+  //   return (
+  //     <section className={`w-full px-6 md:px-16 py-16 transition-colors duration-300 ${
+  //       isDark ? "bg-gray-900" : "bg-white"
+  //     }`}>
+  //       <div className="flex items-center justify-center min-h-96">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+  //       </div>
+  //     </section>
+  //   );
+  // }
 
   return (
     <section 
@@ -125,7 +210,7 @@ const GreatLeader: React.FC = () => {
           <p className={`text-sm font-semibold ${
             isDark ? "text-red-400" : "text-red-600"
           }`}>
-            {t.leaders?.sectionLabel || "Our Leaders"}
+            {getText(getSettingValue('home_leader_section_subtitle'), "Our Leaders")}
           </p>
           <div className={`w-10 h-[2px] mt-1 mb-4 mx-auto md:mx-0 rounded-full ${
             isDark ? "bg-red-400" : "bg-red-600"
@@ -133,7 +218,7 @@ const GreatLeader: React.FC = () => {
           <h2 className={`text-3xl font-bold ${
             isDark ? "text-white" : "text-gray-900"
           }`}>
-            {t.leaders?.title || "The Great Leaders"}
+            {getText(getSettingValue('home_leader_section_title'), "The Great Leaders")}
           </h2>
         </div>
 
@@ -171,7 +256,7 @@ const GreatLeader: React.FC = () => {
               }`}>
                 <Image
                   src={leader.image}
-                  alt={t.leaders?.names?.[leader.nameKey] || `Leader ${index + 1}`}
+                  alt={getText(leader.name, `Leader ${index + 1}`)}
                   width={320}
                   height={400}
                   loading="lazy"
@@ -184,7 +269,7 @@ const GreatLeader: React.FC = () => {
                 }`}></div>
                 <div className="absolute bottom-0 left-0 right-0 p-4">
                   <h3 className="text-white font-bold text-lg text-center drop-shadow-lg">
-                    {t.leaders?.names?.[leader.nameKey] || `Leader ${index + 1}`}
+                    {getText(leader.name, `Leader ${index + 1}`)}
                   </h3>
                 </div>
               </div>
@@ -229,7 +314,7 @@ const GreatLeader: React.FC = () => {
           >
             <Image
               src={leader.image}
-              alt={t.leaders?.names?.[leader.nameKey] || `Leader ${index + 1}`}
+              alt={getText(leader.name, `Leader ${index + 1}`)}
               width={400}
               height={500}
               loading="lazy"
@@ -242,7 +327,7 @@ const GreatLeader: React.FC = () => {
             }`}></div>
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <h3 className="text-white font-bold text-xl text-center drop-shadow-lg">
-                {t.leaders?.names?.[leader.nameKey] || `Leader ${index + 1}`}
+                {getText(leader.name, `Leader ${index + 1}`)}
               </h3>
             </div>
           </div>

@@ -6,53 +6,108 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { useTheme } from "@/providers/ThemeProvider";
+import { useHomeSettings } from "@/hooks/useHomeSettings";
 import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/pagination";
 
-const slidesData = [
-  {
-    backgroundImage: "/slider/1.jpg",
-    personImage: "/slider/leader.png",
-  },
-  {
-    backgroundImage: "/slider/hero-bg-1.jpg",
-    personImage: "/slider/leader.png",
-  },
-  {
-    backgroundImage: "/slider/bg2.jpg",
-    personImage: "/slider/leader.png",
-  },
-  {
-    backgroundImage: "/slider/hero-bg-2.jpg",
-    personImage: "/slider/leader.png",
-  },
-];
 
 export default function Hero() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { isDark } = useTheme();
+  const { homeSettings, loading } = useHomeSettings();
+
+  // Create our own getText function that uses current language
+  const getText = (multilingualText: { en: string; bn: string } | string | undefined): string => {
+    if (!multilingualText) return '';
+    if (typeof multilingualText === 'string') {
+      return multilingualText;
+    }
+    if (typeof multilingualText === 'object' && multilingualText !== null) {
+      return multilingualText[language] || multilingualText.en || '';
+    }
+    return '';
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <section className={`relative w-full h-[70vh] sm:h-[80vh] lg:h-screen overflow-hidden ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className={`animate-spin rounded-full h-12 w-12 border-b-2 mx-auto ${isDark ? 'border-red-400' : 'border-red-600'}`}></div>
+            <p className={`mt-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Loading hero section...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Check if hero section should be shown
+  if (!homeSettings?.home_hero_section_show) {
+    return null;
+  }
+
+  // Get hero items from settings
+  const heroItemCount = homeSettings?.home_hero_item_count || 1;
+  
+  // Build slides data from dynamic settings
+  const slidesData = [];
+  for (let i = 1; i <= heroItemCount; i++) {
+    // Get image values, handling empty strings
+    const backgroundImageFromSettings = homeSettings?.[`home_hero_item_${i}_background_image`];
+    const personImageFromSettings = homeSettings?.[`home_hero_item_${i}_person_image`];
+    
+    const backgroundImage = (backgroundImageFromSettings && backgroundImageFromSettings.trim() !== '') 
+      ? backgroundImageFromSettings 
+      : `/slider/${i === 1 ? '1' : i === 2 ? 'hero-bg-1' : i === 3 ? 'bg2' : 'hero-bg-2'}.jpg`;
+      
+    const personImage = (personImageFromSettings && personImageFromSettings.trim() !== '') 
+      ? personImageFromSettings 
+      : `/slider/leader.png`;
+      
+    // Store settings for dynamic language switching
+    const titleSetting = homeSettings?.[`home_hero_item_${i}_title`];
+    const descriptionSetting = homeSettings?.[`home_hero_item_${i}_description`];
+    
+    slidesData.push({
+      backgroundImage,
+      personImage,
+      titleSetting,
+      descriptionSetting,
+      fallbackTitle: t.hero?.slides?.[i-1]?.title || `Welcome to Our Platform`,
+      fallbackDescription: t.hero?.slides?.[i-1]?.subtitle || `Discover amazing content and experiences`
+    });
+  }
+
+  // Ensure we have at least one slide
+  if (slidesData.length === 0) {
+    slidesData.push({
+      backgroundImage: '/slider/1.jpg',
+      personImage: '/slider/leader.png',
+      title: 'Welcome to Our Platform',
+      description: 'Discover amazing content and experiences'
+    });
+  }
+
+  // Default height - removed hero height setting
+  const heightClass = 'h-[70vh] sm:h-[80vh] lg:h-screen';
 
   return (
-    <section className="relative w-full h-[70vh] sm:h-[80vh] lg:h-screen overflow-hidden">
+    <section className={`relative w-full ${heightClass} overflow-hidden`}>
       <Swiper
         modules={[Autoplay, EffectFade, Pagination]}
         effect="fade"
         autoplay={{ delay: 5000 }}
         loop={true}
-        pagination={{ 
+        pagination={heroItemCount > 1 && homeSettings?.home_hero_show_pagination ? { 
           clickable: true,
           bulletClass: 'swiper-pagination-bullet custom-bullet',
           bulletActiveClass: 'swiper-pagination-bullet-active custom-bullet-active'
-        }}
+        } : false}
         className="w-full h-full"
       >
         {slidesData.map((slide, index) => {
-          const slideContent = t.hero?.slides?.[index] || {
-            title: `Slide ${index + 1}`,
-            subtitle: "Loading..."
-          };
-
           return (
             <SwiperSlide key={index}>
               <div 
@@ -63,11 +118,12 @@ export default function Hero() {
                 }}
                 key={`bg-${index}`}
               >
-                <div className={`absolute inset-0 ${
-                  isDark 
-                    ? "bg-gradient-to-r from-gray-900/95 via-gray-800/60 to-gray-900/80" 
-                    : "bg-gradient-to-r from-black/90 via-black/50 to-black/70"
-                }`}></div>
+                <div 
+                  className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-black"
+                  style={{
+                    opacity: homeSettings?.home_hero_overlay_opacity || 0.7
+                  }}
+                ></div>
                 
                 <div className="relative z-10 h-full flex">
                   <div className="container mx-auto flex items-center h-full">
@@ -84,7 +140,7 @@ export default function Hero() {
                             }`}
                             style={{ animationDelay: '0.6s' }}
                           >
-                            {slideContent.title}
+                            {getText(slide.titleSetting) || slide.fallbackTitle}
                           </h1>
                           
                           <p 
@@ -93,36 +149,39 @@ export default function Hero() {
                             }`}
                             style={{ animationDelay: '0.9s' }}
                           >
-                            {slideContent.subtitle}
+                            {getText(slide.descriptionSetting) || slide.fallbackDescription}
                           </p>
                           
-                          <div 
-                            className="pt-2 sm:pt-4 animate-button-entrance"
-                            style={{ animationDelay: '1.2s' }}
-                          >
-                            <Link
-                              href="/about"
-                              className={`relative inline-block px-6 sm:px-8 lg:px-10 py-2.5 sm:py-3 lg:py-4 text-sm sm:text-base lg:text-lg rounded cursor-pointer group transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
-                                isDark 
-                                  ? "bg-red-600 hover:bg-red-700 text-white" 
-                                  : "bg-primaryRed hover:bg-red-600 text-white"
-                              }`}
+                          {homeSettings?.home_hero_button_show && (
+                            <div 
+                              className="pt-2 sm:pt-4 animate-button-entrance"
+                              style={{ animationDelay: '1.2s' }}
                             >
-                              <span className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded ${
-                                isDark 
-                                  ? "bg-gradient-to-r from-red-700 to-red-800" 
-                                  : "bg-gradient-to-r from-primaryRed to-red-600"
-                              }`}></span>
-                              <span className="relative z-10 font-semibold">
-                                {t.hero?.learnMore || "Learn More"}
-                              </span>
-                            </Link>
-                          </div>
+                              <Link
+                                href={homeSettings?.home_hero_button_url || "/about"}
+                                className={`relative inline-block px-6 sm:px-8 lg:px-10 py-2.5 sm:py-3 lg:py-4 text-sm sm:text-base lg:text-lg rounded cursor-pointer group transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl ${
+                                  isDark 
+                                    ? "bg-red-600 hover:bg-red-700 text-white" 
+                                    : "bg-primaryRed hover:bg-red-600 text-white"
+                                }`}
+                              >
+                                <span className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded ${
+                                  isDark 
+                                    ? "bg-gradient-to-r from-red-700 to-red-800" 
+                                    : "bg-gradient-to-r from-primaryRed to-red-600"
+                                }`}></span>
+                                <span className="relative z-10 font-semibold">
+                                  {getText(homeSettings?.home_hero_button_text) || t.hero?.learnMore || "Learn More"}
+                                </span>
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       </div>
                       
                       {/* Person Image Section - Right */}
-                      <div className="hidden lg:flex flex-1 items-center justify-center lg:justify-end">
+                      {homeSettings?.home_hero_show_person_image && (
+                        <div className="hidden lg:flex flex-1 items-center justify-center lg:justify-end">
                         <div 
                           className="relative animate-image-entrance"
                           key={`image-${index}`}
@@ -152,7 +211,8 @@ export default function Hero() {
                             </div>
                           </div>
                         </div>
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

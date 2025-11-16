@@ -1,0 +1,1216 @@
+# Homepage Theme & System Settings Configuration
+# Political Campaign Website - S M Jahangir Hossain
+# Deep Analysis of Configurable Elements
+
+## 1. HERO SECTION SETTINGS
+
+### Hero Carousel Settings
+- hero_autoplay_delay (default: 5000ms) - Time between slide transitions
+- hero_enable_fade_effect (default: true) - Enable/disable fade transition
+- hero_enable_pagination (default: true) - Show/hide pagination dots
+- hero_enable_loop (default: true) - Enable infinite loop
+- hero_slides_count (default: 4) - Number of slides to display
+
+### Hero Content Settings
+- hero_slide_1_background_image (default: "/slider/1.jpg")
+- hero_slide_2_background_image (default: "/slider/hero-bg-1.jpg")  
+- hero_slide_3_background_image (default: "/slider/bg2.jpg")
+- hero_slide_4_background_image (default: "/slider/hero-bg-2.jpg")
+- hero_person_image (default: "/slider/leader.png") - Leader image for all slides
+- hero_slide_1_title (multilingual support)
+- hero_slide_1_subtitle (multilingual support)
+- hero_slide_2_title (multilingual support)
+- hero_slide_2_subtitle (multilingual support)
+- hero_slide_3_title (multilingual support)
+- hero_slide_3_subtitle (multilingual support)
+- hero_slide_4_title (multilingual support)
+- hero_slide_4_subtitle (multilingual support)
+- hero_button_text (default: "Learn More")
+- hero_button_link (default: "/about")
+
+### Hero Visual Settings
+- hero_height_mobile (default: "70vh")
+- hero_height_tablet (default: "80vh") 
+- hero_height_desktop (default: "100vh")
+- hero_overlay_opacity_dark_theme (default: "from-gray-900/95 via-gray-800/60 to-gray-900/80")
+- hero_overlay_opacity_light_theme (default: "from-black/90 via-black/50 to-black/70")
+- hero_title_font_size_mobile (default: "text-3xl")
+- hero_title_font_size_desktop (default: "text-7xl")
+- hero_animation_delay_title (default: "0.6s")
+- hero_animation_delay_subtitle (default: "0.9s")
+- hero_animation_delay_button (default: "1.2s")
+- hero_animation_delay_image (default: "0.1s")
+
+### Hero Button Styling
+- hero_button_primary_color_dark (default: "#ef4444")
+- hero_button_primary_color_light (default: "#dc2626")
+- hero_button_hover_color_dark (default: "#dc2626")
+- hero_button_hover_color_light (default: "#b91c1c")
+- hero_button_border_radius (default: "rounded")
+- hero_button_padding (default: "px-6 py-2.5")
+
+## 2. GREAT LEADERS SECTION SETTINGS
+
+### Leaders Content Settings
+- leaders_section_label (default: "Our Leaders")
+- leaders_section_title (default: "The Great Leaders")
+- leaders_external_link (default: "https://www.bnpbd.org/our-leaders")
+- leaders_button_text (default: "View More")
+
+### Leaders Data Settings
+- leaders_count (default: 3)
+- leader_1_name (multilingual support)
+- leader_1_image (default: "/leader/zia.png")
+- leader_2_name (multilingual support) 
+- leader_2_image (default: "/leader/khaleda.png")
+- leader_3_name (multilingual support)
+- leader_3_image (default: "/leader/tareq.png")
+
+### Leaders Carousel Settings (Mobile)
+- leaders_mobile_autoplay (default: true)
+- leaders_mobile_slide_delay (default: 2500ms)
+- leaders_mobile_per_view (default: 1.2)
+- leaders_mobile_spacing (default: 20px)
+- leaders_mobile_per_view_small (default: 1.1) - For screens <480px
+- leaders_mobile_spacing_small (default: 16px) - For screens <480px
+
+### Leaders Visual Settings
+- leaders_background_color_dark (default: "#111827")
+- leaders_background_color_light (default: "#ffffff")
+- leaders_image_grayscale_effect (default: true)
+- leaders_image_hover_grayscale_remove (default: true)
+- leaders_image_transition_duration (default: "500ms")
+- leaders_section_padding (default: "py-16")
+- leaders_desktop_columns (default: 3)
+- leaders_hover_scale (default: "hover:scale-105")
+
+## 3. EVENTS SECTION SETTINGS
+
+### Events Content Settings  
+- events_section_title (multilingual support)
+- events_section_subtitle (multilingual support)
+- events_items_per_page (default: 4)
+- events_enable_carousel (default: true)
+- events_show_categories (default: true)
+- events_show_dates (default: true)
+
+### Events Data Settings (Sample/Default Events)
+- event_1_title (default: "National Unity Rally: Standing Together for Bangladesh")
+- event_1_description (default: "A massive gathering bringing together citizens...")  
+- event_1_date (default: "December 15, 2024")
+- event_1_category (default: "Political Rally")
+- event_1_image (default: "/events/event1.jpg")
+[... similar for event_2 through event_5]
+
+### Events Visual Settings
+- events_background_color_dark (default: "#111827")
+- events_background_color_light (default: "#ffffff") 
+- events_card_border_radius (default: "rounded-xl")
+- events_card_shadow (default: "shadow-lg")
+- events_card_hover_effects (default: true)
+- events_image_aspect_ratio (default: "aspect-video")
+
+## 4. ABOUT ME SECTION SETTINGS
+
+### About Content Settings
+- about_section_label (default: "About Me")
+- about_section_title (default: "Foundations for a")
+- about_title_highlight (default: "Thriving Community") 
+- about_paragraph_1 (multilingual support)
+- about_paragraph_2 (multilingual support)
+- about_button_text (default: "Learn More")
+- about_button_link (default: "/about")
+
+### About Video Settings
+- about_video_youtube_id (default: "dQw4w9WgXcQ")
+- about_video_thumbnail (default: "/events/event1.jpg")
+- about_video_title (default: "Watch Our Story")
+- about_video_subtitle (default: "Discover the journey of community transformation")
+- about_video_autoplay (default: true)
+- about_video_show_related (default: false)
+- about_video_modest_branding (default: true)
+
+### About Visual Settings
+- about_background_color_dark (default: "#111827")
+- about_background_color_light (default: "#ffffff")
+- about_layout_columns_desktop (default: 2) - lg:grid-cols-2
+- about_content_alignment_mobile (default: "center")
+- about_content_alignment_desktop (default: "left")
+- about_video_height (default: "h-96")
+- about_video_border_radius (default: "rounded-2xl")
+
+## 5. PHOTO GALLERY SECTION SETTINGS
+
+### Photo Gallery Content Settings
+- gallery_section_title (multilingual support)
+- gallery_section_subtitle (multilingual support) 
+- gallery_items_per_row_mobile (default: 1)
+- gallery_items_per_row_tablet (default: 2)
+- gallery_items_per_row_desktop (default: 3)
+- gallery_enable_lightbox (default: true)
+- gallery_enable_captions (default: true)
+
+### Gallery Images Settings
+- gallery_image_count (default: 9) - For perfect grid layout
+- gallery_image_1_src (default: "/events/event1.jpg")
+- gallery_image_1_alt (multilingual support)
+- gallery_image_1_caption (multilingual support)
+[... similar for images 2-9]
+
+### Gallery Visual Settings
+- gallery_background_color_dark (default: "#111827")
+- gallery_background_color_light (default: "#ffffff")
+- gallery_image_aspect_ratio (default: "square")
+- gallery_image_border_radius (default: "rounded-xl")
+- gallery_image_hover_effects (default: true)
+- gallery_lightbox_theme (default: auto - follows site theme)
+
+## 6. BLOG SECTION SETTINGS
+
+### Blog Content Settings
+- blog_section_title (multilingual support)
+- blog_section_subtitle (multilingual support)
+- blog_posts_per_page (default: 3)
+- blog_show_excerpts (default: true)
+- blog_show_read_time (default: true)
+- blog_show_author (default: true)
+- blog_show_date (default: true)
+- blog_enable_categories (default: true)
+
+### Blog Visual Settings  
+- blog_background_color_dark (default: "#111827")
+- blog_background_color_light (default: "#ffffff")
+- blog_card_layout (default: "vertical") - Options: vertical, horizontal
+- blog_posts_per_row_desktop (default: 3)
+- blog_posts_per_row_tablet (default: 2)
+- blog_posts_per_row_mobile (default: 1)
+
+## 7. VIDEO GALLERY SECTION SETTINGS
+
+### Video Gallery Content Settings
+- video_gallery_section_title (multilingual support)
+- video_gallery_section_subtitle (multilingual support)
+- video_gallery_videos_per_page (default: 6)
+- video_gallery_enable_categories (default: true)
+- video_gallery_autoplay_on_hover (default: false)
+
+### Video Gallery Visual Settings
+- video_gallery_background_color_dark (default: "#111827")
+- video_gallery_background_color_light (default: "#ffffff")
+- video_gallery_thumbnail_aspect_ratio (default: "16:9")
+- video_gallery_columns_desktop (default: 3)
+- video_gallery_columns_tablet (default: 2)
+- video_gallery_columns_mobile (default: 1)
+
+## 8. GLOBAL THEME SETTINGS
+
+### Color Scheme Settings
+- primary_red_color (default: "#dc2626")
+- primary_red_hover (default: "#b91c1c")
+- secondary_red_color (default: "#ef4444")
+- background_dark (default: "#111827")
+- background_light (default: "#ffffff")
+- text_dark_primary (default: "#ffffff")
+- text_dark_secondary (default: "#d1d5db")
+- text_light_primary (default: "#111827")  
+- text_light_secondary (default: "#4b5563")
+
+### Typography Settings
+- font_family_primary (default: system fonts)
+- font_size_base (default: "16px")
+- font_weight_normal (default: 400)
+- font_weight_semibold (default: 600)
+- font_weight_bold (default: 700)
+- line_height_base (default: 1.5)
+- line_height_tight (default: 1.25)
+- letter_spacing_normal (default: 0)
+- letter_spacing_wide (default: "0.025em")
+
+### Animation Settings
+- enable_animations (default: true)
+- animation_duration_fast (default: "300ms")
+- animation_duration_normal (default: "500ms") 
+- animation_duration_slow (default: "700ms")
+- animation_easing (default: "cubic-bezier(0.16, 1, 0.3, 1)")
+- enable_intersection_observer (default: true)
+- intersection_threshold (default: 0.1)
+
+### Layout Settings
+- container_max_width (default: "1280px")
+- container_padding_mobile (default: "px-6")
+- container_padding_desktop (default: "px-16")
+- section_spacing_mobile (default: "py-12")
+- section_spacing_desktop (default: "py-16")
+- grid_gap_default (default: "gap-6")
+- border_radius_small (default: "rounded-lg")
+- border_radius_large (default: "rounded-xl")
+
+### Interactive Elements
+- button_hover_scale (default: "hover:scale-105")
+- button_transition_duration (default: "300ms")
+- image_hover_scale (default: "hover:scale-105")  
+- card_hover_shadow (default: "hover:shadow-xl")
+- enable_smooth_scrolling (default: true)
+- enable_scroll_to_top (default: true)
+
+## 9. RESPONSIVE BREAKPOINTS
+
+### Mobile Settings
+- mobile_breakpoint (default: "640px")
+- mobile_container_padding (default: "px-4")
+- mobile_text_size_adjustment (default: 0.9)
+- mobile_section_spacing (default: "py-8")
+
+### Tablet Settings  
+- tablet_breakpoint (default: "768px")
+- tablet_container_padding (default: "px-6")
+- tablet_grid_columns_default (default: 2)
+
+### Desktop Settings
+- desktop_breakpoint (default: "1024px")
+- desktop_container_padding (default: "px-8")
+- large_desktop_breakpoint (default: "1280px")
+- extra_large_desktop_breakpoint (default: "1536px")
+
+## 10. ACCESSIBILITY SETTINGS
+
+### A11Y Features
+- enable_focus_indicators (default: true)
+- enable_keyboard_navigation (default: true)  
+- enable_screen_reader_support (default: true)
+- high_contrast_mode (default: false)
+- reduce_motion_respect (default: true)
+- alt_text_enforcement (default: true)
+- aria_label_enforcement (default: true)
+
+### Text & Contrast
+- minimum_contrast_ratio (default: 4.5)
+- large_text_contrast_ratio (default: 3.0)
+- focus_outline_color (default: "#3b82f6")
+- focus_outline_width (default: "2px")
+
+## 11. PERFORMANCE SETTINGS
+
+### Image Optimization
+- enable_image_lazy_loading (default: true)
+- image_quality (default: 75)
+- enable_webp_format (default: true)
+- image_placeholder_blur (default: true)
+
+### Animation Performance
+- enable_will_change_property (default: true)
+- enable_transform3d_acceleration (default: true)
+- reduce_animations_on_mobile (default: false)
+
+## 12. SOCIAL MEDIA & EXTERNAL LINKS
+
+### Social Integration
+- facebook_url (configurable)
+- twitter_url (configurable)
+- youtube_url (configurable)  
+- linkedin_url (configurable)
+- instagram_url (configurable)
+- enable_social_sharing (default: true)
+- social_icons_style (default: "rounded") - Options: rounded, square, circle
+
+### External Links
+- party_website_url (default: "https://www.bnpbd.org")
+- contact_phone (configurable)
+- contact_email (configurable)
+- office_address (configurable)
+- enable_external_link_icons (default: true)
+
+## NOTES FOR IMPLEMENTATION:
+
+1. **Database Schema**: Each setting should be stored with:
+   - setting_key (unique identifier)
+   - setting_value (JSON for complex values)
+   - setting_type (string, number, boolean, color, image, url)
+   - setting_category (hero, leaders, events, etc.)
+   - is_multilingual (boolean)
+   - default_value (fallback)
+   - description (admin help text)
+
+2. **Admin Panel Categories**:
+   - Hero Section
+   - Leaders Section  
+   - Events Section
+   - About Section
+   - Photo Gallery
+   - Blog Section
+   - Video Gallery
+   - Global Theme
+   - Colors & Typography
+   - Layout & Spacing
+   - Animations
+   - Accessibility
+   - Performance
+   - Social Media
+
+3. **UI Components Needed**:
+   - Color picker for color settings
+   - Image uploader for image settings
+   - Range sliders for numeric values
+   - Toggle switches for boolean settings
+   - Multi-language text inputs
+   - Preview functionality for visual changes
+   - Reset to defaults button
+   - Import/Export settings functionality
+
+4. **Validation Rules**:
+   - Image files: max size, allowed formats
+   - URLs: valid format validation
+   - Colors: hex/rgb validation
+   - Numbers: min/max ranges
+   - Text: character limits
+
+5. **Real-time Preview**: 
+   - Settings should update preview in real-time
+   - Changes should be saveable as drafts
+   - Ability to preview in different themes (light/dark)
+   - Mobile/tablet/desktop preview modes
+
+## 13. MENU MANAGEMENT SYSTEM
+
+### Primary Navigation Settings
+- menu_items_count (dynamic - configurable number of main menu items)
+- menu_item_1_title (multilingual support)
+- menu_item_1_href (URL/path)
+- menu_item_1_has_dropdown (boolean)
+- menu_item_1_dropdown_width (default: "w-80")
+- menu_item_1_icon (optional Font Awesome or SVG icon)
+- menu_item_1_display_order (numeric for ordering)
+- menu_item_1_is_active (boolean - show/hide)
+- menu_item_1_target (same_window, new_window)
+- menu_item_1_css_class (custom CSS classes)
+[... similar for menu_item_2 through menu_item_N]
+
+### Dropdown Menu Settings
+- dropdown_animation_duration (default: 300ms)
+- dropdown_animation_easing (default: cubic-bezier)
+- dropdown_shadow_style (default: "shadow-2xl")
+- dropdown_border_radius (default: "rounded-xl")
+- dropdown_background_dark (default: "#1f2937")
+- dropdown_background_light (default: "#ffffff")
+- dropdown_border_color_dark (default: "#374151")
+- dropdown_border_color_light (default: "#e5e7eb")
+- dropdown_max_height (default: none)
+- dropdown_enable_scroll (default: false)
+
+### Sub-menu Items Management
+- submenu_item_1_parent_id (links to main menu item)
+- submenu_item_1_title (multilingual support)
+- submenu_item_1_href (URL/path)
+- submenu_item_1_has_submenu (boolean - for 3rd level)
+- submenu_item_1_icon (optional icon)
+- submenu_item_1_display_order (numeric)
+- submenu_item_1_is_active (boolean)
+- submenu_item_1_description (optional hover tooltip)
+[... similar for all submenu items]
+
+### Third-level Submenu Settings
+- enable_third_level_menus (default: true)
+- submenu_submenu_width (default: "w-72")
+- submenu_submenu_position (default: "left-full")
+- submenu_submenu_animation (default: opacity + visibility)
+- submenu_submenu_delay (default: 0ms)
+
+### Mobile Menu Settings
+- mobile_menu_width (default: "w-80")
+- mobile_menu_position (default: "right") - Options: left, right
+- mobile_menu_animation (default: "translate-x")
+- mobile_menu_overlay_opacity (default: "bg-opacity-50")
+- mobile_menu_close_on_link_click (default: true)
+- mobile_menu_logo_show (default: true)
+- mobile_menu_logo_width (default: 40)
+- mobile_menu_header_text (default: "মেনু")
+- mobile_menu_max_height_navigation (default: "max-h-80")
+- mobile_menu_enable_scroll (default: true)
+
+### Menu Visual Settings
+- menu_font_size_desktop (default: "text-base")
+- menu_font_size_mobile (default: "text-lg")
+- menu_font_weight (default: "font-semibold")
+- menu_item_padding_desktop (default: "px-4 py-2")
+- menu_item_padding_mobile (default: "py-3")
+- menu_item_border_radius (default: "rounded-lg")
+- menu_item_spacing (default: "space-x-4")
+- menu_hover_transition_duration (default: 300ms)
+- menu_active_item_indicator (boolean)
+- menu_active_item_color (default: red-600)
+
+### Menu Colors & States
+- menu_text_color_dark (default: "#d1d5db")
+- menu_text_color_light (default: "#374151")
+- menu_text_hover_color_dark (default: "#ffffff")
+- menu_text_hover_color_light (default: "#dc2626")
+- menu_background_hover_dark (default: "#1f2937")
+- menu_background_hover_light (default: "#f9fafb")
+- menu_dropdown_arrow_show (default: true)
+- menu_dropdown_arrow_rotation (default: "rotate-180")
+
+## 14. HEADER SETTINGS
+
+### Header Layout Settings
+- header_position (default: "sticky") - Options: static, sticky, fixed
+- header_sticky_threshold (default: 250px) - Scroll distance before sticky
+- header_height (default: auto)
+- header_padding_desktop (default: "px-6 py-4")
+- header_padding_mobile (default: "px-6 py-4")
+- header_container_max_width (default: "container mx-auto")
+- header_z_index (default: 9999)
+
+### Header Visual Settings
+- header_background_dark (default: "#111827")
+- header_background_light (default: "#ffffff")
+- header_border_show (default: true)
+- header_border_color_dark (default: "#374151")
+- header_border_color_light (default: "#e5e7eb")
+- header_shadow_default (default: "shadow-sm")
+- header_shadow_sticky (default: "shadow-lg")
+- header_backdrop_blur (default: true)
+- header_transition_duration (default: 500ms)
+
+### Logo Settings
+- header_logo_src (default: "/logo.png")
+- header_logo_alt (default: "S M Jahangir Hossain Logo")
+- header_logo_width (default: 90)
+- header_logo_height (default: 60)
+- header_logo_max_height (default: "max-h-14")
+- header_logo_hover_scale (default: "hover:scale-105")
+- header_logo_transition (default: 300ms)
+- header_logo_priority (default: true) - Next.js Image priority
+- header_logo_link (default: "/")
+
+### Header Controls Settings
+- header_show_language_toggle (default: true)
+- header_show_theme_toggle (default: true)
+- header_show_whatsapp_button (default: true)
+- header_show_contact_button (default: true)
+- header_controls_spacing (default: "space-x-4")
+
+### Language Toggle Settings
+- language_toggle_show (default: true)
+- language_toggle_text_bn (default: "English")
+- language_toggle_text_en (default: "বাংলা")
+- language_toggle_button_style (default: "px-4 py-2")
+- language_toggle_border_show (default: true)
+- language_toggle_border_radius (default: "rounded-lg")
+- language_toggle_font_weight (default: "font-semibold")
+
+### Theme Toggle Settings
+- theme_toggle_show (default: true)
+- theme_toggle_button_padding (default: "p-3")
+- theme_toggle_button_radius (default: "rounded-lg")
+- theme_toggle_icon_size (default: "w-5 h-5")
+- theme_toggle_animation_duration (default: 300ms)
+- theme_toggle_sun_icon (SVG path or icon class)
+- theme_toggle_moon_icon (SVG path or icon class)
+
+### WhatsApp Button Settings
+- whatsapp_button_show (default: true)
+- whatsapp_phone_number (default: "+8801700000000")
+- whatsapp_button_text (multilingual support)
+- whatsapp_button_background (default: "from-green-500 to-green-600")
+- whatsapp_button_hover_background (default: "from-green-600 to-green-700")
+- whatsapp_button_padding (default: "px-6 py-3")
+- whatsapp_button_border_radius (default: "rounded-lg")
+- whatsapp_button_icon_show (default: true)
+- whatsapp_button_icon_size (default: "w-5 h-5")
+- whatsapp_button_hover_scale (default: "hover:scale-105")
+- whatsapp_button_shadow (default: "shadow-lg hover:shadow-xl")
+
+### Contact Button Settings
+- contact_button_show (default: true)
+- contact_button_text (multilingual support)
+- contact_button_link (default: "/contact")
+- contact_button_background (default: "from-red-600 to-red-700")
+- contact_button_hover_background (default: "from-red-700 to-red-800")
+- contact_button_padding (default: "px-6 py-3")
+- contact_button_border_radius (default: "rounded-lg")
+- contact_button_hover_scale (default: "hover:scale-105")
+- contact_button_shadow (default: "shadow-lg hover:shadow-xl")
+
+### Mobile Header Settings
+- mobile_menu_button_show (default: true)
+- mobile_menu_button_icon_size (default: "w-6 h-6")
+- mobile_menu_button_padding (default: "p-2")
+- mobile_menu_button_border_radius (default: "rounded-lg")
+- mobile_controls_layout (default: "flex justify-between")
+- mobile_controls_padding (default: "p-4")
+- mobile_controls_border_show (default: true)
+- mobile_action_buttons_spacing (default: "space-y-3")
+- mobile_action_buttons_full_width (default: true)
+
+### Header Animation Settings
+- header_sticky_animation (default: "animate-fadeInDown")
+- header_sticky_animation_duration (default: 500ms)
+- header_sticky_transform (default: none)
+- header_sticky_opacity (default: 1)
+- header_mobile_menu_animation (default: "translate-x")
+- header_mobile_overlay_animation (default: opacity)
+- header_dropdown_hover_delay (default: 0ms)
+
+## 15. FOOTER SETTINGS
+
+### Footer Layout Settings
+- footer_layout (default: "5-column") - Options: 3-column, 4-column, 5-column
+- footer_responsive_breakpoints (mobile: 2-col, tablet: 3-col, desktop: 5-col)
+- footer_padding_top (default: "py-10 md:py-5")
+- footer_padding_sides (default: "px-6")
+- footer_max_width (default: "max-w-screen-xl mx-auto")
+- footer_grid_gap (default: "gap-x-8")
+
+### Footer CTA Section Settings
+- footer_cta_show (default: true)
+- footer_cta_background_image (default: "/footerbg.png")
+- footer_cta_background_position (default: "bg-cover bg-center")
+- footer_cta_border_radius (default: "rounded-3xl")
+- footer_cta_padding (default: "px-6 py-12")
+- footer_cta_text_alignment (default: "text-center")
+- footer_cta_title (multilingual support)
+- footer_cta_subtitle (multilingual support)
+- footer_cta_button_text (multilingual support)
+- footer_cta_button_link (default: "/join")
+- footer_cta_shadow_dark (default: "shadow-2xl shadow-gray-900/70")
+- footer_cta_shadow_light (default: "shadow-lg shadow-gray-500/30")
+
+### Footer CTA Button Settings
+- footer_cta_button_background_dark (default: "#f3f4f6")
+- footer_cta_button_background_light (default: "#ffffff")
+- footer_cta_button_text_color_dark (default: "#111827")
+- footer_cta_button_text_color_light (default: "#003B2F")
+- footer_cta_button_hover_background_dark (default: "#ffffff")
+- footer_cta_button_hover_background_light (default: "#e5e7eb")
+- footer_cta_button_padding (default: "px-6 py-3")
+- footer_cta_button_border_radius (default: "rounded-md")
+- footer_cta_button_font_weight (default: "font-semibold")
+- footer_cta_button_hover_scale (default: "hover:scale-105")
+
+### Footer Background Colors
+- footer_background_dark (default: "#111827")
+- footer_background_light (default: "#003B2F")
+- footer_text_color_dark (default: "#d1d5db")
+- footer_text_color_light (default: "#ffffff")
+- footer_split_background_top_dark (default: "#1f2937")
+- footer_split_background_top_light (default: "#ffffff")
+- footer_split_background_bottom_dark (default: "#111827")
+- footer_split_background_bottom_light (default: "#003B2F")
+- footer_split_height (default: "h-32 md:h-40")
+
+### Footer Logo & Social Settings
+- footer_logo_show (default: true)
+- footer_logo_src (default: "/logo.png")
+- footer_logo_alt (default: "BNP Flag")
+- footer_logo_width (default: 64)
+- footer_logo_height (default: 48)
+- footer_social_title (multilingual - "Follow us")
+- footer_social_icons_size (default: "text-xl")
+- footer_social_icons_spacing (default: "space-x-2")
+
+### Social Media Links
+- footer_youtube_url (configurable)
+- footer_youtube_show (default: true)
+- footer_facebook_url (configurable)
+- footer_facebook_show (default: true)
+- footer_twitter_url (configurable)
+- footer_twitter_show (default: true)
+- footer_instagram_url (configurable)
+- footer_instagram_show (default: true)
+- footer_telegram_url (configurable)
+- footer_telegram_show (default: true)
+- footer_tiktok_url (configurable)
+- footer_tiktok_show (default: true)
+
+### Social Media Hover Colors
+- footer_social_youtube_hover_dark (default: "#ef4444")
+- footer_social_youtube_hover_light (default: "#fca5a5")
+- footer_social_facebook_hover_dark (default: "#60a5fa")
+- footer_social_facebook_hover_light (default: "#93c5fd")
+- footer_social_twitter_hover_dark (default: "#9ca3af")
+- footer_social_twitter_hover_light (default: "#d1d5db")
+- footer_social_instagram_hover_dark (default: "#f472b6")
+- footer_social_instagram_hover_light (default: "#f9a8d4")
+- footer_social_telegram_hover_dark (default: "#60a5fa")
+- footer_social_telegram_hover_light (default: "#93c5fd")
+- footer_social_tiktok_hover_dark (default: "#9ca3af")
+- footer_social_tiktok_hover_light (default: "#d1d5db")
+
+### Footer Columns Content
+#### Column 1: Logo & Social (Fixed)
+- footer_column_1_show (default: true)
+- footer_column_1_content_type (default: "logo_social")
+
+#### Column 2: About Us
+- footer_column_2_show (default: true)
+- footer_column_2_title (multilingual - "About Us")
+- footer_column_2_link_1_text (multilingual - "Our Leaders")
+- footer_column_2_link_1_href (default: "/leaders")
+- footer_column_2_link_2_text (multilingual - "Constitution")
+- footer_column_2_link_2_href (default: "/constitution")
+- footer_column_2_links_count (default: 2, expandable)
+
+#### Column 3: Resources
+- footer_column_3_show (default: true)
+- footer_column_3_title (multilingual - "Resources")
+- footer_column_3_link_1_text (multilingual - "Vision 2030")
+- footer_column_3_link_1_href (default: "/vision-2030")
+- footer_column_3_link_2_text (multilingual - "19 Points")
+- footer_column_3_link_2_href (default: "/19-points")
+- footer_column_3_links_count (default: 2, expandable)
+
+#### Column 4: Updates
+- footer_column_4_show (default: true)
+- footer_column_4_title (multilingual - "Updates")
+- footer_column_4_link_1_text (multilingual - "Press Releases")
+- footer_column_4_link_1_href (default: "/press-releases")
+- footer_column_4_link_2_text (multilingual - "Announcements")
+- footer_column_4_link_2_href (default: "/announcements")
+- footer_column_4_links_count (default: 2, expandable)
+
+#### Column 5: Join Us
+- footer_column_5_show (default: true)
+- footer_column_5_title (multilingual - "Join Us")
+- footer_column_5_button_1_text (multilingual - "Membership Free")
+- footer_column_5_button_1_href (default: "/membership")
+- footer_column_5_button_2_text (multilingual - "General Membership Free")
+- footer_column_5_button_2_href (default: "/general-membership")
+- footer_column_5_button_3_text (multilingual - "Donate")
+- footer_column_5_button_3_href (default: "/donate")
+- footer_column_5_buttons_count (default: 3, expandable)
+
+### Footer Column Link Styling
+- footer_link_font_size (default: inherit)
+- footer_link_hover_color_dark (default: "#ef4444")
+- footer_link_hover_color_light (default: "#86efac")
+- footer_link_transition_duration (default: 300ms)
+- footer_link_spacing (default: "space-y-1")
+
+### Footer Join Us Button Styling
+- footer_join_button_background_dark (default: "#dc2626")
+- footer_join_button_background_light (default: "#16a34a")
+- footer_join_button_hover_background_dark (default: "#b91c1c")
+- footer_join_button_hover_background_light (default: "#15803d")
+- footer_join_button_text_color (default: "#ffffff")
+- footer_join_button_padding (default: "px-4 py-2")
+- footer_join_button_border_radius (default: "rounded-md")
+- footer_join_button_font_weight (default: "font-semibold")
+- footer_join_button_spacing (default: "space-y-2")
+- footer_join_button_hover_scale (default: "hover:scale-105")
+
+### Footer Bottom Section
+- footer_bottom_show (default: true)
+- footer_bottom_padding (default: "py-4 px-6")
+- footer_bottom_text_size (default: "text-sm")
+- footer_bottom_text_alignment (default: "text-center")
+- footer_bottom_border_show (default: true)
+- footer_bottom_border_color_dark (default: "#374151")
+- footer_bottom_border_color_light (default: "#166534")
+- footer_bottom_text_color_dark (default: "#9ca3af")
+- footer_bottom_text_color_light (default: "#d1d5db")
+
+### Footer Copyright Settings
+- footer_copyright_text (multilingual - "© 2023 to 2025 Bangladesh Nationalist Party - BNP")
+- footer_copyright_show (default: true)
+- footer_developer_text (multilingual - "Develop And Maintained By Md Sabbir Ahmed")
+- footer_developer_show (default: true)
+- footer_copyright_year_auto_update (default: true)
+
+### Footer Responsive Settings
+- footer_mobile_column_span_5 (default: "col-span-2 md:col-span-1")
+- footer_mobile_grid_adjustment (default: "grid-cols-2 md:grid-cols-3 lg:grid-cols-5")
+- footer_mobile_text_size (default: same as desktop)
+- footer_mobile_padding_adjustment (default: responsive)
+- footer_mobile_cta_positioning (default: responsive centering)
+
+### Footer Custom Sections
+- footer_enable_custom_sections (default: false)
+- footer_custom_section_1_title (multilingual)
+- footer_custom_section_1_content_type (options: links, text, buttons, form)
+- footer_custom_section_1_position (numeric - insertion position)
+- footer_custom_section_1_show_on_mobile (default: true)
+- footer_custom_section_1_column_width (default: 1)
+[... expandable for multiple custom sections]
+
+## ADDITIONAL MENU MANAGEMENT FEATURES:
+
+### Menu Permissions & Visibility
+- menu_item_role_visibility (options: all, authenticated, admin, guest)
+- menu_item_date_range_visibility (start_date, end_date for temporary menus)
+- menu_item_location_visibility (show only in certain countries/regions)
+- menu_item_device_visibility (mobile_only, desktop_only, all)
+
+### Menu Analytics & SEO
+- menu_item_click_tracking (default: false)
+- menu_item_analytics_id (Google Analytics event tracking)
+- menu_item_nofollow (default: false)
+- menu_item_seo_title (for hover tooltips)
+- menu_item_structured_data (JSON-LD markup)
+
+### Menu Advanced Features
+- mega_menu_enable (default: false)
+- mega_menu_columns (default: 4)
+- mega_menu_featured_content (boolean)
+- menu_search_integration (default: false)
+- menu_breadcrumb_integration (default: true)
+- menu_keyboard_navigation (default: true)
+- menu_screen_reader_support (default: true)
+
+### Menu Import/Export
+- menu_backup_functionality (default: true)
+- menu_import_json_support (default: true)
+- menu_export_json_support (default: true)
+- menu_version_control (default: false)
+- menu_staging_environment (default: false)
+
+# ==================================================================================
+# DATABASE SCHEMA & IMPLEMENTATION TODO LIST
+# ==================================================================================
+
+## DATABASE SCHEMA
+
+### 1. Settings Table (Main)
+```sql
+CREATE TABLE settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  setting_key VARCHAR(255) UNIQUE NOT NULL,
+  setting_value JSONB,
+  setting_type VARCHAR(50) NOT NULL, -- 'string', 'number', 'boolean', 'color', 'image', 'url', 'json'
+  category VARCHAR(100) NOT NULL, -- 'hero', 'leaders', 'events', 'about', 'gallery', 'blog', 'videos', 'header', 'footer', 'menu', 'system'
+  subcategory VARCHAR(100), -- 'carousel', 'content', 'visual', 'layout', etc.
+  is_multilingual BOOLEAN DEFAULT FALSE,
+  default_value JSONB,
+  description TEXT,
+  validation_rules JSONB, -- min, max, required, pattern, etc.
+  display_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES profiles(id),
+  updated_by UUID REFERENCES profiles(id)
+);
+
+-- Index for performance
+CREATE INDEX idx_settings_category ON settings(category);
+CREATE INDEX idx_settings_key ON settings(setting_key);
+CREATE INDEX idx_settings_active ON settings(is_active);
+```
+
+### 2. Setting Translations Table
+```sql
+CREATE TABLE setting_translations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  setting_id UUID REFERENCES settings(id) ON DELETE CASCADE,
+  language_code VARCHAR(5) NOT NULL, -- 'en', 'bn'
+  translated_value JSONB NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(setting_id, language_code)
+);
+
+-- Index for performance
+CREATE INDEX idx_setting_translations_setting ON setting_translations(setting_id);
+CREATE INDEX idx_setting_translations_lang ON setting_translations(language_code);
+```
+
+### 3. Menu Items Table
+```sql
+CREATE TABLE menu_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  parent_id UUID REFERENCES menu_items(id) ON DELETE CASCADE,
+  title_en VARCHAR(255) NOT NULL,
+  title_bn VARCHAR(255),
+  href VARCHAR(500),
+  icon VARCHAR(100), -- Icon class or SVG
+  display_order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  is_dropdown BOOLEAN DEFAULT FALSE,
+  expand_only BOOLEAN DEFAULT FALSE,
+  target VARCHAR(20) DEFAULT '_self', -- '_self', '_blank'
+  css_class VARCHAR(255),
+  role_visibility VARCHAR(50) DEFAULT 'all', -- 'all', 'authenticated', 'admin', 'guest'
+  date_start DATE,
+  date_end DATE,
+  device_visibility VARCHAR(20) DEFAULT 'all', -- 'all', 'mobile_only', 'desktop_only'
+  description_en TEXT,
+  description_bn TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_by UUID REFERENCES profiles(id),
+  updated_by UUID REFERENCES profiles(id)
+);
+
+-- Index for performance
+CREATE INDEX idx_menu_items_parent ON menu_items(parent_id);
+CREATE INDEX idx_menu_items_order ON menu_items(display_order);
+CREATE INDEX idx_menu_items_active ON menu_items(is_active);
+```
+
+### 4. Setting History Table (Optional - for audit trail)
+```sql
+CREATE TABLE setting_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  setting_id UUID REFERENCES settings(id) ON DELETE CASCADE,
+  old_value JSONB,
+  new_value JSONB,
+  changed_by UUID REFERENCES profiles(id),
+  changed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  change_reason TEXT
+);
+```
+
+## IMPLEMENTATION TODO LIST
+
+### Phase 1: Database & API Foundation
+- [ ] 1.1 Create settings database tables with migrations
+- [ ] 1.2 Seed default settings from this file
+- [ ] 1.3 Create settings API endpoints (CRUD)
+- [ ] 1.4 Create multilingual translation API
+- [ ] 1.5 Create menu management API
+- [ ] 1.6 Add settings validation middleware
+- [ ] 1.7 Create settings backup/restore functionality
+
+### Phase 2: Core Settings Pages
+- [ ] 2.1 Header Settings Page
+  - [ ] Logo management (upload, resize, alt text)
+  - [ ] Layout settings (position, height, padding)
+  - [ ] Visual settings (background, border, shadow)
+  - [ ] Controls toggle (language, theme, WhatsApp, contact)
+  - [ ] Language toggle customization
+  - [ ] Theme toggle customization
+  - [ ] WhatsApp button configuration
+  - [ ] Contact button configuration
+  - [ ] Mobile header settings
+
+- [ ] 2.2 Footer Settings Page
+  - [ ] CTA section (background image, title, subtitle, button)
+  - [ ] Layout configuration (columns, responsive)
+  - [ ] Background colors (split design)
+  - [ ] Logo & social media settings
+  - [ ] Column content management (About, Resources, Updates, Join Us)
+  - [ ] Social media links (6 platforms)
+  - [ ] Hover colors customization
+  - [ ] Copyright & developer credits
+  - [ ] Custom sections management
+
+- [ ] 2.3 Menu Management Page
+  - [ ] Primary navigation builder
+  - [ ] Dropdown menu configuration
+  - [ ] Sub-menu management (3 levels)
+  - [ ] Mobile menu settings
+  - [ ] Visual styling options
+  - [ ] Colors & states configuration
+  - [ ] Permission-based visibility
+  - [ ] Analytics & SEO settings
+  - [ ] Import/export functionality
+
+### Phase 3: Homepage Settings Pages
+- [ ] 3.1 Hero Section Settings
+  - [ ] Carousel configuration (autoplay, fade, pagination, loop)
+  - [ ] Content management (4 slides with multilingual titles/subtitles)
+  - [ ] Image management (backgrounds, leader image)
+  - [ ] Visual settings (height, overlay, font sizes)
+  - [ ] Animation delays configuration
+  - [ ] Button styling (colors, radius, padding)
+
+- [ ] 3.2 Great Leaders Settings
+  - [ ] Content settings (section labels, external links)
+  - [ ] Leader data management (names, images)
+  - [ ] Mobile carousel configuration
+  - [ ] Visual settings (background colors, effects)
+  - [ ] Layout settings (columns, padding, hover effects)
+
+- [ ] 3.3 Events Section Settings
+  - [ ] Content configuration (titles, items per page)
+  - [ ] Display options (carousel, categories, dates)
+  - [ ] Sample events management
+  - [ ] Visual styling (background, cards, hover effects)
+
+- [ ] 3.4 About Section Settings
+  - [ ] Content management (labels, paragraphs, button)
+  - [ ] Video settings (YouTube integration, thumbnail, autoplay)
+  - [ ] Layout configuration (columns, alignment)
+  - [ ] Visual settings (background, content alignment, video styling)
+
+- [ ] 3.5 Photo Gallery Settings
+  - [ ] Content configuration (titles, grid layout)
+  - [ ] Image management (9 images with captions)
+  - [ ] Lightbox configuration
+  - [ ] Visual settings (aspect ratio, hover effects)
+
+- [ ] 3.6 Blog Section Settings
+  - [ ] Content configuration (titles, display options)
+  - [ ] Post management settings
+  - [ ] Visual styling (background, card layout, responsive)
+
+- [ ] 3.7 Video Gallery Settings
+  - [ ] Content configuration (titles, videos per page)
+  - [ ] Video management (categories, autoplay)
+  - [ ] Visual settings (thumbnail, aspect ratio, columns)
+
+### Phase 4: System Settings Pages
+- [ ] 4.1 Global Theme Settings
+  - [ ] Dark/light mode configuration
+  - [ ] Theme switching options
+  - [ ] Overall color scheme management
+
+- [ ] 4.2 Typography Settings
+  - [ ] Font family management
+  - [ ] Font sizes (base, headings)
+  - [ ] Font weights configuration
+  - [ ] Line height settings
+  - [ ] Letter spacing options
+
+- [ ] 4.3 Colors Settings
+  - [ ] Primary color palette
+  - [ ] Secondary colors
+  - [ ] Accent colors
+  - [ ] Background colors
+  - [ ] Text colors
+  - [ ] Hover states colors
+
+- [ ] 4.4 Animations Settings
+  - [ ] Animation timing configuration
+  - [ ] Effects options
+  - [ ] Transition settings
+  - [ ] Performance options
+  - [ ] Reduced motion support
+
+- [ ] 4.5 Layout & Spacing Settings
+  - [ ] Container widths
+  - [ ] Padding configurations
+  - [ ] Margin settings
+  - [ ] Grid systems
+  - [ ] Section spacing
+
+- [ ] 4.6 Responsive Breakpoints Settings
+  - [ ] Mobile breakpoint (640px)
+  - [ ] Tablet breakpoint (768px)
+  - [ ] Desktop breakpoint (1024px)
+  - [ ] Large desktop (1280px)
+  - [ ] Extra large (1536px)
+
+- [ ] 4.7 Accessibility Settings
+  - [ ] Focus indicators
+  - [ ] Keyboard navigation
+  - [ ] Screen reader support
+  - [ ] High contrast mode
+  - [ ] Reduced motion preferences
+  - [ ] Alt text enforcement
+  - [ ] ARIA label requirements
+  - [ ] Minimum contrast ratios
+
+- [ ] 4.8 Performance Settings
+  - [ ] Image optimization (lazy loading, quality, WebP)
+  - [ ] Animation performance
+  - [ ] Caching strategies
+  - [ ] Bundle optimization
+
+- [ ] 4.9 Social Media Settings
+  - [ ] Platform integration (Facebook, Twitter, YouTube, LinkedIn, Instagram)
+  - [ ] Social sharing options
+  - [ ] Social icons styling
+  - [ ] External link management
+
+- [ ] 4.10 SEO Settings
+  - [ ] Meta tags configuration
+  - [ ] Structured data (JSON-LD)
+  - [ ] Search optimization
+  - [ ] Open Graph settings
+  - [ ] Twitter Card settings
+
+### Phase 5: Advanced Features
+- [ ] 5.1 Settings Import/Export
+  - [ ] JSON backup functionality
+  - [ ] Settings migration tools
+  - [ ] Bulk update capabilities
+
+- [ ] 5.2 Settings Preview System
+  - [ ] Real-time preview
+  - [ ] Draft mode
+  - [ ] Staging environment
+  - [ ] Rollback functionality
+
+- [ ] 5.3 Settings Validation
+  - [ ] Client-side validation
+  - [ ] Server-side validation
+  - [ ] Error handling
+  - [ ] Success feedback
+
+- [ ] 5.4 Settings Search & Filter
+  - [ ] Search functionality
+  - [ ] Category filtering
+  - [ ] Favorites system
+  - [ ] Recently modified
+
+## API ENDPOINTS STRUCTURE
+
+### Settings CRUD
+- GET /api/admin/settings - Get all settings with filtering
+- GET /api/admin/settings/[category] - Get settings by category
+- GET /api/admin/settings/[category]/[subcategory] - Get specific subcategory
+- PUT /api/admin/settings/[key] - Update single setting
+- PUT /api/admin/settings/bulk - Bulk update settings
+- POST /api/admin/settings - Create new setting
+- DELETE /api/admin/settings/[key] - Delete setting
+- POST /api/admin/settings/reset/[category] - Reset category to defaults
+
+### Translations
+- GET /api/admin/settings/translations/[language] - Get translations
+- PUT /api/admin/settings/translations/[key]/[language] - Update translation
+- POST /api/admin/settings/translations/bulk - Bulk update translations
+
+### Menu Management
+- GET /api/admin/menu - Get menu structure
+- POST /api/admin/menu - Create menu item
+- PUT /api/admin/menu/[id] - Update menu item
+- DELETE /api/admin/menu/[id] - Delete menu item
+- PUT /api/admin/menu/reorder - Reorder menu items
+
+### Settings Utilities
+- GET /api/admin/settings/export - Export all settings
+- POST /api/admin/settings/import - Import settings
+- POST /api/admin/settings/backup - Create backup
+- GET /api/admin/settings/history/[key] - Get setting history
+
+## MULTILINGUAL SUPPORT IMPLEMENTATION
+
+### 1. Language Tab Component
+```typescript
+interface LanguageTabsProps {
+  currentLanguage: 'en' | 'bn';
+  onLanguageChange: (lang: 'en' | 'bn') => void;
+  hasTranslation?: boolean;
+}
+
+const LanguageTabs: React.FC<LanguageTabsProps> = ({ 
+  currentLanguage, 
+  onLanguageChange, 
+  hasTranslation 
+}) => {
+  return (
+    <div className="flex space-x-2 mb-4">
+      <button
+        onClick={() => onLanguageChange('en')}
+        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          currentLanguage === 'en'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        }`}
+      >
+        English
+        {hasTranslation && <span className="ml-1 text-xs">✓</span>}
+      </button>
+      <button
+        onClick={() => onLanguageChange('bn')}
+        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          currentLanguage === 'bn'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+        }`}
+      >
+        বাংলা
+        {hasTranslation && <span className="ml-1 text-xs">✓</span>}
+      </button>
+    </div>
+  );
+};
+```
+
+### 2. Multilingual Input Component
+```typescript
+interface MultilingualInputProps {
+  name: string;
+  value: { en: string; bn: string };
+  onChange: (value: { en: string; bn: string }) => void;
+  label: string;
+  type?: 'input' | 'textarea';
+  placeholder?: { en: string; bn: string };
+  required?: boolean;
+}
+
+const MultilingualInput: React.FC<MultilingualInputProps> = ({
+  name,
+  value,
+  onChange,
+  label,
+  type = 'input',
+  placeholder,
+  required = false
+}) => {
+  const [currentLang, setCurrentLang] = useState<'en' | 'bn'>('en');
+  
+  const handleChange = (newValue: string) => {
+    onChange({
+      ...value,
+      [currentLang]: newValue
+    });
+  };
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      
+      <LanguageTabs
+        currentLanguage={currentLang}
+        onLanguageChange={setCurrentLang}
+        hasTranslation={value.en && value.bn}
+      />
+      
+      {type === 'textarea' ? (
+        <textarea
+          value={value[currentLang] || ''}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder={placeholder?.[currentLang]}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          rows={4}
+        />
+      ) : (
+        <input
+          type="text"
+          value={value[currentLang] || ''}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder={placeholder?.[currentLang]}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      )}
+      
+      {/* Translation Status */}
+      <div className="mt-2 text-xs text-gray-500">
+        <span className={value.en ? 'text-green-600' : 'text-red-500'}>
+          English: {value.en ? '✓ Translated' : '✗ Missing'}
+        </span>
+        <span className="mx-2">|</span>
+        <span className={value.bn ? 'text-green-600' : 'text-red-500'}>
+          বাংলা: {value.bn ? '✓ অনুবাদিত' : '✗ অনুপস্থিত'}
+        </span>
+      </div>
+    </div>
+  );
+};
+```
+
+## PRIORITY ORDER FOR IMPLEMENTATION
+
+1. **Immediate (Week 1)**
+   - Database schema creation
+   - Basic settings API
+   - Header settings page (most visible)
+
+2. **High Priority (Week 2-3)**
+   - Footer settings page
+   - Menu management page
+   - Hero section settings
+
+3. **Medium Priority (Week 4-5)**
+   - Other homepage sections
+   - System color & typography settings
+
+4. **Lower Priority (Week 6+)**
+   - Advanced system settings
+   - Performance optimization
+   - Import/export features
+
+This comprehensive plan provides a complete roadmap for implementing all settings functionality with proper multilingual support and database structure.

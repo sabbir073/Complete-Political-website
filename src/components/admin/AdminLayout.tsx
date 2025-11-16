@@ -14,6 +14,7 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({});
   const { user, profile, isAuthenticated, isAdmin, canAccessUserManagement, canAccessSettings, canAccessContent, initialized, loading } = useAuth();
   const { signOut } = useAuthActions();
   const { isDark, toggleTheme } = useTheme();
@@ -158,6 +159,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+      label: 'Profile',
+      href: '/admin/profile',
+      access: 'all', // All authenticated users can access their profile
+      show: true,
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
@@ -166,6 +178,79 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/admin/settings',
       access: 'admin', // Admin only
       show: canAccessSettings,
+      isDropdown: true,
+      subItems: [
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
+          ),
+          label: 'Header',
+          href: '/admin/settings/header',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          ),
+          label: 'Footer',
+          href: '/admin/settings/footer',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          ),
+          label: 'Homepage',
+          href: null, // No page - expansion only
+          isDropdown: true,
+          expandOnly: true, // Flag to indicate this is expansion-only
+          subItems: [
+            { label: 'Hero Section', href: '/admin/settings/homepage/hero' },
+            { label: 'Great Leaders', href: '/admin/settings/homepage/leaders' },
+            { label: 'Events Section', href: '/admin/settings/homepage/events' },
+            { label: 'About Section', href: '/admin/settings/homepage/about' },
+            { label: 'Photo Gallery', href: '/admin/settings/homepage/gallery' },
+            { label: 'Blog Section', href: '/admin/settings/homepage/blog' },
+            { label: 'Video Gallery', href: '/admin/settings/homepage/videos' },
+          ]
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          ),
+          label: 'System',
+          href: null, // No page - expansion only
+          isDropdown: true,
+          expandOnly: true, // Flag to indicate this is expansion-only
+          subItems: [
+            { label: 'Global Theme', href: '/admin/settings/system/theme' },
+            { label: 'Typography', href: '/admin/settings/system/typography' },
+            { label: 'Colors', href: '/admin/settings/system/colors' },
+            { label: 'Animations', href: '/admin/settings/system/animations' },
+            { label: 'Layout & Spacing', href: '/admin/settings/system/layout' },
+            { label: 'Responsive Breakpoints', href: '/admin/settings/system/responsive' },
+            { label: 'Accessibility', href: '/admin/settings/system/accessibility' },
+            { label: 'Performance', href: '/admin/settings/system/performance' },
+            { label: 'Social Media', href: '/admin/settings/system/social' },
+            { label: 'SEO Settings', href: '/admin/settings/system/seo' },
+          ]
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          ),
+          label: 'Menu Management',
+          href: '/admin/settings/menu',
+        },
+      ]
     },
   ];
 
@@ -179,6 +264,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     } catch (error) {
       console.error('Sign out error:', error);
     }
+  };
+
+  const toggleMenuExpansion = (menuLabel: string) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menuLabel]: !prev[menuLabel]
+    }));
   };
 
   return (
@@ -224,7 +316,170 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
             {menuItems.map((item, index) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+              const isExpanded = expandedMenus[item.label];
+
+              if (item.isDropdown && item.subItems) {
+                return (
+                  <div key={index}>
+                    <div className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${
+                      isActive
+                        ? isDark
+                          ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                          : 'bg-red-600 text-white shadow-lg shadow-red-600/30'
+                        : isDark
+                        ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}>
+                      {item.expandOnly ? (
+                        // Expansion only - clicking anywhere toggles
+                        <div 
+                          className="flex-1 flex items-center space-x-3"
+                          onClick={() => toggleMenuExpansion(item.label)}
+                        >
+                          {item.icon}
+                          <span className="font-medium">{item.label}</span>
+                        </div>
+                      ) : (
+                        // Normal navigation + expansion
+                        <Link
+                          href={item.href}
+                          className="flex-1 flex items-center space-x-3"
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          {item.icon}
+                          <span className="font-medium">{item.label}</span>
+                        </Link>
+                      )}
+                      <button
+                        onClick={() => toggleMenuExpansion(item.label)}
+                        className="p-1 -mr-1 hover:bg-black/10 rounded transition-colors duration-200"
+                      >
+                        <svg
+                          className={`w-4 h-4 transition-transform duration-200 ${
+                            isExpanded ? 'rotate-180' : ''
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Dropdown Items */}
+                    {isExpanded && (
+                      <div className="mt-2 ml-4 space-y-1">
+                        {item.subItems.map((subItem: any, subIndex: number) => {
+                          const subIsActive = pathname === subItem.href || pathname.startsWith(subItem.href + '/');
+                          const subIsExpanded = expandedMenus[subItem.label];
+
+                          if (subItem.isDropdown && subItem.subItems) {
+                            return (
+                              <div key={subIndex}>
+                                <div className={`flex items-center px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
+                                  subIsActive
+                                    ? isDark
+                                      ? 'bg-red-600/80 text-white'
+                                      : 'bg-red-600/80 text-white'
+                                    : isDark
+                                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                    : 'text-gray-600 hover:bg-gray-100'
+                                }`}>
+                                  {subItem.expandOnly ? (
+                                    // Expansion only - clicking anywhere toggles
+                                    <div 
+                                      className="flex-1 flex items-center space-x-2"
+                                      onClick={() => toggleMenuExpansion(subItem.label)}
+                                    >
+                                      {subItem.icon && subItem.icon}
+                                      <span className="font-medium">{subItem.label}</span>
+                                    </div>
+                                  ) : (
+                                    // Normal navigation + expansion
+                                    <Link
+                                      href={subItem.href}
+                                      className="flex-1 flex items-center space-x-2"
+                                      onClick={() => setSidebarOpen(false)}
+                                    >
+                                      {subItem.icon && subItem.icon}
+                                      <span className="font-medium">{subItem.label}</span>
+                                    </Link>
+                                  )}
+                                  <button
+                                    onClick={() => toggleMenuExpansion(subItem.label)}
+                                    className="p-1 -mr-1 hover:bg-black/10 rounded transition-colors duration-200"
+                                  >
+                                    <svg
+                                      className={`w-3 h-3 transition-transform duration-200 ${
+                                        subIsExpanded ? 'rotate-180' : ''
+                                      }`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                  </button>
+                                </div>
+
+                                {/* Third Level Items */}
+                                {subIsExpanded && (
+                                  <div className="mt-1 ml-6 space-y-1">
+                                    {subItem.subItems.map((thirdItem: any, thirdIndex: number) => {
+                                      const thirdIsActive = pathname === thirdItem.href;
+                                      return (
+                                        <Link
+                                          key={thirdIndex}
+                                          href={thirdItem.href}
+                                          className={`block px-3 py-2 rounded-lg font-medium cursor-pointer transition-all duration-200 ${
+                                            thirdIsActive
+                                              ? isDark
+                                                ? 'bg-red-600/60 text-white'
+                                                : 'bg-red-600/60 text-white'
+                                              : isDark
+                                              ? 'text-gray-500 hover:bg-gray-700 hover:text-gray-300'
+                                              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                                          }`}
+                                          onClick={() => setSidebarOpen(false)}
+                                        >
+                                          {thirdItem.label}
+                                        </Link>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <Link
+                              key={subIndex}
+                              href={subItem.href}
+                              className={`flex items-center space-x-2 px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
+                                subIsActive
+                                  ? isDark
+                                    ? 'bg-red-600/80 text-white'
+                                    : 'bg-red-600/80 text-white'
+                                  : isDark
+                                  ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                  : 'text-gray-600 hover:bg-gray-100'
+                              }`}
+                              onClick={() => setSidebarOpen(false)}
+                            >
+                              {subItem.icon && subItem.icon}
+                              <span className="font-medium">{subItem.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
               return (
                 <Link
                   key={index}
@@ -307,8 +562,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 {pathname === '/admin' ? 'Dashboard' : 
                  pathname === '/admin/users' ? 'User Management' :
                  pathname === '/admin/content' ? 'Content Management' :
+                 pathname === '/admin/media' ? 'Media Manager' :
                  pathname === '/admin/analytics' ? 'Analytics' :
-                 pathname === '/admin/settings' ? 'Settings' : 'Admin Panel'}
+                 pathname === '/admin/profile' ? 'My Profile' :
+                 pathname.startsWith('/admin/settings') ? 'Settings' : 'Admin Panel'}
               </h1>
             </div>
 

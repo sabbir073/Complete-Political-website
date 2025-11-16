@@ -274,7 +274,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('bn');
+  const [language, setLanguage] = useState<Language>('en');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -313,10 +313,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // Don't block rendering - use default language until mounted
   if (!mounted) {
     const defaultValue = {
-      language: 'bn' as Language,
+      language: 'en' as Language,
       changeLanguage: () => {},
-      t: translations['bn'],
-      isRTL: true,
+      t: translations['en'],
+      isRTL: false,
     };
     
     return (
