@@ -31,20 +31,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   profile: null,
   loading: true,
   initialized: false,
-  
+
   initialize: async () => {
     try {
       const { data: { session }, error } = await supabase.auth.getSession();
-      
+
       if (error) {
         console.error('Session error:', error);
         set({ user: null, profile: null, loading: false, initialized: true });
         return;
       }
-      
+
       if (session?.user) {
         set({ user: session.user, loading: false, initialized: true });
-        
+
         // Fetch profile
         try {
           const response = await fetch('/api/admin/users');
@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             const result = await response.json();
             const users = result.users || [];
             const profile = users.find((u: Profile) => u.id === session.user.id);
-            
+
             if (profile) {
               set(state => ({ ...state, profile }));
             } else {
@@ -75,7 +75,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       } else {
         set({ user: null, profile: null, loading: false, initialized: true });
       }
-      
+
     } catch (error) {
       console.error('Auth initialization error:', error);
       set({ user: null, profile: null, loading: false, initialized: true });
@@ -85,12 +85,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signIn: async (email: string, password: string) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      
+
       if (error) {
-        console.error('Sign in failed:', error);
-        throw error;
+        // Create a custom error that indicates this is expected user error, not a system error
+        const authError: any = new Error(error.message);
+        authError.code = error.code;
+        authError.isUserError = true; // Flag to prevent console logging
+        throw authError;
       }
-      
+
       if (data.user) {
         // Fetch and validate profile
         const response = await fetch('/api/admin/users');
@@ -98,16 +101,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           const result = await response.json();
           const users = result.users || [];
           const profile = users.find((u: Profile) => u.id === data.user.id);
-          
+
           if (profile && !profile.is_active) {
-            console.error('User account is inactive');
+            // User account inactive - expected validation
             await supabase.auth.signOut();
-            throw new Error('Your account is inactive. Please contact an administrator.');
+            const inactiveError: any = new Error('Your account is inactive. Please contact an administrator.');
+            inactiveError.isUserError = true;
+            throw inactiveError;
           }
         }
       }
-    } catch (error) {
-      console.error('Sign in error:', error);
+    } catch (error: any) {
+      // Re-throw but mark as user error to suppress unnecessary console logging
+      if (!error.isUserError) {
+        error.isUserError = true;
+      }
       throw error;
     }
   },
@@ -115,12 +123,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   signOut: async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      
+
       if (error) {
         console.error('Sign out failed:', error);
         throw error;
       }
-      
+
       set({ user: null, profile: null, loading: false, initialized: true });
     } catch (error) {
       console.error('Sign out error:', error);
@@ -142,7 +150,7 @@ let authListenerInitialized = false;
 
 export const setupAuthListener = () => {
   if (authListenerInitialized) return;
-  
+
   supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' && session?.user) {
       useAuthStore.setState({
@@ -158,7 +166,7 @@ export const setupAuthListener = () => {
           const result = await response.json();
           const users = result.users || [];
           const profile = users.find((u: Profile) => u.id === session.user.id);
-          
+
           if (profile) {
             useAuthStore.setState(state => ({ ...state, profile }));
           }
@@ -166,7 +174,7 @@ export const setupAuthListener = () => {
       } catch (error) {
         console.error('Profile fetch in listener failed:', error);
       }
-        
+
     } else if (event === 'SIGNED_OUT') {
       useAuthStore.setState({
         user: null,
@@ -176,7 +184,7 @@ export const setupAuthListener = () => {
       });
     }
   });
-  
+
   authListenerInitialized = true;
 };
 

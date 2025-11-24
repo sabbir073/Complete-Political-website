@@ -201,7 +201,7 @@ export const useFooterSettings = (initialSettings?: FooterSettings) => {
           
           settingsData.data.settings.forEach((setting: any) => {
             const key = setting.setting_key as keyof FooterSettings;
-            let value = setting.setting_value;
+            const value = setting.setting_value;
             
             // Handle multilingual settings
             if (setting.is_multilingual && typeof value === 'object') {

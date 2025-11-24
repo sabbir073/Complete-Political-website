@@ -144,7 +144,7 @@ const GreatLeader: React.FC = () => {
     [
       (slider) => {
         if (leaders.length <= 1) return;
-        
+
         let timeout: any;
         let mouseOver = false;
 
@@ -180,8 +180,7 @@ const GreatLeader: React.FC = () => {
         slider.on("animationEnded", nextTimeout);
         slider.on("updated", nextTimeout);
       },
-    ],
-    [leaders]
+    ]
   );
 
   // Show loading state - TEMPORARILY DISABLED FOR DEBUGGING

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const includeTranslations = searchParams.get('translations') !== 'false';
 
-    let query = supabase.from('settings').select(includeTranslations ? `*, setting_translations(language_code, translated_value)` : '*').eq('category', 'home').eq('subcategory', 'video').eq('is_active', true).order('display_order', { ascending: true });
+    const query = supabase.from('settings').select(includeTranslations ? `*, setting_translations(language_code, translated_value)` : '*').eq('category', 'home').eq('subcategory', 'video').eq('is_active', true).order('display_order', { ascending: true });
     const { data: settings, error } = await query;
     if (error) return NextResponse.json({ error: 'Failed to fetch video settings' }, { status: 500 });
 

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch leaders settings' }, { status: 500 });
     }
 
-    let formattedSettings = settings || [];
+    const formattedSettings = settings || [];
 
     // Process settings to apply proper fallback logic (same as Hero API)
     const processedSettings = formattedSettings.map((setting: any) => {

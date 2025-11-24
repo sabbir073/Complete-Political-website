@@ -55,9 +55,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading while auth is being checked
   if (!initialized || loading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
-        isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
-      }`}>
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
+        }`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -71,9 +70,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading while redirecting if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
-        isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
-      }`}>
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
+        }`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -87,9 +85,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading while signing out inactive user
   if (profile && !profile.is_active) {
     return (
-      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${
-        isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
-      }`}>
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDark ? 'bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-gray-100'
+        }`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -129,10 +126,59 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
       ),
-      label: 'Content Management',
+      label: 'Contents',
       href: '/admin/content',
-      access: 'moderator+', // Moderator and Admin
+      access: 'moderator+',
       show: canAccessContent,
+      isDropdown: true,
+      expandOnly: false,
+      subItems: [
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          ),
+          label: 'Events',
+          href: '/admin/content/events',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+          ),
+          label: 'News',
+          href: '/admin/content/news',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          ),
+          label: 'Photo Gallery',
+          href: '/admin/content/photo-gallery/albums',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          ),
+          label: 'Video Gallery',
+          href: '/admin/content/video-gallery',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+          ),
+          label: 'Categories',
+          href: '/admin/content/categories',
+        },
+      ]
     },
     {
       icon: (
@@ -276,36 +322,31 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className={`min-h-screen transition-colors ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Sidebar for desktop */}
-      <aside className={`fixed inset-y-0 left-0 z-10 w-64 transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0 ${
-        isDark ? 'bg-gray-800' : 'bg-white'
-      } shadow-xl`}>
+      <aside className={`fixed inset-y-0 left-0 z-10 w-64 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 ${isDark ? 'bg-gray-800' : 'bg-white'
+        } shadow-xl`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className={`flex items-center justify-between p-4 border-b ${
-            isDark ? 'border-gray-700' : 'border-gray-200'
-          }`}>
+          <div className={`flex items-center justify-between p-4 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'
+            }`}>
             <div className="flex items-center space-x-3">
-              <Image 
-                src="/logo.png" 
-                alt="Logo" 
-                width={40} 
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={40}
                 height={30}
                 style={{ width: 'auto', height: '30px' }}
                 priority
               />
-              <span className={`font-bold text-lg transition-colors ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
+              <span className={`font-bold text-lg transition-colors ${isDark ? 'text-white' : 'text-gray-900'
+                }`}>
                 Admin Panel
               </span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className={`lg:hidden p-1 rounded-lg transition-colors ${
-                isDark ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'
-              }`}
+              className={`lg:hidden p-1 rounded-lg transition-colors ${isDark ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'
+                }`}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -322,18 +363,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               if (item.isDropdown && item.subItems) {
                 return (
                   <div key={index}>
-                    <div className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${
-                      isActive
+                    <div className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${isActive
                         ? isDark
                           ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
                           : 'bg-red-600 text-white shadow-lg shadow-red-600/30'
                         : isDark
-                        ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}>
+                          ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}>
                       {item.expandOnly ? (
                         // Expansion only - clicking anywhere toggles
-                        <div 
+                        <div
                           className="flex-1 flex items-center space-x-3"
                           onClick={() => toggleMenuExpansion(item.label)}
                         >
@@ -356,9 +396,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                         className="p-1 -mr-1 hover:bg-black/10 rounded transition-colors duration-200"
                       >
                         <svg
-                          className={`w-4 h-4 transition-transform duration-200 ${
-                            isExpanded ? 'rotate-180' : ''
-                          }`}
+                          className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''
+                            }`}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -378,18 +417,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                           if (subItem.isDropdown && subItem.subItems) {
                             return (
                               <div key={subIndex}>
-                                <div className={`flex items-center px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${
-                                  subIsActive
+                                <div className={`flex items-center px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer ${subIsActive
                                     ? isDark
                                       ? 'bg-red-600/80 text-white'
                                       : 'bg-red-600/80 text-white'
                                     : isDark
-                                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                                    : 'text-gray-600 hover:bg-gray-100'
-                                }`}>
+                                      ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                      : 'text-gray-600 hover:bg-gray-100'
+                                  }`}>
                                   {subItem.expandOnly ? (
                                     // Expansion only - clicking anywhere toggles
-                                    <div 
+                                    <div
                                       className="flex-1 flex items-center space-x-2"
                                       onClick={() => toggleMenuExpansion(subItem.label)}
                                     >
@@ -412,9 +450,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                     className="p-1 -mr-1 hover:bg-black/10 rounded transition-colors duration-200"
                                   >
                                     <svg
-                                      className={`w-3 h-3 transition-transform duration-200 ${
-                                        subIsExpanded ? 'rotate-180' : ''
-                                      }`}
+                                      className={`w-3 h-3 transition-transform duration-200 ${subIsExpanded ? 'rotate-180' : ''
+                                        }`}
                                       fill="none"
                                       stroke="currentColor"
                                       viewBox="0 0 24 24"
@@ -433,15 +470,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                                         <Link
                                           key={thirdIndex}
                                           href={thirdItem.href}
-                                          className={`block px-3 py-2 rounded-lg font-medium cursor-pointer transition-all duration-200 ${
-                                            thirdIsActive
+                                          className={`block px-3 py-2 rounded-lg font-medium cursor-pointer transition-all duration-200 ${thirdIsActive
                                               ? isDark
                                                 ? 'bg-red-600/60 text-white'
                                                 : 'bg-red-600/60 text-white'
                                               : isDark
-                                              ? 'text-gray-500 hover:bg-gray-700 hover:text-gray-300'
-                                              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-                                          }`}
+                                                ? 'text-gray-500 hover:bg-gray-700 hover:text-gray-300'
+                                                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                                            }`}
                                           onClick={() => setSidebarOpen(false)}
                                         >
                                           {thirdItem.label}
@@ -458,15 +494,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                             <Link
                               key={subIndex}
                               href={subItem.href}
-                              className={`flex items-center space-x-2 px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${
-                                subIsActive
+                              className={`flex items-center space-x-2 px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${subIsActive
                                   ? isDark
                                     ? 'bg-red-600/80 text-white'
                                     : 'bg-red-600/80 text-white'
                                   : isDark
-                                  ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                                  : 'text-gray-600 hover:bg-gray-100'
-                              }`}
+                                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                                    : 'text-gray-600 hover:bg-gray-100'
+                                }`}
                               onClick={() => setSidebarOpen(false)}
                             >
                               {subItem.icon && subItem.icon}
@@ -484,15 +519,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <Link
                   key={index}
                   href={item.href}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                    isActive
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
                       ? isDark
                         ? 'bg-red-600 text-white shadow-lg shadow-red-600/30'
                         : 'bg-red-600 text-white shadow-lg shadow-red-600/30'
                       : isDark
-                      ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                        ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   {item.icon}
@@ -503,27 +537,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
 
           {/* User Info */}
-          <div className={`p-4 border-t ${
-            isDark ? 'border-gray-700' : 'border-gray-200'
-          }`}>
-            <div className={`flex items-center justify-between p-3 rounded-lg ${
-              isDark ? 'bg-gray-700' : 'bg-gray-100'
+          <div className={`p-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'
             }`}>
+            <div className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'
+              }`}>
               <div className="flex items-center space-x-3">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  isDark ? 'bg-red-600' : 'bg-red-600'
-                } text-white font-bold`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-red-600' : 'bg-red-600'
+                  } text-white font-bold`}>
                   {profile?.email?.[0]?.toUpperCase() || 'A'}
                 </div>
                 <div>
-                  <p className={`text-sm font-medium transition-colors ${
-                    isDark ? 'text-white' : 'text-gray-900'
-                  }`}>
+                  <p className={`text-sm font-medium transition-colors ${isDark ? 'text-white' : 'text-gray-900'
+                    }`}>
                     {profile?.full_name || profile?.email || 'Admin'}
                   </p>
-                  <p className={`text-xs transition-colors ${
-                    isDark ? 'text-gray-400' : 'text-gray-500'
-                  }`}>
+                  <p className={`text-xs transition-colors ${isDark ? 'text-gray-400' : 'text-gray-500'
+                    }`}>
                     {profile?.role ? profile.role.charAt(0).toUpperCase() + profile.role.slice(1) : 'User'}
                   </p>
                 </div>
@@ -536,19 +565,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <div className="lg:ml-64">
         {/* Top Bar */}
-        <header className={`relative transition-colors ${
-          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-        } border-b shadow-sm`}>
+        <header className={`relative transition-colors ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+          } border-b shadow-sm`}>
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center space-x-4">
               {/* Mobile menu button */}
               <button
                 onClick={() => setSidebarOpen(true)}
-                className={`lg:hidden p-2 rounded-lg transition-colors ${
-                  isDark 
-                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white' 
+                className={`lg:hidden p-2 rounded-lg transition-colors ${isDark
+                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                  }`}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -556,16 +583,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </button>
 
               {/* Page Title */}
-              <h1 className={`text-xl font-semibold transition-colors ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}>
-                {pathname === '/admin' ? 'Dashboard' : 
-                 pathname === '/admin/users' ? 'User Management' :
-                 pathname === '/admin/content' ? 'Content Management' :
-                 pathname === '/admin/media' ? 'Media Manager' :
-                 pathname === '/admin/analytics' ? 'Analytics' :
-                 pathname === '/admin/profile' ? 'My Profile' :
-                 pathname.startsWith('/admin/settings') ? 'Settings' : 'Admin Panel'}
+              <h1 className={`text-xl font-semibold transition-colors ${isDark ? 'text-white' : 'text-gray-900'
+                }`}>
+                {pathname === '/admin' ? 'Dashboard' :
+                  pathname === '/admin/users' ? 'User Management' :
+                    pathname === '/admin/content' ? 'Content Management' :
+                      pathname === '/admin/media' ? 'Media Manager' :
+                        pathname === '/admin/analytics' ? 'Analytics' :
+                          pathname === '/admin/profile' ? 'My Profile' :
+                            pathname.startsWith('/admin/settings') ? 'Settings' : 'Admin Panel'}
               </h1>
             </div>
 
@@ -573,11 +599,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDark 
-                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white' 
+                className={`p-2 rounded-lg transition-colors ${isDark
+                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                  }`}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {isDark ? (
@@ -594,11 +619,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {/* Language Toggle */}
               <button
                 onClick={() => changeLanguage(language === 'bn' ? 'en' : 'bn')}
-                className={`px-3 py-1 rounded-lg font-medium transition-colors ${
-                  isDark 
-                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white' 
+                className={`px-3 py-1 rounded-lg font-medium transition-colors ${isDark
+                    ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
                     : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                  }`}
                 title="Switch language"
               >
                 {language === 'bn' ? 'EN' : 'বাং'}
@@ -607,11 +631,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {/* Sign Out */}
               <button
                 onClick={handleSignOut}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer ${
-                  isDark 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 cursor-pointer ${isDark
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
                     : 'bg-red-600 hover:bg-red-700 text-white'
-                }`}
+                  }`}
                 title="Sign out"
               >
                 <span className="hidden sm:inline">Sign Out</span>
@@ -631,7 +654,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />

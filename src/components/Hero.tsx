@@ -57,14 +57,22 @@ export default function Hero() {
     // Get image values, handling empty strings
     const backgroundImageFromSettings = homeSettings?.[`home_hero_item_${i}_background_image`];
     const personImageFromSettings = homeSettings?.[`home_hero_item_${i}_person_image`];
-    
-    const backgroundImage = (backgroundImageFromSettings && backgroundImageFromSettings.trim() !== '') 
-      ? backgroundImageFromSettings 
+
+    const backgroundImage = (backgroundImageFromSettings && backgroundImageFromSettings.trim() !== '')
+      ? backgroundImageFromSettings
       : `/slider/${i === 1 ? '1' : i === 2 ? 'hero-bg-1' : i === 3 ? 'bg2' : 'hero-bg-2'}.jpg`;
-      
-    const personImage = (personImageFromSettings && personImageFromSettings.trim() !== '') 
-      ? personImageFromSettings 
+
+    const personImage = (personImageFromSettings && personImageFromSettings.trim() !== '')
+      ? personImageFromSettings
       : `/slider/leader.png`;
+
+    // Debug logging
+    console.log(`Hero Item ${i}:`, {
+      backgroundImage,
+      personImage,
+      backgroundImageFromSettings,
+      personImageFromSettings
+    });
       
     // Store settings for dynamic language switching
     const titleSetting = homeSettings?.[`home_hero_item_${i}_title`];

@@ -304,7 +304,7 @@ export default function HeroSettingsPage() {
       });
 
       if (settingsToUpdate.length === 0) {
-        toast.info('No changes to save');
+        toast('No changes to save');
         setSaving(false);
         return;
       }
@@ -360,7 +360,7 @@ export default function HeroSettingsPage() {
         <SettingInput
           name={setting.setting_key}
           value={setting.setting_value}
-          onChange={(value) => handleItemCountChange(parseInt(value) || 1)}
+          onChange={(value) => handleItemCountChange(parseInt(String(value)) || 1)}
           label="Number of Hero Items"
           description="How many hero slides to display (1-10)"
           type="number"
@@ -442,10 +442,11 @@ export default function HeroSettingsPage() {
 
       return (
         <MultilingualInput
+          name={setting.setting_key}
           label={label}
           value={multilingualValue}
           onChange={(value) => handleSettingChange(setting.setting_key, value)}
-          type={setting.setting_type === 'textarea' ? 'textarea' : 'text'}
+          type={setting.setting_type === 'textarea' ? 'textarea' : 'input'}
           rows={setting.setting_type === 'textarea' ? 3 : undefined}
         />
       );
@@ -462,7 +463,6 @@ export default function HeroSettingsPage() {
           label={label}
           description={setting.description}
           type="number"
-          step={setting.setting_key.includes('opacity') ? 0.1 : 1}
           min={setting.setting_key.includes('opacity') ? 0 : undefined}
           max={setting.setting_key.includes('opacity') ? 1 : undefined}
         />
@@ -477,7 +477,7 @@ export default function HeroSettingsPage() {
         onChange={(value) => handleSettingChange(setting.setting_key, value)}
         label={label}
         description={setting.description}
-        type="text"
+        type="string"
       />
     );
   };

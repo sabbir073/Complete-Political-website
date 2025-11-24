@@ -46,7 +46,9 @@
       "Bash(del \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\admin\\settings\\home\\page.tsx\")",
       "Bash(start http://localhost:3000/admin/settings/homepage/hero)",
       "Bash(del \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\api\\settings\\home\\route.ts\")",
-      "Bash(start http://localhost:3000/admin/settings/homepage/leaders)"
+      "Bash(start http://localhost:3000/admin/settings/homepage/leaders)",
+      "Bash(find:*)",
+      "Bash(npm run lint:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

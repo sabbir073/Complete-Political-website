@@ -8,7 +8,7 @@ import { formatFileSize } from '@/lib/media-utils';
 import { useMediaSelector } from './MediaSelector';
 
 interface MediaPickerProps {
-  value?: MediaItem | MediaItem[] | null;
+  value?: MediaItem | MediaItem[] | string | null;
   onChange: (media: MediaItem | MediaItem[] | null) => void;
   multiple?: boolean;
   fileType?: 'image' | 'video' | 'all';
@@ -33,15 +33,36 @@ export default function MediaPicker({
   const { isDark } = useTheme();
   const { openSelector, MediaSelectorComponent } = useMediaSelector();
 
-  const selectedItems = value 
-    ? (Array.isArray(value) ? value : [value])
-    : [];
+  const getItems = (val: MediaItem | MediaItem[] | string | null | undefined): MediaItem[] => {
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    if (typeof val === 'string') {
+      if (!val) return [];
+      // Create a mock MediaItem from the string URL
+      return [{
+        id: 'external',
+        filename: 'external-media',
+        original_filename: 'External Media',
+        file_type: 'image', // Default to image, could try to infer
+        mime_type: 'image/jpeg',
+        file_size: 0,
+        s3_key: 'external',
+        s3_url: val,
+        cloudfront_url: val,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      } as MediaItem];
+    }
+    return [val];
+  };
+
+  const selectedItems = getItems(value);
 
   const getPlaceholderText = () => {
     if (placeholder) return placeholder;
-    
+
     const typeText = fileType === 'all' ? 'media' : fileType === 'image' ? 'image' : 'video';
-    return multiple 
+    return multiple
       ? `Select ${typeText}${maxSelections ? ` (max ${maxSelections})` : ''}`
       : `Choose ${typeText}`;
   };
@@ -62,7 +83,7 @@ export default function MediaPicker({
     if (!allowRemove) return;
 
     if (multiple && itemToRemove) {
-      const currentItems = Array.isArray(value) ? value : [];
+      const currentItems = getItems(value);
       const newItems = currentItems.filter(item => item.id !== itemToRemove.id);
       onChange(newItems.length > 0 ? newItems : null);
     } else {
@@ -83,11 +104,12 @@ export default function MediaPicker({
           onClick={handleSelect}
           className={`
             flex items-center space-x-2 px-4 py-2 rounded-lg border-2 border-dashed transition-all duration-200
-            ${isDark 
-              ? 'border-gray-600 hover:border-blue-500 bg-gray-800 text-gray-300' 
+            ${isDark
+              ? 'border-gray-600 hover:border-blue-500 bg-gray-800 text-gray-300'
               : 'border-gray-300 hover:border-blue-500 bg-white text-gray-700'
             }
           `}
+          type="button"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -101,11 +123,12 @@ export default function MediaPicker({
             onClick={handleRemoveAll}
             className={`
               px-3 py-2 rounded-lg text-sm font-medium transition-colors
-              ${isDark 
-                ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70' 
+              ${isDark
+                ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
                 : 'bg-red-100 text-red-700 hover:bg-red-200'
               }
             `}
+            type="button"
           >
             Remove All
           </button>
@@ -179,9 +202,9 @@ function MediaPreviewCard({ item, onRemove, large = false }: MediaPreviewCardPro
     `}>
       {/* Media Content */}
       {isImage ? (
-        <Image 
-          src={displayUrl} 
-          alt={item.alt_text || item.filename} 
+        <Image
+          src={displayUrl}
+          alt={item.alt_text || item.filename}
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -222,6 +245,7 @@ function MediaPreviewCard({ item, onRemove, large = false }: MediaPreviewCardPro
         <button
           onClick={onRemove}
           className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+          type="button"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -232,8 +256,8 @@ function MediaPreviewCard({ item, onRemove, large = false }: MediaPreviewCardPro
       {/* File Type Badge */}
       <div className={`
         absolute top-2 left-2 px-2 py-1 rounded text-xs font-medium
-        ${isImage 
-          ? 'bg-green-500/80 text-white' 
+        ${isImage
+          ? 'bg-green-500/80 text-white'
           : 'bg-blue-500/80 text-white'
         }
       `}>

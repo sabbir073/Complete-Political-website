@@ -168,7 +168,7 @@ export default function HeaderSettingsPage() {
       });
 
       if (settingsToUpdate.length === 0) {
-        toast.info('No changes to save');
+        toast('No changes to save');
         setSaving(false);
         return;
       }

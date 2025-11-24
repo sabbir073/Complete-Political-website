@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch footer settings' }, { status: 500 });
     }
 
-    let formattedSettings = settings || [];
+    const formattedSettings = settings || [];
 
     // Process settings to apply proper fallback logic
     const processedSettings = formattedSettings.map((setting: any) => {

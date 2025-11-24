@@ -167,7 +167,7 @@ export default function FooterSettingsPage() {
       });
 
       if (settingsToUpdate.length === 0) {
-        toast.info('No changes to save');
+        toast('No changes to save');
         setSaving(false);
         return;
       }
