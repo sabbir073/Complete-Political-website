@@ -18,10 +18,11 @@ export const metadata = {
 export default async function EventDetailPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
+    const { slug } = await params;
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/events/${params.slug}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/events/${slug}`,
         { cache: 'no-store' }
     );
     if (!res.ok) {

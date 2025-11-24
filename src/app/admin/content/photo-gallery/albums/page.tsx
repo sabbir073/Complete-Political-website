@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { PhotoAlbum } from '@/types/cms';
 import { getStatusColor } from '@/lib/cms-utils';
 import toast from 'react-hot-toast';
@@ -142,11 +143,13 @@ export default function PhotoAlbumsListPage() {
                                     className="border dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition"
                                 >
                                     {album.cover_image && (
-                                        <div className="h-48 bg-gray-200 dark:bg-gray-700">
-                                            <img
+                                        <div className="relative h-48 bg-gray-200 dark:bg-gray-700">
+                                            <Image
                                                 src={album.cover_image}
                                                 alt={album.name_en}
-                                                className="w-full h-full object-cover"
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                             />
                                         </div>
                                     )}

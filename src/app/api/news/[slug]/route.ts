@@ -4,8 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 // GET /api/news/[slug] - Get single news article by slug (public)
 export async function GET(
     request: NextRequest,
-    { params }: { params: { slug: string } }
+    { params }: { params: Promise<{ slug: string }> }
 ) {
+    const { slug } = await params;
     try {
         const supabase = await createClient();
 
@@ -15,7 +16,7 @@ export async function GET(
         *,
         category:categories(*)
       `)
-            .eq('slug', params.slug)
+            .eq('slug', slug)
             .eq('status', 'published')
             .single();
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface AlbumItem {
     id: number;
@@ -28,7 +29,15 @@ export default async function PhotoGalleryPage() {
                     {data.map((album) => (
                         <div key={album.id} className="border rounded overflow-hidden shadow-sm">
                             {album.cover_image && (
-                                <img src={album.cover_image} alt={album.title_en} className="w-full h-48 object-cover" />
+                                <div className="relative w-full h-48">
+                                    <Image
+                                        src={album.cover_image}
+                                        alt={album.title_en}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    />
+                                </div>
                             )}
                             <div className="p-4">
                                 <h2 className="text-xl font-semibold mb-2">

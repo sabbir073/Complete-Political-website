@@ -126,9 +126,10 @@ export default function SettingInput({
             />
             {type === 'image' && value && (
               <div className="mt-2">
-                <img 
-                  src={String(value)} 
-                  alt="Preview" 
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={String(value)}
+                  alt="Preview"
                   className="max-w-xs h-auto rounded-lg border border-gray-300 dark:border-gray-600"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 
 interface PhotoItem {
     id: number;
@@ -25,10 +26,11 @@ export const metadata = {
 export default async function AlbumDetailPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
+    const { slug } = await params;
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/photo-gallery?album=${params.slug}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/photo-gallery?album=${slug}`,
         { cache: 'no-store' }
     );
     if (!res.ok) {
@@ -45,12 +47,15 @@ export default async function AlbumDetailPage({
             {album.photos && album.photos.length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {album.photos.map((photo) => (
-                        <img
-                            key={photo.id}
-                            src={photo.url}
-                            alt={photo.alt_text || album.title_en}
-                            className="w-full h-auto object-cover"
-                        />
+                        <div key={photo.id} className="relative w-full aspect-square">
+                            <Image
+                                src={photo.url}
+                                alt={photo.alt_text || album.title_en}
+                                fill
+                                className="object-cover rounded"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            />
+                        </div>
                     ))}
                 </div>
             ) : (

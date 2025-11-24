@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface NewsItem {
     id: number;
@@ -29,7 +30,15 @@ export default async function NewsPage() {
                     {data.map((item) => (
                         <div key={item.id} className="border rounded overflow-hidden shadow-sm">
                             {item.featured_image && (
-                                <img src={item.featured_image} alt={item.title_en} className="w-full h-48 object-cover" />
+                                <div className="relative w-full h-48">
+                                    <Image
+                                        src={item.featured_image}
+                                        alt={item.title_en}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    />
+                                </div>
                             )}
                             <div className="p-4">
                                 <h2 className="text-xl font-semibold mb-2">

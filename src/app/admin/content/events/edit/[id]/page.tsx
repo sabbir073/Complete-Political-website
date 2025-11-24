@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { generateSlug } from '@/lib/cms-utils';
+import { useRouter, useParams } from 'next/navigation';
 import MediaPicker from '@/components/media/MediaPicker';
 import toast from 'react-hot-toast';
 
-export default function EditEventPage({ params }: { params: { id: string } }) {
+export default function EditEventPage() {
     const router = useRouter();
+    const params = useParams();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
@@ -41,7 +41,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
 
     const fetchEvent = async () => {
         try {
-            const response = await fetch(`/api/admin/events/${params.id}`);
+            const response = await fetch(`/api/admin/events/${params.id as string}`);
             const event = await response.json();
 
             if (response.ok) {
@@ -100,7 +100,7 @@ export default function EditEventPage({ params }: { params: { id: string } }) {
         setSaving(true);
 
         try {
-            const response = await fetch(`/api/admin/events/${params.id}`, {
+            const response = await fetch(`/api/admin/events/${params.id as string}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),

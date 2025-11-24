@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import MediaPicker from '@/components/media/MediaPicker';
-import { MediaItem } from '@/types/media.types';
 import toast from 'react-hot-toast';
 
-export default function ViewAlbumPage({ params }: { params: { id: string } }) {
+export default function ViewAlbumPage() {
     const router = useRouter();
+    const params = useParams();
     const [album, setAlbum] = useState<any>(null);
     const [photos, setPhotos] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ export default function ViewAlbumPage({ params }: { params: { id: string } }) {
 
     const fetchAlbum = async () => {
         try {
-            const response = await fetch(`/api/admin/photo-gallery/albums/${params.id}`);
+            const response = await fetch(`/api/admin/photo-gallery/albums/${params.id as string}`);
             const data = await response.json();
 
             if (response.ok) {
@@ -63,7 +64,7 @@ export default function ViewAlbumPage({ params }: { params: { id: string } }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...photoForm,
-                    album_id: params.id,
+                    album_id: params.id as string,
                     category_id: album.category_id,
                 }),
             });
@@ -138,7 +139,7 @@ export default function ViewAlbumPage({ params }: { params: { id: string } }) {
                 </div>
                 <div className="flex gap-3">
                     <Link
-                        href={`/admin/content/photo-gallery/albums/edit/${params.id}`}
+                        href={`/admin/content/photo-gallery/albums/edit/${params.id as string}`}
                         className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition"
                     >
                         Edit Album
@@ -284,11 +285,15 @@ export default function ViewAlbumPage({ params }: { params: { id: string } }) {
                                 key={photo.id}
                                 className="relative group border dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition"
                             >
-                                <img
-                                    src={photo.image_url}
-                                    alt={photo.alt_text_en || photo.title_en}
-                                    className="w-full h-48 object-cover"
-                                />
+                                <div className="relative w-full h-48">
+                                    <Image
+                                        src={photo.image_url}
+                                        alt={photo.alt_text_en || photo.title_en}
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                                    />
+                                </div>
                                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
                                     <button
                                         onClick={() => handleDeletePhoto(photo.id)}

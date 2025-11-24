@@ -4,8 +4,9 @@ import { createClient } from '@/lib/supabase/server';
 // GET /api/admin/events/[id] - Get single event
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const supabase = await createClient();
 
@@ -20,7 +21,7 @@ export async function GET(
         *,
         category:categories(*)
       `)
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
 
         if (error) {
@@ -37,8 +38,9 @@ export async function GET(
 // PUT /api/admin/events/[id] - Update event
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const supabase = await createClient();
 
@@ -55,7 +57,7 @@ export async function PUT(
                 .from('events')
                 .select('id')
                 .eq('slug', body.slug)
-                .neq('id', params.id)
+                .neq('id', id)
                 .single();
 
             if (existingSlug) {
@@ -74,7 +76,7 @@ export async function PUT(
         const { data, error } = await supabase
             .from('events')
             .update(body)
-            .eq('id', params.id)
+            .eq('id', id)
             .select(`
         *,
         category:categories(*)
@@ -96,8 +98,9 @@ export async function PUT(
 // DELETE /api/admin/events/[id] - Delete event
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const supabase = await createClient();
 
@@ -109,7 +112,7 @@ export async function DELETE(
         const { error } = await supabase
             .from('events')
             .delete()
-            .eq('id', params.id);
+            .eq('id', id);
 
         if (error) {
             console.error('Error deleting event:', error);

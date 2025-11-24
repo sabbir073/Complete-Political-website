@@ -1,5 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 
 interface NewsDetail {
     id: number;
@@ -19,10 +20,11 @@ export const metadata = {
 export default async function NewsDetailPage({
     params,
 }: {
-    params: { slug: string };
+    params: Promise<{ slug: string }>;
 }) {
+    const { slug } = await params;
     const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/news/${params.slug}`,
+        `${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/news/${slug}`,
         { cache: 'no-store' }
     );
     if (!res.ok) {
@@ -38,7 +40,16 @@ export default async function NewsDetailPage({
                 {news.category?.name_en ? ` • ${news.category.name_en}` : ''}
             </p>
             {news.featured_image && (
-                <img src={news.featured_image} alt={news.title_en} className="w-full mb-4" />
+                <div className="relative w-full h-96 mb-4">
+                    <Image
+                        src={news.featured_image}
+                        alt={news.title_en}
+                        fill
+                        className="object-cover rounded"
+                        sizes="100vw"
+                        priority
+                    />
+                </div>
             )}
             {news.content_en && (
                 <div className="prose" dangerouslySetInnerHTML={{ __html: news.content_en }} />

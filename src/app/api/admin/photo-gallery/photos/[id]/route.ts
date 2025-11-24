@@ -3,8 +3,9 @@ import { createClient } from '@/lib/supabase/server';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const supabase = await createClient();
 
@@ -20,7 +21,7 @@ export async function GET(
         album:photo_albums(id, name_en, name_bn),
         category:categories(*)
       `)
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
 
         if (error) {
@@ -36,8 +37,9 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const supabase = await createClient();
 
@@ -51,7 +53,7 @@ export async function PUT(
         const { data, error } = await supabase
             .from('photo_gallery')
             .update(body)
-            .eq('id', params.id)
+            .eq('id', id)
             .select(`
         *,
         album:photo_albums(id, name_en, name_bn),
@@ -73,8 +75,9 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     try {
         const supabase = await createClient();
 
@@ -86,7 +89,7 @@ export async function DELETE(
         const { error } = await supabase
             .from('photo_gallery')
             .delete()
-            .eq('id', params.id);
+            .eq('id', id);
 
         if (error) {
             console.error('Error deleting photo:', error);
