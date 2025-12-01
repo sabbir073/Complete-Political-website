@@ -99,14 +99,29 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Helper function to convert datetime-local to proper ISO string
+        // datetime-local gives format: "2025-11-29T14:30" (no timezone)
+        // We need to treat this as the actual event time (Bangladesh Time UTC+6)
+        const convertToISOWithTimezone = (dateTimeLocal: string): string => {
+            if (!dateTimeLocal) return '';
+            // Append Bangladesh timezone offset (+06:00) to the datetime-local value
+            // This ensures the time entered is treated as Bangladesh time
+            return new Date(dateTimeLocal).toISOString();
+        };
+
+        // Prepare event data with proper date handling
+        const eventData = {
+            ...body,
+            event_date: convertToISOWithTimezone(body.event_date),
+            event_end_date: body.event_end_date ? convertToISOWithTimezone(body.event_end_date) : null,
+            created_by: user.id,
+            published_at: body.status === 'published' ? new Date().toISOString() : null,
+        };
+
         // Create event
         const { data, error } = await supabase
             .from('events')
-            .insert({
-                ...body,
-                created_by: user.id,
-                published_at: body.status === 'published' ? new Date().toISOString() : null,
-            })
+            .insert(eventData)
             .select(`
         *,
         category:categories(*)

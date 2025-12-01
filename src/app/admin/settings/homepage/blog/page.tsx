@@ -252,7 +252,15 @@ export default function BlogSettingsPage() {
       return (
         <MediaPicker
           value={setting.setting_value}
-          onChange={(value) => handleSettingChange(setting.setting_key, value)}
+          onChange={(media: any) => {
+            // Extract URL from MediaItem
+            const url = media
+              ? Array.isArray(media)
+                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
+                : media.cloudfront_url || media.s3_url || ''
+              : '';
+            handleSettingChange(setting.setting_key, url);
+          }}
           label={label}
           description={setting.description}
           fileType="image"
@@ -279,7 +287,15 @@ export default function BlogSettingsPage() {
         <MultilingualInput
           name={setting.setting_key}
           value={multilingualValue}
-          onChange={(value) => handleSettingChange(setting.setting_key, value)}
+          onChange={(media: any) => {
+            // Extract URL from MediaItem
+            const url = media
+              ? Array.isArray(media)
+                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
+                : media.cloudfront_url || media.s3_url || ''
+              : '';
+            handleSettingChange(setting.setting_key, url);
+          }}
           label={label}
           description={setting.description}
         />
@@ -290,7 +306,15 @@ export default function BlogSettingsPage() {
       <SettingInput
         name={setting.setting_key}
         value={setting.setting_value}
-        onChange={(value) => handleSettingChange(setting.setting_key, value)}
+        onChange={(media: any) => {
+            // Extract URL from MediaItem
+            const url = media
+              ? Array.isArray(media)
+                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
+                : media.cloudfront_url || media.s3_url || ''
+              : '';
+            handleSettingChange(setting.setting_key, url);
+          }}
         label={label}
         type={setting.setting_type as any}
         description={setting.description}

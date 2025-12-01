@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { generateSlug, calculateReadTime } from '@/lib/cms-utils';
 import MediaPicker from '@/components/media/MediaPicker';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import toast from 'react-hot-toast';
 
 export default function CreateNewsPage() {
@@ -126,25 +127,24 @@ export default function CreateNewsPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label className="block mb-2 font-medium">Content (English) *</label>
-                            <textarea
-                                value={formData.content_en}
-                                onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white h-64"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-2 font-medium">Content (Bengali) *</label>
-                            <textarea
-                                value={formData.content_bn}
-                                onChange={(e) => setFormData(prev => ({ ...prev, content_bn: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white h-64"
-                                required
-                            />
-                        </div>
+                    <div className="mb-6">
+                        <label className="block mb-2 font-medium">Content (English) *</label>
+                        <RichTextEditor
+                            value={formData.content_en}
+                            onChange={(value) => setFormData(prev => ({ ...prev, content_en: value }))}
+                            placeholder="Write your article content in English..."
+                            minHeight="350px"
+                        />
+                    </div>
+
+                    <div className="mb-6">
+                        <label className="block mb-2 font-medium">Content (Bengali) *</label>
+                        <RichTextEditor
+                            value={formData.content_bn}
+                            onChange={(value) => setFormData(prev => ({ ...prev, content_bn: value }))}
+                            placeholder="আপনার নিবন্ধের বিষয়বস্তু বাংলায় লিখুন..."
+                            minHeight="350px"
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-4">

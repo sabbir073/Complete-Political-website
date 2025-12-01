@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { News } from '@/types/cms';
 import { getStatusColor } from '@/lib/cms-utils';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export default function NewsListPage() {
@@ -13,6 +14,12 @@ export default function NewsListPage() {
     const [total, setTotal] = useState(0);
     const [statusFilter, setStatusFilter] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; title: string }>({
+        isOpen: false,
+        id: '',
+        title: '',
+    });
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchNews();
@@ -46,16 +53,26 @@ export default function NewsListPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this news article?')) return;
+    const openDeleteModal = (id: string, title: string) => {
+        setDeleteModal({ isOpen: true, id, title });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({ isOpen: false, id: '', title: '' });
+    };
+
+    const handleDelete = async () => {
+        if (!deleteModal.id) return;
+        setIsDeleting(true);
 
         try {
-            const response = await fetch(`/api/admin/news/${id}`, {
+            const response = await fetch(`/api/admin/news/${deleteModal.id}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 toast.success('News deleted successfully');
+                closeDeleteModal();
                 fetchNews();
             } else {
                 const result = await response.json();
@@ -64,6 +81,8 @@ export default function NewsListPage() {
         } catch (error) {
             console.error('Error deleting news:', error);
             toast.error('Failed to delete news');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -193,7 +212,7 @@ export default function NewsListPage() {
                                                     </svg>
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(article.id)}
+                                                    onClick={() => openDeleteModal(article.id, article.title_en)}
                                                     className="text-red-600 hover:text-red-900 dark:text-red-400 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition cursor-pointer"
                                                     title="Delete"
                                                 >
@@ -236,6 +255,19 @@ export default function NewsListPage() {
                     </>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title="Delete News Article"
+                message={`Are you sure you want to delete "${deleteModal.title}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isLoading={isDeleting}
+                variant="danger"
+            />
         </div>
     );
 }

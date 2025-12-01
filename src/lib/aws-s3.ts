@@ -1,4 +1,13 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  CreateMultipartUploadCommand,
+  UploadPartCommand,
+  CompleteMultipartUploadCommand,
+  AbortMultipartUploadCommand,
+  CompletedPart,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // AWS S3 Configuration
@@ -98,16 +107,138 @@ export async function getPresignedUploadUrl(key: string, contentType: string) {
 export function validateAWSConfig() {
   const requiredVars = [
     'AWS_ACCESS_KEY_ID',
-    'AWS_SECRET_ACCESS_KEY', 
+    'AWS_SECRET_ACCESS_KEY',
     'AWS_REGION',
     'AWS_S3_BUCKET_NAME'
   ];
 
   const missing = requiredVars.filter(varName => !process.env[varName]);
-  
+
   if (missing.length > 0) {
     throw new Error(`Missing AWS configuration: ${missing.join(', ')}`);
   }
 
   return true;
+}
+
+// Multipart upload for large files
+export async function initMultipartUpload(key: string, contentType: string) {
+  try {
+    const command = new CreateMultipartUploadCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      ContentType: contentType,
+    });
+
+    const response = await s3Client.send(command);
+    return {
+      success: true,
+      uploadId: response.UploadId,
+      key,
+    };
+  } catch (error) {
+    console.error('Multipart Init Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to initiate multipart upload',
+    };
+  }
+}
+
+export async function uploadPart(
+  key: string,
+  uploadId: string,
+  partNumber: number,
+  body: Buffer
+) {
+  try {
+    const command = new UploadPartCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      UploadId: uploadId,
+      PartNumber: partNumber,
+      Body: body,
+    });
+
+    const response = await s3Client.send(command);
+    return {
+      success: true,
+      etag: response.ETag,
+      partNumber,
+    };
+  } catch (error) {
+    console.error('Upload Part Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to upload part',
+    };
+  }
+}
+
+export async function completeMultipartUpload(
+  key: string,
+  uploadId: string,
+  parts: CompletedPart[]
+) {
+  try {
+    const command = new CompleteMultipartUploadCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      UploadId: uploadId,
+      MultipartUpload: { Parts: parts },
+    });
+
+    await s3Client.send(command);
+
+    // Generate URLs
+    const s3Url = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+    const cloudFrontUrl = CLOUDFRONT_DOMAIN
+      ? (CLOUDFRONT_DOMAIN.startsWith('http')
+          ? `${CLOUDFRONT_DOMAIN}/${key}`
+          : `https://${CLOUDFRONT_DOMAIN}/${key}`)
+      : s3Url;
+
+    return {
+      success: true,
+      s3Url,
+      cloudFrontUrl,
+    };
+  } catch (error) {
+    console.error('Complete Multipart Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to complete multipart upload',
+    };
+  }
+}
+
+export async function abortMultipartUpload(key: string, uploadId: string) {
+  try {
+    const command = new AbortMultipartUploadCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      UploadId: uploadId,
+    });
+
+    await s3Client.send(command);
+    return { success: true };
+  } catch (error) {
+    console.error('Abort Multipart Error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to abort multipart upload',
+    };
+  }
+}
+
+// Get S3 URL helpers
+export function getS3Url(key: string) {
+  return `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+}
+
+export function getCloudFrontUrl(key: string) {
+  if (!CLOUDFRONT_DOMAIN) return getS3Url(key);
+  return CLOUDFRONT_DOMAIN.startsWith('http')
+    ? `${CLOUDFRONT_DOMAIN}/${key}`
+    : `https://${CLOUDFRONT_DOMAIN}/${key}`;
 }

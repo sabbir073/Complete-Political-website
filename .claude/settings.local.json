@@ -48,7 +48,16 @@
       "Bash(del \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\api\\settings\\home\\route.ts\")",
       "Bash(start http://localhost:3000/admin/settings/homepage/leaders)",
       "Bash(find:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(for file in header/page.tsx footer/page.tsx homepage/hero/page.tsx homepage/about/page.tsx homepage/blog/page.tsx homepage/events/page.tsx homepage/gallery/page.tsx homepage/leaders/page.tsx homepage/videos/page.tsx)",
+      "Bash(do)",
+      "Bash(echo:*)",
+      "Bash(perl -i -pe:*)",
+      "Bash(done)",
+      "Bash(start http://localhost:3002)",
+      "Bash(start http://localhost:3002/test-images.html)",
+      "Bash(ls:*)",
+      "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\abc (1).svg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\dhaka-18-map.svg\")"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

@@ -13,8 +13,6 @@ export default function CreateVideoPage() {
     const [formData, setFormData] = useState({
         title_en: '',
         title_bn: '',
-        description_en: '',
-        description_bn: '',
         youtube_url: '',
         custom_thumbnail: '',
         category_id: '',
@@ -140,25 +138,6 @@ export default function CreateVideoPage() {
                                 onChange={(e) => handleTitleChange(e.target.value, 'bn')}
                                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white"
                                 required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label className="block mb-2 font-medium">Description (English)</label>
-                            <textarea
-                                value={formData.description_en}
-                                onChange={(e) => setFormData(prev => ({ ...prev, description_en: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white h-32"
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-2 font-medium">Description (Bengali)</label>
-                            <textarea
-                                value={formData.description_bn}
-                                onChange={(e) => setFormData(prev => ({ ...prev, description_bn: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white h-32"
                             />
                         </div>
                     </div>

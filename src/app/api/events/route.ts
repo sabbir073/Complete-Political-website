@@ -19,14 +19,18 @@ export async function GET(request: NextRequest) {
         *,
         category:categories(*)
       `, { count: 'exact' })
-            .eq('status', 'published')
-            .order('event_date', { ascending: filter === 'upcoming' });
+            .eq('status', 'published');
 
-        // Filter by past/upcoming
+        // Filter by past/upcoming or show all
         if (filter === 'past') {
             query = query.lt('event_date', new Date().toISOString());
+            query = query.order('event_date', { ascending: false });
         } else if (filter === 'upcoming') {
             query = query.gte('event_date', new Date().toISOString());
+            query = query.order('event_date', { ascending: true });
+        } else {
+            // Default: show all events, most recent first
+            query = query.order('event_date', { ascending: false });
         }
 
         if (category) {

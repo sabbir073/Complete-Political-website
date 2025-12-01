@@ -34,12 +34,13 @@ export async function GET(request: NextRequest) {
 
             return NextResponse.json(album);
         } else {
-            // List all published albums
+            // List all published albums with their photos
             const { data, error } = await supabase
                 .from('photo_albums')
                 .select(`
           *,
-          category:categories(*)
+          category:categories(*),
+          photos:photo_gallery(*)
         `)
                 .eq('status', 'published')
                 .order('display_order', { ascending: true })
@@ -48,6 +49,15 @@ export async function GET(request: NextRequest) {
             if (error) {
                 console.error('Error fetching albums:', error);
                 return NextResponse.json({ error: error.message }, { status: 500 });
+            }
+
+            // Sort photos by display_order for each album
+            if (data) {
+                data.forEach((album: any) => {
+                    if (album.photos) {
+                        album.photos.sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0));
+                    }
+                });
             }
 
             return NextResponse.json({ data });

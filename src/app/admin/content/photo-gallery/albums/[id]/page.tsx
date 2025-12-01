@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import MediaPicker from '@/components/media/MediaPicker';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export default function ViewAlbumPage() {
@@ -14,6 +15,12 @@ export default function ViewAlbumPage() {
     const [photos, setPhotos] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAddPhoto, setShowAddPhoto] = useState(false);
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; title: string }>({
+        isOpen: false,
+        id: '',
+        title: '',
+    });
+    const [isDeleting, setIsDeleting] = useState(false);
     const [photoForm, setPhotoForm] = useState({
         title_en: '',
         title_bn: '',
@@ -94,16 +101,26 @@ export default function ViewAlbumPage() {
         }
     };
 
-    const handleDeletePhoto = async (photoId: string) => {
-        if (!confirm('Are you sure you want to delete this photo?')) return;
+    const openDeleteModal = (id: string, title: string) => {
+        setDeleteModal({ isOpen: true, id, title: title || 'this photo' });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({ isOpen: false, id: '', title: '' });
+    };
+
+    const handleDeletePhoto = async () => {
+        if (!deleteModal.id) return;
+        setIsDeleting(true);
 
         try {
-            const response = await fetch(`/api/admin/photo-gallery/photos/${photoId}`, {
+            const response = await fetch(`/api/admin/photo-gallery/photos/${deleteModal.id}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 toast.success('Photo deleted successfully');
+                closeDeleteModal();
                 fetchAlbum();
             } else {
                 toast.error('Failed to delete photo');
@@ -111,6 +128,8 @@ export default function ViewAlbumPage() {
         } catch (error) {
             console.error('Error deleting photo:', error);
             toast.error('Failed to delete photo');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -296,7 +315,7 @@ export default function ViewAlbumPage() {
                                 </div>
                                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
                                     <button
-                                        onClick={() => handleDeletePhoto(photo.id)}
+                                        onClick={() => openDeleteModal(photo.id, photo.title_en)}
                                         className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
                                     >
                                         Delete
@@ -315,6 +334,19 @@ export default function ViewAlbumPage() {
                     </div>
                 )}
             </div>
+
+            {/* Delete Photo Confirmation Modal */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDeletePhoto}
+                title="Delete Photo"
+                message={`Are you sure you want to delete "${deleteModal.title}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isLoading={isDeleting}
+                variant="danger"
+            />
         </div>
     );
 }

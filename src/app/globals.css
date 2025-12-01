@@ -49,8 +49,9 @@ body {
   z-index: 9999999 !important;
 }
 
-/* Header should always be visible but below fullscreen modals */
-header {
+/* Public site header should always be visible but below fullscreen modals */
+/* Only apply to main public header, not admin headers */
+header.public-header {
   z-index: 9999 !important;
 }
 

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { PhotoAlbum } from '@/types/cms';
 import { getStatusColor } from '@/lib/cms-utils';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export default function PhotoAlbumsListPage() {
@@ -14,6 +15,12 @@ export default function PhotoAlbumsListPage() {
     const [total, setTotal] = useState(0);
     const [statusFilter, setStatusFilter] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; name: string }>({
+        isOpen: false,
+        id: '',
+        name: '',
+    });
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchAlbums();
@@ -47,16 +54,26 @@ export default function PhotoAlbumsListPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this album? All photos in this album will also be deleted.')) return;
+    const openDeleteModal = (id: string, name: string) => {
+        setDeleteModal({ isOpen: true, id, name });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({ isOpen: false, id: '', name: '' });
+    };
+
+    const handleDelete = async () => {
+        if (!deleteModal.id) return;
+        setIsDeleting(true);
 
         try {
-            const response = await fetch(`/api/admin/photo-gallery/albums/${id}`, {
+            const response = await fetch(`/api/admin/photo-gallery/albums/${deleteModal.id}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 toast.success('Album deleted successfully');
+                closeDeleteModal();
                 fetchAlbums();
             } else {
                 const result = await response.json();
@@ -65,6 +82,8 @@ export default function PhotoAlbumsListPage() {
         } catch (error) {
             console.error('Error deleting album:', error);
             toast.error('Failed to delete album');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -185,7 +204,7 @@ export default function PhotoAlbumsListPage() {
                                                 Edit
                                             </Link>
                                             <button
-                                                onClick={() => handleDelete(album.id)}
+                                                onClick={() => openDeleteModal(album.id, album.name_en)}
                                                 className="bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-600 dark:text-red-200 px-4 py-2 rounded text-sm transition cursor-pointer flex items-center gap-1"
                                             >
                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,6 +246,19 @@ export default function PhotoAlbumsListPage() {
                     </>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title="Delete Photo Album"
+                message={`Are you sure you want to delete "${deleteModal.name}"? All photos in this album will also be deleted. This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isLoading={isDeleting}
+                variant="danger"
+            />
         </div>
     );
 }

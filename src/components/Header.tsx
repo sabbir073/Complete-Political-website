@@ -10,17 +10,7 @@ import { useHeaderSettings } from "../hooks/useHeaderSettings";
 
 const menuItems = [
   { href: "/", key: "home" },
-  {
-    href: "/about",
-    key: "about",
-    dropdown: [
-      { href: "/about", key: "personalInfo" },
-      { href: "/about#journey", key: "politicalJourney" },
-      { href: "/about#education", key: "education" },
-      { href: "/about#position", key: "partyPosition" },
-      { href: "/about#achievements", key: "awards" },
-    ],
-  },
+  { href: "/about", key: "about" },
   {
     href: "/activities",
     key: "activities",
@@ -29,7 +19,7 @@ const menuItems = [
         href: "/events",
         key: "events",
         submenu: [
-          { href: "/events", key: "upcomingEvents" },
+          { href: "/events/upcoming", key: "upcomingEvents" },
           { href: "/events/archive", key: "pastEvents" },
           { href: "/events/calendar", key: "meetingCalendar" },
           { href: "/events/town-hall", key: "virtualTownHall" },
@@ -39,23 +29,16 @@ const menuItems = [
         href: "/news",
         key: "news",
         submenu: [
-          { href: "/news", key: "latestNews" },
-          { href: "/news/press-releases", key: "pressReleases" },
-          { href: "/news/announcements", key: "announcements" },
-          { href: "/news/media", key: "mediaCoverage" },
+          { href: "/news/category/latest-news", key: "latestNews" },
+          { href: "/news/category/press-releases", key: "pressReleases" },
+          { href: "/news/category/announcements", key: "announcements" },
+          { href: "/news/category/media-coverage", key: "mediaCoverage" },
+          { href: "/news/category/interviews", key: "interviews" },
         ],
       },
-      {
-        href: "/gallery",
-        key: "gallery",
-        submenu: [
-          { href: "/gallery", key: "photoGallery" },
-          { href: "/gallery/videos", key: "videoStories" },
-          { href: "/gallery/events", key: "eventPhotos" },
-          { href: "/gallery/downloads", key: "downloads" },
-        ],
-      },
-      { href: "/leaders", key: "leadership" },
+      { href: "/gallery/photos", key: "photoGallery" },
+      { href: "/gallery/videos", key: "videoStories" },
+      { href: "/leadership", key: "leadership" },
     ],
   },
   {
@@ -67,8 +50,8 @@ const menuItems = [
         key: "contactComplaints",
         submenu: [
           { href: "/contact", key: "contactUs" },
-          { href: "/contact/complaints", key: "complaintBox" },
-          { href: "/contact/area-problems", key: "areaProblems" },
+          { href: "/complaints", key: "complaintBox" },
+          { href: "/area-problems", key: "areaProblems" },
           { href: "/emergency", key: "emergencyHelp" },
         ],
       },
@@ -202,7 +185,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   // Show loading or fallback if settings are not available
   if (!settings) {
     return (
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 relative shadow-sm z-[9999]">
+      <header className="public-header bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 relative shadow-sm z-[9999]">
         <div className="container mx-auto">
           <div className="flex justify-between items-center px-6 py-4">
             <Link href="/" className="flex-shrink-0">
@@ -218,7 +201,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   return (
     <>
       <header
-        className={`border-b backdrop-blur-lg transition-all duration-500 ease-in-out z-[9999] ${
+        className={`public-header border-b backdrop-blur-lg transition-all duration-500 ease-in-out z-[9999] ${
           settings.header_position === 'fixed' 
             ? "fixed top-0 left-0 right-0 shadow-lg"
             : isSticky 

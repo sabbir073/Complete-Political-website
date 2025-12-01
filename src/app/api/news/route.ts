@@ -8,10 +8,25 @@ export async function GET(request: NextRequest) {
 
         const searchParams = request.nextUrl.searchParams;
         const category = searchParams.get('category');
+        const categorySlug = searchParams.get('category_slug');
         const featured = searchParams.get('featured');
         const limit = parseInt(searchParams.get('limit') || '10');
         const page = parseInt(searchParams.get('page') || '1');
         const offset = (page - 1) * limit;
+
+        // If category_slug is provided, first get the category ID
+        let categoryId = category;
+        if (categorySlug) {
+            const { data: categoryData } = await supabase
+                .from('categories')
+                .select('id')
+                .eq('slug', categorySlug)
+                .eq('content_type', 'news')
+                .single();
+            if (categoryData) {
+                categoryId = categoryData.id;
+            }
+        }
 
         let query = supabase
             .from('news')
@@ -22,8 +37,8 @@ export async function GET(request: NextRequest) {
             .eq('status', 'published')
             .order('published_at', { ascending: false });
 
-        if (category) {
-            query = query.eq('category_id', category);
+        if (categoryId) {
+            query = query.eq('category_id', categoryId);
         }
 
         if (featured === 'true') {

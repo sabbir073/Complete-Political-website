@@ -47,13 +47,57 @@ export function getYouTubeThumbnail(videoId: string, quality: 'default' | 'hq' |
 }
 
 /**
- * Calculate read time from content (average 200 words per minute)
+ * Strip HTML tags from content
  */
-export function calculateReadTime(content: string): number {
-    const wordsPerMinute = 200;
-    const wordCount = content.trim().split(/\s+/).length;
-    const minutes = Math.ceil(wordCount / wordsPerMinute);
+export function stripHtml(html: string): string {
+    if (!html) return '';
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Convert number to Bengali numerals
+ */
+export function toBengaliNumber(num: number): string {
+    const bnNumbers = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    return String(num).split('').map(d => bnNumbers[parseInt(d)] || d).join('');
+}
+
+/**
+ * Calculate read time from content (average 200 words per minute for English, 150 for Bengali)
+ * Returns the number of minutes
+ */
+export function calculateReadTime(content: string, isBengali: boolean = false): number {
+    if (!content) return 1;
+    const text = stripHtml(content);
+    const words = text.split(/\s+/).filter(word => word.length > 0).length;
+    // Bengali text typically takes longer to read
+    const wordsPerMinute = isBengali ? 150 : 200;
+    const minutes = Math.ceil(words / wordsPerMinute);
     return Math.max(1, minutes); // At least 1 minute
+}
+
+/**
+ * Get formatted read time string with proper localization
+ * Use this function everywhere to ensure consistent read time display
+ */
+export function getReadTimeText(
+    content_en?: string | null,
+    content_bn?: string | null,
+    language: 'en' | 'bn' = 'en'
+): string {
+    // Always use English content for word count calculation for consistency
+    // This ensures the same article shows the same read time regardless of language view
+    const content = content_en || content_bn || '';
+    if (!content) {
+        return language === 'bn' ? '১ মিনিট পড়া' : '1 min read';
+    }
+
+    const minutes = calculateReadTime(content, false); // Always use English reading speed for consistency
+
+    if (language === 'bn') {
+        return `${toBengaliNumber(minutes)} মিনিট পড়া`;
+    }
+    return `${minutes} min read`;
 }
 
 /**

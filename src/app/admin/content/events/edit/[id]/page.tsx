@@ -39,15 +39,34 @@ export default function EditEventPage() {
         fetchCategories();
     }, []);
 
+    // Helper function to format date for datetime-local input in Bangladesh timezone
+    const formatDateForInput = (dateString: string | null): string => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        // Format in Bangladesh timezone (Asia/Dhaka)
+        const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            timeZone: 'Asia/Dhaka'
+        };
+        const parts = new Intl.DateTimeFormat('en-CA', options).formatToParts(date);
+        const get = (type: string) => parts.find(p => p.type === type)?.value || '00';
+        return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+    };
+
     const fetchEvent = async () => {
         try {
             const response = await fetch(`/api/admin/events/${params.id as string}`);
             const event = await response.json();
 
             if (response.ok) {
-                // Format dates for datetime-local input
-                const eventDate = event.event_date ? new Date(event.event_date).toISOString().slice(0, 16) : '';
-                const eventEndDate = event.event_end_date ? new Date(event.event_end_date).toISOString().slice(0, 16) : '';
+                // Format dates for datetime-local input (in Bangladesh timezone)
+                const eventDate = formatDateForInput(event.event_date);
+                const eventEndDate = formatDateForInput(event.event_end_date);
 
                 setFormData({
                     title_en: event.title_en || '',

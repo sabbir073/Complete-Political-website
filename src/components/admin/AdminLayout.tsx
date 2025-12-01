@@ -183,6 +183,39 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      ),
+      label: 'Services',
+      href: '/admin/services',
+      access: 'moderator+',
+      show: canAccessContent,
+      isDropdown: true,
+      expandOnly: false,
+      subItems: [
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          ),
+          label: 'Contacts',
+          href: '/admin/services/contacts',
+        },
+        {
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          ),
+          label: 'Complaints',
+          href: '/admin/services/complaints',
+        },
+      ]
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
@@ -565,7 +598,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <div className="lg:ml-64">
         {/* Top Bar */}
-        <header className={`relative transition-colors ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        <header className={`sticky top-0 z-30 transition-colors ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
           } border-b shadow-sm`}>
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center space-x-4">

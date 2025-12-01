@@ -73,9 +73,22 @@ export async function PUT(
             body.published_at = new Date().toISOString();
         }
 
+        // Helper function to convert datetime-local to proper ISO string
+        const convertToISOWithTimezone = (dateTimeLocal: string): string => {
+            if (!dateTimeLocal) return '';
+            return new Date(dateTimeLocal).toISOString();
+        };
+
+        // Prepare update data with proper date handling
+        const updateData = {
+            ...body,
+            event_date: body.event_date ? convertToISOWithTimezone(body.event_date) : undefined,
+            event_end_date: body.event_end_date ? convertToISOWithTimezone(body.event_end_date) : null,
+        };
+
         const { data, error } = await supabase
             .from('events')
-            .update(body)
+            .update(updateData)
             .eq('id', id)
             .select(`
         *,

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { generateSlug, calculateReadTime } from '@/lib/cms-utils';
 import MediaPicker from '@/components/media/MediaPicker';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import toast from 'react-hot-toast';
 
 export default function EditNewsPage() {
@@ -54,14 +55,13 @@ export default function EditNewsPage() {
     const fetchNews = async () => {
         try {
             const response = await fetch(`/api/admin/news/${params.id}`);
-            const result = await response.json();
-            if (response.ok) {
-                const data = result.data;
+            const data = await response.json();
+            if (response.ok && data && !data.error) {
                 setFormData({
-                    title_en: data.title_en,
-                    title_bn: data.title_bn,
-                    content_en: data.content_en,
-                    content_bn: data.content_bn,
+                    title_en: data.title_en || '',
+                    title_bn: data.title_bn || '',
+                    content_en: data.content_en || '',
+                    content_bn: data.content_bn || '',
                     excerpt_en: data.excerpt_en || '',
                     excerpt_bn: data.excerpt_bn || '',
                     featured_image: data.featured_image || '',
@@ -70,16 +70,16 @@ export default function EditNewsPage() {
                     category_id: data.category_id || '',
                     author_name: data.author_name || '',
                     read_time: data.read_time || 0,
-                    status: data.status,
+                    status: data.status || 'draft',
                     is_featured: data.is_featured || false,
-                    slug: data.slug,
+                    slug: data.slug || '',
                     meta_title_en: data.meta_title_en || '',
                     meta_title_bn: data.meta_title_bn || '',
                     meta_description_en: data.meta_description_en || '',
                     meta_description_bn: data.meta_description_bn || '',
                 });
             } else {
-                toast.error('Failed to fetch news details');
+                toast.error(data.error || 'Failed to fetch news details');
                 router.push('/admin/content/news');
             }
         } catch (error) {
@@ -178,25 +178,24 @@ export default function EditNewsPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label className="block mb-2 font-medium">Content (English) *</label>
-                            <textarea
-                                value={formData.content_en}
-                                onChange={(e) => setFormData(prev => ({ ...prev, content_en: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white h-64"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-2 font-medium">Content (Bengali) *</label>
-                            <textarea
-                                value={formData.content_bn}
-                                onChange={(e) => setFormData(prev => ({ ...prev, content_bn: e.target.value }))}
-                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white h-64"
-                                required
-                            />
-                        </div>
+                    <div className="mb-6">
+                        <label className="block mb-2 font-medium">Content (English) *</label>
+                        <RichTextEditor
+                            value={formData.content_en}
+                            onChange={(value) => setFormData(prev => ({ ...prev, content_en: value }))}
+                            placeholder="Write your article content in English..."
+                            minHeight="350px"
+                        />
+                    </div>
+
+                    <div className="mb-6">
+                        <label className="block mb-2 font-medium">Content (Bengali) *</label>
+                        <RichTextEditor
+                            value={formData.content_bn}
+                            onChange={(value) => setFormData(prev => ({ ...prev, content_bn: value }))}
+                            placeholder="আপনার নিবন্ধের বিষয়বস্তু বাংলায় লিখুন..."
+                            minHeight="350px"
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 mb-4">

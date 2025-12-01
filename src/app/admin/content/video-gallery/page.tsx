@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Video } from '@/types/cms';
 import { getStatusColor } from '@/lib/cms-utils';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import toast from 'react-hot-toast';
 
 export default function VideoGalleryListPage() {
@@ -13,6 +14,12 @@ export default function VideoGalleryListPage() {
     const [total, setTotal] = useState(0);
     const [statusFilter, setStatusFilter] = useState<string>('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string; title: string }>({
+        isOpen: false,
+        id: '',
+        title: '',
+    });
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         fetchVideos();
@@ -46,16 +53,26 @@ export default function VideoGalleryListPage() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this video?')) return;
+    const openDeleteModal = (id: string, title: string) => {
+        setDeleteModal({ isOpen: true, id, title });
+    };
+
+    const closeDeleteModal = () => {
+        setDeleteModal({ isOpen: false, id: '', title: '' });
+    };
+
+    const handleDelete = async () => {
+        if (!deleteModal.id) return;
+        setIsDeleting(true);
 
         try {
-            const response = await fetch(`/api/admin/video-gallery/${id}`, {
+            const response = await fetch(`/api/admin/video-gallery/${deleteModal.id}`, {
                 method: 'DELETE',
             });
 
             if (response.ok) {
                 toast.success('Video deleted successfully');
+                closeDeleteModal();
                 fetchVideos();
             } else {
                 const result = await response.json();
@@ -64,6 +81,8 @@ export default function VideoGalleryListPage() {
         } catch (error) {
             console.error('Error deleting video:', error);
             toast.error('Failed to delete video');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -193,7 +212,7 @@ export default function VideoGalleryListPage() {
                                                     </svg>
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleDelete(video.id)}
+                                                    onClick={() => openDeleteModal(video.id, video.title_en)}
                                                     className="text-red-600 hover:text-red-900 dark:text-red-400 p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition cursor-pointer"
                                                     title="Delete"
                                                 >
@@ -236,6 +255,19 @@ export default function VideoGalleryListPage() {
                     </>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmModal
+                isOpen={deleteModal.isOpen}
+                onClose={closeDeleteModal}
+                onConfirm={handleDelete}
+                title="Delete Video"
+                message={`Are you sure you want to delete "${deleteModal.title}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isLoading={isDeleting}
+                variant="danger"
+            />
         </div>
     );
 }

@@ -28,7 +28,7 @@ export async function GET(
             return NextResponse.json({ error: error.message }, { status: 404 });
         }
 
-        return NextResponse.json(data);
+        return NextResponse.json({ data });
     } catch (error) {
         console.error('Error in GET /api/admin/video-gallery/[id]:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
