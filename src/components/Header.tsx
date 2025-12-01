@@ -52,9 +52,12 @@ const menuItems = [
           { href: "/contact", key: "contactUs" },
           { href: "/complaints", key: "complaintBox" },
           { href: "/area-problems", key: "areaProblems" },
-          { href: "/emergency", key: "emergencyHelp" },
+          { href: "/emergency/contacts", key: "emergencyContacts" },
+          { href: "/emergency/sos", key: "emergencySOS" },
+          { href: "/emergency/safety", key: "safetyResources" },
         ],
       },
+      { href: "/blood-hub", key: "bloodHub" },
       {
         href: "/participation",
         key: "publicParticipation",

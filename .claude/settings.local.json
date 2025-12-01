@@ -57,7 +57,9 @@
       "Bash(start http://localhost:3002)",
       "Bash(start http://localhost:3002/test-images.html)",
       "Bash(ls:*)",
-      "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\abc (1).svg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\dhaka-18-map.svg\")"
+      "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\abc (1).svg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\dhaka-18-map.svg\")",
+      "Bash(awk:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

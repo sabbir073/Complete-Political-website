@@ -43,7 +43,14 @@ interface LanguageData {
     contactUs: string;
     complaintBox: string;
     areaProblems: string;
-    emergencyHelp: string;
+    emergencyContacts: string;
+    emergencySOS: string;
+    safetyResources: string;
+    bloodHub: string;
+    bloodHubHome: string;
+    findBlood: string;
+    becomeDonor: string;
+    requestBlood: string;
     publicParticipation: string;
     pollsSurveys: string;
     askMeAnything: string;

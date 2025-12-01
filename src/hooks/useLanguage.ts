@@ -42,7 +42,9 @@ interface LanguageData {
     contactUs: string;
     complaintBox: string;
     areaProblems: string;
-    emergencyHelp: string;
+    emergencyContacts: string;
+    emergencySOS: string;
+    safetyResources: string;
     publicParticipation: string;
     pollsSurveys: string;
     askMeAnything: string;

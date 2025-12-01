@@ -67,7 +67,9 @@ const menuItems = [
           { href: "/contact", key: "contactUs" },
           { href: "/contact/complaints", key: "complaintBox" },
           { href: "/contact/area-problems", key: "areaProblems" },
-          { href: "/emergency", key: "emergencyHelp" },
+          { href: "/emergency/contacts", key: "emergencyContacts" },
+          { href: "/emergency/sos", key: "emergencySOS" },
+          { href: "/emergency/safety", key: "safetyResources" },
         ],
       },
       {
