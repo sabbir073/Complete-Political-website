@@ -3,7 +3,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "../providers/LanguageProvider";
 import { useTheme } from "../providers/ThemeProvider";
 import { useHeaderSettings } from "../hooks/useHeaderSettings";
@@ -12,8 +12,9 @@ const menuItems = [
   { href: "/", key: "home" },
   { href: "/about", key: "about" },
   {
-    href: "/activities",
+    href: "#",
     key: "activities",
+    noLink: true,
     dropdown: [
       {
         href: "/events",
@@ -42,8 +43,9 @@ const menuItems = [
     ],
   },
   {
-    href: "/services",
+    href: "#",
     key: "services",
+    noLink: true,
     dropdown: [
       {
         href: "/contact",
@@ -80,8 +82,9 @@ const menuItems = [
     ],
   },
   {
-    href: "/more",
+    href: "#",
     key: "more",
+    noLink: true,
     dropdown: [
       {
         href: "/tools",
@@ -119,6 +122,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
   const [logoAltText, setLogoAltText] = useState('');
+  const navRef = useRef<HTMLElement>(null);
   const { language, changeLanguage, t } = useLanguage();
   const { theme, toggleTheme, isDark } = useTheme();
   const { settings, loading, error, getText } = useHeaderSettings(initialSettings);
@@ -174,6 +178,23 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
       document.body.classList.remove("overflow-hidden");
     }
   }, [isMenuOpen]);
+
+  // Close dropdown when clicking outside (for noLink items with click-to-toggle)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+
+    if (openDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openDropdown]);
 
   const getTranslation = (section: string, key: string) => {
     return (t as any)[section]?.[key] || key;
@@ -233,39 +254,64 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-4">
+            <nav ref={navRef} className="hidden lg:flex items-center space-x-4">
               {menuItems.map((item) => (
                 <div
-                  key={item.href}
+                  key={item.key}
                   className="relative group"
-                  onMouseEnter={() => item.dropdown && setOpenDropdown(item.href)}
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  onMouseEnter={() => !item.noLink && item.dropdown && setOpenDropdown(item.key)}
+                  onMouseLeave={() => !item.noLink && setOpenDropdown(null)}
                 >
-                  <Link
-                    href={item.href}
-                    className={`text-base font-semibold px-4 py-2 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap ${
-                      isDark
-                        ? "text-gray-200 hover:text-white hover:bg-gray-800"
-                        : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    {getTranslation("navigation", item.key)}
-                    {item.dropdown && (
-                      <svg
-                        className={`ml-2 w-4 h-4 transition-transform duration-300 ${
-                          openDropdown === item.href ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    )}
-                  </Link>
+                  {item.noLink ? (
+                    <button
+                      onClick={() => item.dropdown && setOpenDropdown(openDropdown === item.key ? null : item.key)}
+                      className={`text-base font-semibold px-4 py-2 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap cursor-pointer ${
+                        isDark
+                          ? "text-gray-200 hover:text-white hover:bg-gray-800"
+                          : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      {getTranslation("navigation", item.key)}
+                      {item.dropdown && (
+                        <svg
+                          className={`ml-2 w-4 h-4 transition-transform duration-300 ${
+                            openDropdown === item.key ? "rotate-180" : ""
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      )}
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`text-base font-semibold px-4 py-2 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap ${
+                        isDark
+                          ? "text-gray-200 hover:text-white hover:bg-gray-800"
+                          : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
+                      }`}
+                    >
+                      {getTranslation("navigation", item.key)}
+                      {item.dropdown && (
+                        <svg
+                          className={`ml-2 w-4 h-4 transition-transform duration-300 ${
+                            openDropdown === item.key ? "rotate-180" : ""
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      )}
+                    </Link>
+                  )}
 
                   {/* Dropdown Menu */}
-                  {item.dropdown && openDropdown === item.href && (
+                  {item.dropdown && openDropdown === item.key && (
                     <div className={`absolute top-full left-0 w-80 rounded-xl shadow-2xl border z-[99999] transform transition-all duration-300 ${
                       isDark 
                         ? "bg-gray-800 border-gray-700" 
@@ -494,46 +540,75 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
           {/* Mobile Navigation */}
           <nav className="flex flex-col space-y-2 max-h-80 overflow-y-auto">
             {menuItems.map((item) => (
-              <div key={item.href} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+              <div key={item.key} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
                 <div className="flex items-center justify-between">
-                  <Link
-                    href={item.href}
-                    className={`flex-1 text-lg font-medium py-3 transition-colors ${
-                      isDark
-                        ? "text-gray-200 hover:text-white"
-                        : "text-gray-800 hover:text-red-600"
-                    }`}
-                    onClick={closeAllMenus}
-                  >
-                    {getTranslation("navigation", item.key)}
-                  </Link>
-                  {item.dropdown && (
+                  {item.noLink ? (
                     <button
-                      onClick={() => setOpenMobileDropdown(
-                        openMobileDropdown === item.href ? null : item.href
+                      onClick={() => item.dropdown && setOpenMobileDropdown(
+                        openMobileDropdown === item.key ? null : item.key
                       )}
-                      className={`p-2 transition-colors ${
+                      className={`flex-1 text-lg font-medium py-3 text-left flex items-center justify-between ${
                         isDark
-                          ? "text-gray-400 hover:text-white"
-                          : "text-gray-500 hover:text-gray-700"
+                          ? "text-gray-200"
+                          : "text-gray-800"
                       }`}
                     >
-                      <svg
-                        className={`w-4 h-4 transition-transform ${
-                          openMobileDropdown === item.href ? "rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <span>{getTranslation("navigation", item.key)}</span>
+                      {item.dropdown && (
+                        <svg
+                          className={`w-4 h-4 transition-transform ${
+                            openMobileDropdown === item.key ? "rotate-180" : ""
+                          } ${isDark ? "text-gray-400" : "text-gray-500"}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      )}
                     </button>
+                  ) : (
+                    <>
+                      <Link
+                        href={item.href}
+                        className={`flex-1 text-lg font-medium py-3 transition-colors ${
+                          isDark
+                            ? "text-gray-200 hover:text-white"
+                            : "text-gray-800 hover:text-red-600"
+                        }`}
+                        onClick={closeAllMenus}
+                      >
+                        {getTranslation("navigation", item.key)}
+                      </Link>
+                      {item.dropdown && (
+                        <button
+                          onClick={() => setOpenMobileDropdown(
+                            openMobileDropdown === item.key ? null : item.key
+                          )}
+                          className={`p-2 transition-colors ${
+                            isDark
+                              ? "text-gray-400 hover:text-white"
+                              : "text-gray-500 hover:text-gray-700"
+                          }`}
+                        >
+                          <svg
+                            className={`w-4 h-4 transition-transform ${
+                              openMobileDropdown === item.key ? "rotate-180" : ""
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Mobile Dropdown */}
-                {item.dropdown && openMobileDropdown === item.href && (
+                {item.dropdown && openMobileDropdown === item.key && (
                   <div className="ml-4 pb-3 space-y-2">
                     {item.dropdown.map((subItem) => (
                       <div key={subItem.href}>
