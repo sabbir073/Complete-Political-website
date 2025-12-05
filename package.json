@@ -21,7 +21,7 @@
     "bcryptjs": "^3.0.2",
     "immer": "^10.1.1",
     "keen-slider": "^6.8.6",
-    "next": "15.3.2",
+    "next": "^16.0.7",
     "pg": "^8.16.3",
     "quill-resize-image": "^1.0.11",
     "react": "^19.0.0",
@@ -44,7 +44,7 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.20",
     "eslint": "^9",
-    "eslint-config-next": "15.3.2",
+    "eslint-config-next": "^16.0.7",
     "postcss": "^8.4.31",
     "tailwindcss": "^4.1.6",
     "typescript": "^5"

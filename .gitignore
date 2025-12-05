@@ -138,3 +138,6 @@ bundle-report.html
 
 # Documentation drafts
 *.draft.md
+
+#packagelockfile
+package-lock.json
