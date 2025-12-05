@@ -108,8 +108,8 @@ export default function BNPFooter() {
           color: isDark ? '#E5E7EB' : (footerSettings?.footer_text_color || '#FFFFFF')
         }}
       >
-        <div className={`w-full px-6 max-w-screen-xl mx-auto py-10 md:py-5 grid gap-x-8 ${
-          footerSettings?.footer_layout === '3-column' 
+        <div className={`w-full px-6 max-w-screen-xl mx-auto py-10 md:py-5 grid gap-x-8 gap-y-8 md:gap-y-6 ${
+          footerSettings?.footer_layout === '3-column'
             ? 'grid-cols-1 md:grid-cols-3 lg:grid-cols-3'
             : footerSettings?.footer_layout === '4-column'
             ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-4'
@@ -117,7 +117,7 @@ export default function BNPFooter() {
         }`}>
 
           {/* Column 1: Logo + Socials */}
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start pt-2 md:pt-0">
             {footerSettings?.footer_logo_show && (
               <Image 
                 src={footerSettings?.footer_logo_src || "/logo.png"} 
