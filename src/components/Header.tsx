@@ -110,6 +110,7 @@ const menuItems = [
       { href: "/install", key: "installApp" },
     ],
   },
+  { href: "/election-2026", key: "election2026" },
 ];
 
 interface HeaderProps {
@@ -120,7 +121,9 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   const [isSticky, setIsSticky] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(null);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [mobileSubmenu, setMobileSubmenu] = useState<string | null>(null);
+  const [mobileSubSubmenu, setMobileSubSubmenu] = useState<string | null>(null);
   const [logoAltText, setLogoAltText] = useState('');
   const navRef = useRef<HTMLElement>(null);
   const { language, changeLanguage, t } = useLanguage();
@@ -132,11 +135,11 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
     const fetchLogoAltText = async () => {
       const logoSrc = isDark ? settings?.header_logo_dark : settings?.header_logo_light;
       if (!logoSrc) return;
-      
+
       try {
         const response = await fetch(`/api/media/alt-text?url=${encodeURIComponent(logoSrc)}`);
         const data = await response.json();
-        
+
         if (data.success && data.alt_text) {
           setLogoAltText(data.alt_text);
         } else {
@@ -152,13 +155,11 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   }, [settings?.header_logo_light, settings?.header_logo_dark, isDark]);
 
   useEffect(() => {
-    // Safety check for settings
     if (!settings) return;
-    
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const headerHeight = 250;
-      // Only make sticky if header position is set to sticky
       setIsSticky(settings.header_position === 'sticky' && scrollPosition > headerHeight);
     };
 
@@ -166,7 +167,6 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
     } else {
-      // For non-sticky positions, ensure isSticky is false
       setIsSticky(false);
     }
   }, [settings]);
@@ -179,11 +179,12 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
     }
   }, [isMenuOpen]);
 
-  // Close dropdown when clicking outside (for noLink items with click-to-toggle)
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setOpenDropdown(null);
+        setOpenSubmenu(null);
       }
     };
 
@@ -203,7 +204,9 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   const closeAllMenus = () => {
     setIsMenuOpen(false);
     setOpenDropdown(null);
-    setOpenMobileDropdown(null);
+    setOpenSubmenu(null);
+    setMobileSubmenu(null);
+    setMobileSubSubmenu(null);
   };
 
   // Show loading or fallback if settings are not available
@@ -226,10 +229,10 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
     <>
       <header
         className={`public-header border-b backdrop-blur-lg transition-all duration-500 ease-in-out z-[9999] ${
-          settings.header_position === 'fixed' 
+          settings.header_position === 'fixed'
             ? "fixed top-0 left-0 right-0 shadow-lg"
-            : isSticky 
-            ? "fixed top-0 left-0 right-0 shadow-lg animate-fadeInDown" 
+            : isSticky
+            ? "fixed top-0 left-0 right-0 shadow-lg animate-fadeInDown"
             : settings.header_position === 'static'
             ? "static shadow-sm"
             : "relative shadow-sm"
@@ -240,33 +243,43 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
         }}
       >
         <div className="container mx-auto">
-          <div className="flex justify-between items-center px-6 py-4">
+          <div className="flex justify-between items-center px-4 lg:px-6 py-3 lg:py-4">
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 transition-transform duration-300 hover:scale-105">
-              <Image 
-                src={isDark ? settings.header_logo_dark : settings.header_logo_light} 
-                alt={logoAltText || 'Header Logo'} 
-                width={settings.header_logo_width} 
-                height={settings.header_logo_height} 
-                className="h-auto max-h-14" 
+              <Image
+                src={isDark ? settings.header_logo_dark : settings.header_logo_light}
+                alt={logoAltText || 'Header Logo'}
+                width={settings.header_logo_width}
+                height={settings.header_logo_height}
+                className="h-auto max-h-12 lg:max-h-14"
                 priority
               />
             </Link>
 
             {/* Desktop Navigation */}
-            <nav ref={navRef} className="hidden lg:flex items-center space-x-4">
+            <nav ref={navRef} className="hidden lg:flex items-center space-x-1">
               {menuItems.map((item) => (
                 <div
                   key={item.key}
                   className="relative group"
-                  onMouseEnter={() => !item.noLink && item.dropdown && setOpenDropdown(item.key)}
-                  onMouseLeave={() => !item.noLink && setOpenDropdown(null)}
+                  onMouseEnter={() => {
+                    if (item.dropdown) {
+                      setOpenDropdown(item.key);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setOpenDropdown(null);
+                    setOpenSubmenu(null);
+                  }}
                 >
                   {item.noLink ? (
                     <button
-                      onClick={() => item.dropdown && setOpenDropdown(openDropdown === item.key ? null : item.key)}
-                      className={`text-base font-semibold px-4 py-2 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap cursor-pointer ${
-                        isDark
+                      className={`text-base font-semibold px-4 py-2.5 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap cursor-pointer ${
+                        openDropdown === item.key
+                          ? isDark
+                            ? "text-white bg-gray-800"
+                            : "text-red-600 bg-red-50"
+                          : isDark
                           ? "text-gray-200 hover:text-white hover:bg-gray-800"
                           : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
                       }`}
@@ -274,7 +287,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                       {getTranslation("navigation", item.key)}
                       {item.dropdown && (
                         <svg
-                          className={`ml-2 w-4 h-4 transition-transform duration-300 ${
+                          className={`ml-1.5 w-4 h-4 transition-transform duration-300 ${
                             openDropdown === item.key ? "rotate-180" : ""
                           }`}
                           fill="none"
@@ -288,80 +301,86 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                   ) : (
                     <Link
                       href={item.href}
-                      className={`text-base font-semibold px-4 py-2 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap ${
+                      className={`text-base font-semibold px-4 py-2.5 rounded-lg transition-all duration-300 flex items-center whitespace-nowrap ${
                         isDark
                           ? "text-gray-200 hover:text-white hover:bg-gray-800"
                           : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
                       }`}
                     >
                       {getTranslation("navigation", item.key)}
-                      {item.dropdown && (
-                        <svg
-                          className={`ml-2 w-4 h-4 transition-transform duration-300 ${
-                            openDropdown === item.key ? "rotate-180" : ""
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      )}
                     </Link>
                   )}
 
-                  {/* Dropdown Menu */}
+                  {/* Desktop Mega Menu Dropdown */}
                   {item.dropdown && openDropdown === item.key && (
-                    <div className={`absolute top-full left-0 w-80 rounded-xl shadow-2xl border z-[99999] transform transition-all duration-300 ${
-                      isDark 
-                        ? "bg-gray-800 border-gray-700" 
-                        : "bg-white border-gray-200"
-                    }`}>
-                      <div className="py-3">
-                        {item.dropdown.map((subItem) => (
-                          <div key={subItem.href} className="relative group/sub">
-                            <Link
-                              href={subItem.href}
-                              className={`flex items-center justify-between px-6 py-3 text-sm font-medium transition-all duration-200 ${
-                                isDark
-                                  ? "text-gray-300 hover:text-white hover:bg-gray-700"
-                                  : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
-                              }`}
+                    <div
+                      className={`absolute top-full left-0 pt-1 min-w-[280px] z-[99999]`}
+                    >
+                      <div className={`rounded-xl shadow-2xl border overflow-visible ${
+                        isDark
+                          ? "bg-gray-900 border-gray-700"
+                          : "bg-white border-gray-200"
+                      }`}>
+                        <div className="py-2">
+                          {item.dropdown.map((subItem) => (
+                            <div
+                              key={subItem.href}
+                              className="relative group/sub"
+                              onMouseEnter={() => subItem.submenu && setOpenSubmenu(subItem.key)}
                             >
-                              <span>{getTranslation(item.key, subItem.key)}</span>
-                              {subItem.submenu && (
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
-                              )}
-                            </Link>
+                              <Link
+                                href={subItem.href}
+                                className={`flex items-center justify-between px-5 py-3 text-[15px] font-medium transition-all duration-200 ${
+                                  openSubmenu === subItem.key
+                                    ? isDark
+                                      ? "text-white bg-gray-800"
+                                      : "text-red-600 bg-red-50"
+                                    : isDark
+                                    ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                                    : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
+                                }`}
+                              >
+                                <span>{getTranslation(item.key, subItem.key)}</span>
+                                {subItem.submenu && (
+                                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                  </svg>
+                                )}
+                              </Link>
 
-                            {/* Submenu */}
-                            {subItem.submenu && (
-                              <div className={`absolute left-full top-0 w-72 rounded-xl shadow-xl border opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 z-[999999] ${
-                                isDark 
-                                  ? "bg-gray-800 border-gray-700" 
-                                  : "bg-white border-gray-200"
-                              }`}>
-                                <div className="py-2">
-                                  {subItem.submenu.map((subSubItem) => (
-                                    <Link
-                                      key={subSubItem.href}
-                                      href={subSubItem.href}
-                                      className={`block px-6 py-2 text-sm transition-all duration-200 ${
-                                        isDark
-                                          ? "text-gray-400 hover:text-white hover:bg-gray-700"
-                                          : "text-gray-600 hover:text-red-600 hover:bg-gray-50"
-                                      }`}
-                                    >
-                                      {getTranslation(item.key, subSubItem.key)}
-                                    </Link>
-                                  ))}
+                              {/* Desktop Sub-submenu - CSS hover based */}
+                              {subItem.submenu && (
+                                <div
+                                  className={`absolute left-full top-0 pl-1 min-w-[240px] z-[999999] ${
+                                    openSubmenu === subItem.key ? 'block' : 'hidden'
+                                  } group-hover/sub:block`}
+                                >
+                                  <div className={`rounded-xl shadow-2xl border overflow-hidden ${
+                                    isDark
+                                      ? "bg-gray-900 border-gray-700"
+                                      : "bg-white border-gray-200"
+                                  }`}>
+                                    <div className="py-2">
+                                      {subItem.submenu.map((subSubItem) => (
+                                        <Link
+                                          key={subSubItem.href}
+                                          href={subSubItem.href}
+                                          className={`block px-5 py-2.5 text-[14px] font-medium transition-all duration-200 ${
+                                            isDark
+                                              ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                                              : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                          }`}
+                                        >
+                                          {getTranslation(item.key, subSubItem.key)}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -370,18 +389,18 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
             </nav>
 
             {/* Desktop Controls */}
-            <div className="hidden lg:flex items-center space-x-4">
+            <div className="hidden lg:flex items-center space-x-3">
               {/* Language Toggle */}
               {settings.header_show_language_toggle && (
                 <button
                   onClick={() => changeLanguage(language === 'bn' ? 'en' : 'bn')}
-                  className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-all duration-300 ${
+                  className={`px-3.5 py-2 text-sm font-semibold rounded-lg border transition-all duration-300 ${
                     isDark
                       ? "text-gray-300 border-gray-600 hover:bg-gray-700 hover:text-white"
                       : "text-gray-700 border-gray-300 hover:bg-gray-100 hover:text-gray-900"
                   }`}
                 >
-                  {language === 'bn' ? 'English' : 'বাংলা'}
+                  {language === 'bn' ? 'EN' : 'বাং'}
                 </button>
               )}
 
@@ -389,7 +408,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
               {settings.header_show_theme_toggle && (
                 <button
                   onClick={toggleTheme}
-                  className={`p-3 rounded-lg transition-all duration-300 ${
+                  className={`p-2.5 rounded-lg transition-all duration-300 ${
                     isDark
                       ? "text-gray-300 hover:bg-gray-700 hover:text-white"
                       : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
@@ -414,9 +433,9 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                   href={`https://wa.me/${settings.whatsapp_phone_number.replace(/[^\d+]/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:from-green-600 hover:to-green-700 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-300 hover:from-green-600 hover:to-green-700 hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
                 >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12.017 2.006c-5.516 0-9.999 4.481-9.999 9.996 0 1.746.444 3.388 1.234 4.815L2.003 21.99l5.245-1.238c1.391.745 2.977 1.143 4.769 1.143 5.515 0 9.998-4.481 9.998-9.996S17.532 2.006 12.017 2.006zm5.818 14.186c-.244.687-1.213 1.266-1.973 1.43-.511.11-1.18.195-3.426-.731-2.871-1.184-4.727-4.073-4.871-4.26-.144-.187-1.174-1.563-1.174-2.982 0-1.419.744-2.118 1.008-2.407.264-.289.576-.361.768-.361.192 0 .384.009.552.017.177.008.414-.067.648.495.239.576.816 1.991.888 2.135.072.144.12.313.024.5-.096.187-.144.304-.288.472-.144.168-.304.374-.433.5-.144.144-.288.304-.12.6.168.296.744 1.227 1.596 1.986 1.092.973 2.016 1.274 2.304 1.418.288.144.456.12.624-.072.168-.192.72-.839.912-1.127.192-.288.384-.24.648-.144.264.096 1.68.792 1.968.936.288.144.48.216.552.336.072.12.072.697-.168 1.385z"/>
                   </svg>
                   <span>{getText(settings.whatsapp_button_text)}</span>
@@ -427,92 +446,30 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
               {settings.header_show_contact_button && (
                 <Link
                   href={settings.contact_button_link}
-                  className={`relative bg-gradient-to-r ${settings.contact_button_background} text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:${settings.contact_button_hover_background} hover:scale-105 shadow-lg hover:shadow-xl`}
+                  className={`bg-gradient-to-r ${settings.contact_button_background} text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl`}
                 >
                   {getText(settings.contact_button_text)}
                 </Link>
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              className={`lg:hidden p-2 rounded-lg transition-all duration-300 ${
-                isDark
-                  ? "text-gray-300 hover:bg-gray-700"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={() => setIsMenuOpen(true)}
-              aria-label={getTranslation("buttons", "menu")}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-[9998] transition-opacity duration-300 ${
-          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={closeAllMenus}
-      />
-
-      {/* Mobile Menu */}
-      <div
-        className={`fixed top-0 right-0 w-80 h-full z-[9999] transform transition-transform duration-300 ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        } ${
-          isDark ? "bg-gray-900" : "bg-white"
-        } shadow-2xl`}
-      >
-        <div className="p-6">
-          {/* Mobile Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center space-x-3">
-              <Image 
-                src={isDark ? settings.header_logo_dark : settings.header_logo_light} 
-                alt={logoAltText || 'Header Logo'} 
-                width={40} 
-                height={30} 
-                className="h-auto" 
-              />
-              <span className={`font-bold text-lg ${isDark ? "text-white" : "text-gray-900"}`}>
-                মেনু
-              </span>
-            </div>
-            <button
-              className={`p-2 rounded-lg ${
-                isDark
-                  ? "text-gray-300 hover:bg-gray-700"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-              onClick={closeAllMenus}
-              aria-label={getTranslation("buttons", "close")}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile Controls */}
-          {(settings.header_show_language_toggle || settings.header_show_theme_toggle) && (
-            <div className="flex items-center justify-between mb-6 p-4 rounded-lg border">
+            {/* Mobile Controls - Outside hamburger */}
+            <div className="flex lg:hidden items-center space-x-2">
+              {/* Mobile Language Toggle */}
               {settings.header_show_language_toggle && (
                 <button
                   onClick={() => changeLanguage(language === 'bn' ? 'en' : 'bn')}
-                  className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-all duration-300 ${
+                  className={`px-2.5 py-1.5 text-xs font-bold rounded-md border transition-all duration-300 ${
                     isDark
                       ? "text-gray-300 border-gray-600 hover:bg-gray-700"
                       : "text-gray-700 border-gray-300 hover:bg-gray-100"
                   }`}
                 >
-                  {language === 'bn' ? 'English' : 'বাংলা'}
+                  {language === 'bn' ? 'EN' : 'বাং'}
                 </button>
               )}
+
+              {/* Mobile Theme Toggle */}
               {settings.header_show_theme_toggle && (
                 <button
                   onClick={toggleTheme}
@@ -521,7 +478,6 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                       ? "text-gray-300 hover:bg-gray-700"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
-                  title={getTranslation("theme", "toggle")}
                 >
                   {isDark ? (
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -534,112 +490,183 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                   )}
                 </button>
               )}
-            </div>
-          )}
 
-          {/* Mobile Navigation */}
-          <nav className="flex flex-col space-y-2 max-h-80 overflow-y-auto">
+              {/* Mobile Menu Button */}
+              <button
+                className={`p-2 rounded-lg transition-all duration-300 ${
+                  isDark
+                    ? "text-gray-300 hover:bg-gray-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+                onClick={() => setIsMenuOpen(true)}
+                aria-label="Open menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[99998] transition-all duration-300 lg:hidden ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={closeAllMenus}
+      />
+
+      {/* Mobile Menu - App Style Slide-in */}
+      <div
+        className={`fixed top-0 right-0 w-full max-w-[320px] h-full z-[99999] transform transition-transform duration-300 ease-out lg:hidden ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        } ${isDark ? "bg-gray-900" : "bg-white"}`}
+      >
+        {/* Mobile Menu Header */}
+        <div className={`flex items-center justify-between px-5 py-4 border-b ${
+          isDark ? "border-gray-800" : "border-gray-100"
+        }`}>
+          <div className="flex items-center space-x-3">
+            <Image
+              src={isDark ? settings.header_logo_dark : settings.header_logo_light}
+              alt={logoAltText || 'Logo'}
+              width={36}
+              height={28}
+              className="h-auto"
+            />
+            <span className={`font-bold text-lg ${isDark ? "text-white" : "text-gray-900"}`}>
+              {language === 'bn' ? 'মেনু' : 'Menu'}
+            </span>
+          </div>
+          <button
+            className={`p-2 rounded-full transition-all duration-300 ${
+              isDark
+                ? "text-gray-400 hover:text-white hover:bg-gray-800"
+                : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
+            }`}
+            onClick={closeAllMenus}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile Menu Content */}
+        <div className="h-[calc(100%-140px)] overflow-y-auto">
+          <nav className="py-2">
             {menuItems.map((item) => (
-              <div key={item.key} className="border-b border-gray-200 dark:border-gray-700 last:border-b-0">
-                <div className="flex items-center justify-between">
-                  {item.noLink ? (
+              <div key={item.key}>
+                {/* Main Menu Item */}
+                <div className={`border-b ${isDark ? "border-gray-800" : "border-gray-50"}`}>
+                  {item.dropdown ? (
                     <button
-                      onClick={() => item.dropdown && setOpenMobileDropdown(
-                        openMobileDropdown === item.key ? null : item.key
-                      )}
-                      className={`flex-1 text-lg font-medium py-3 text-left flex items-center justify-between ${
-                        isDark
-                          ? "text-gray-200"
-                          : "text-gray-800"
+                      onClick={() => setMobileSubmenu(mobileSubmenu === item.key ? null : item.key)}
+                      className={`w-full flex items-center justify-between px-5 py-4 text-[16px] font-semibold transition-all duration-200 ${
+                        mobileSubmenu === item.key
+                          ? isDark
+                            ? "text-white bg-gray-800"
+                            : "text-red-600 bg-red-50"
+                          : isDark
+                          ? "text-gray-200 hover:bg-gray-800"
+                          : "text-gray-800 hover:bg-gray-50"
                       }`}
                     >
                       <span>{getTranslation("navigation", item.key)}</span>
-                      {item.dropdown && (
-                        <svg
-                          className={`w-4 h-4 transition-transform ${
-                            openMobileDropdown === item.key ? "rotate-180" : ""
-                          } ${isDark ? "text-gray-400" : "text-gray-500"}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      )}
+                      <svg
+                        className={`w-5 h-5 transition-transform duration-300 ${
+                          mobileSubmenu === item.key ? "rotate-180" : ""
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </button>
                   ) : (
-                    <>
-                      <Link
-                        href={item.href}
-                        className={`flex-1 text-lg font-medium py-3 transition-colors ${
-                          isDark
-                            ? "text-gray-200 hover:text-white"
-                            : "text-gray-800 hover:text-red-600"
-                        }`}
-                        onClick={closeAllMenus}
-                      >
-                        {getTranslation("navigation", item.key)}
-                      </Link>
-                      {item.dropdown && (
-                        <button
-                          onClick={() => setOpenMobileDropdown(
-                            openMobileDropdown === item.key ? null : item.key
-                          )}
-                          className={`p-2 transition-colors ${
-                            isDark
-                              ? "text-gray-400 hover:text-white"
-                              : "text-gray-500 hover:text-gray-700"
-                          }`}
-                        >
-                          <svg
-                            className={`w-4 h-4 transition-transform ${
-                              openMobileDropdown === item.key ? "rotate-180" : ""
-                            }`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
-                      )}
-                    </>
+                    <Link
+                      href={item.href}
+                      className={`block px-5 py-4 text-[16px] font-semibold transition-all duration-200 ${
+                        isDark
+                          ? "text-gray-200 hover:text-white hover:bg-gray-800"
+                          : "text-gray-800 hover:text-red-600 hover:bg-gray-50"
+                      }`}
+                      onClick={closeAllMenus}
+                    >
+                      {getTranslation("navigation", item.key)}
+                    </Link>
                   )}
                 </div>
 
-                {/* Mobile Dropdown */}
-                {item.dropdown && openMobileDropdown === item.key && (
-                  <div className="ml-4 pb-3 space-y-2">
+                {/* Submenu */}
+                {item.dropdown && mobileSubmenu === item.key && (
+                  <div className={`${isDark ? "bg-gray-800/50" : "bg-gray-50"}`}>
                     {item.dropdown.map((subItem) => (
                       <div key={subItem.href}>
-                        <Link
-                          href={subItem.href}
-                          className={`block text-sm py-2 transition-colors ${
-                            isDark
-                              ? "text-gray-400 hover:text-white"
-                              : "text-gray-600 hover:text-red-600"
-                          }`}
-                          onClick={closeAllMenus}
-                        >
-                          {getTranslation(item.key, subItem.key)}
-                        </Link>
-                        {subItem.submenu && (
-                          <div className="ml-4 mt-1 space-y-1">
-                            {subItem.submenu.map((subSubItem) => (
-                              <Link
-                                key={subSubItem.href}
-                                href={subSubItem.href}
-                                className={`block text-xs py-1 transition-colors ${
-                                  isDark
-                                    ? "text-gray-500 hover:text-gray-300"
-                                    : "text-gray-500 hover:text-red-600"
+                        {subItem.submenu ? (
+                          <>
+                            <button
+                              onClick={() => setMobileSubSubmenu(
+                                mobileSubSubmenu === subItem.key ? null : subItem.key
+                              )}
+                              className={`w-full flex items-center justify-between pl-8 pr-5 py-3.5 text-[15px] font-medium transition-all duration-200 ${
+                                mobileSubSubmenu === subItem.key
+                                  ? isDark
+                                    ? "text-white bg-gray-700"
+                                    : "text-red-600 bg-red-100"
+                                  : isDark
+                                  ? "text-gray-300 hover:text-white hover:bg-gray-700"
+                                  : "text-gray-700 hover:text-red-600 hover:bg-gray-100"
+                              }`}
+                            >
+                              <span>{getTranslation(item.key, subItem.key)}</span>
+                              <svg
+                                className={`w-4 h-4 transition-transform duration-300 ${
+                                  mobileSubSubmenu === subItem.key ? "rotate-180" : ""
                                 }`}
-                                onClick={closeAllMenus}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                               >
-                                {getTranslation(item.key, subSubItem.key)}
-                              </Link>
-                            ))}
-                          </div>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+
+                            {/* Sub-submenu */}
+                            {mobileSubSubmenu === subItem.key && (
+                              <div className={`${isDark ? "bg-gray-900/50" : "bg-white"}`}>
+                                {subItem.submenu.map((subSubItem) => (
+                                  <Link
+                                    key={subSubItem.href}
+                                    href={subSubItem.href}
+                                    className={`block pl-12 pr-5 py-3 text-[14px] font-medium transition-all duration-200 ${
+                                      isDark
+                                        ? "text-gray-400 hover:text-white hover:bg-gray-800"
+                                        : "text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                    }`}
+                                    onClick={closeAllMenus}
+                                  >
+                                    {getTranslation(item.key, subSubItem.key)}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <Link
+                            href={subItem.href}
+                            className={`block pl-8 pr-5 py-3.5 text-[15px] font-medium transition-all duration-200 ${
+                              isDark
+                                ? "text-gray-300 hover:text-white hover:bg-gray-700"
+                                : "text-gray-700 hover:text-red-600 hover:bg-gray-100"
+                            }`}
+                            onClick={closeAllMenus}
+                          >
+                            {getTranslation(item.key, subItem.key)}
+                          </Link>
                         )}
                       </div>
                     ))}
@@ -648,41 +675,41 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
               </div>
             ))}
           </nav>
+        </div>
 
-          {/* Mobile Action Buttons */}
-          {(settings.header_show_whatsapp_button || settings.header_show_contact_button) && (
-            <div className="mt-6 space-y-3">
-              {settings.header_show_whatsapp_button && (
-                <a
-                  href={`https://wa.me/${settings.whatsapp_phone_number.replace(/[^\d+]/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-semibold text-center transition-all duration-300 hover:from-green-600 hover:to-green-700"
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12.017 2.006c-5.516 0-9.999 4.481-9.999 9.996 0 1.746.444 3.388 1.234 4.815L2.003 21.99l5.245-1.238c1.391.745 2.977 1.143 4.769 1.143 5.515 0 9.998-4.481 9.998-9.996S17.532 2.006 12.017 2.006zm5.818 14.186c-.244.687-1.213 1.266-1.973 1.43-.511.11-1.18.195-3.426-.731-2.871-1.184-4.727-4.073-4.871-4.26-.144-.187-1.174-1.563-1.174-2.982 0-1.419.744-2.118 1.008-2.407.264-.289.576-.361.768-.361.192 0 .384.009.552.017.177.008.414-.067.648.495.239.576.816 1.991.888 2.135.072.144.12.313.024.5-.096.187-.144.304-.288.472-.144.168-.304.374-.433.5-.144.144-.288.304-.12.6.168.296.744 1.227 1.596 1.986 1.092.973 2.016 1.274 2.304 1.418.288.144.456.12.624-.072.168-.192.72-.839.912-1.127.192-.288.384-.24.648-.144.264.096 1.68.792 1.968.936.288.144.48.216.552.336.072.12.072.697-.168 1.385z"/>
-                    </svg>
-                    <span>{getText(settings.whatsapp_button_text)}</span>
-                  </div>
-                </a>
-              )}
-              {settings.header_show_contact_button && (
-                <Link
-                  href={settings.contact_button_link}
-                  className={`block w-full bg-gradient-to-r ${settings.contact_button_background} text-white px-6 py-3 rounded-lg font-semibold text-center transition-all duration-300 hover:${settings.contact_button_hover_background}`}
-                  onClick={closeAllMenus}
-                >
-                  {getText(settings.contact_button_text)}
-                </Link>
-              )}
-            </div>
-          )}
+        {/* Mobile Menu Footer - Action Buttons */}
+        <div className={`absolute bottom-0 left-0 right-0 p-4 border-t ${
+          isDark ? "border-gray-800 bg-gray-900" : "border-gray-100 bg-white"
+        }`}>
+          <div className="space-y-3">
+            {settings.header_show_whatsapp_button && (
+              <a
+                href={`https://wa.me/${settings.whatsapp_phone_number.replace(/[^\d+]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center space-x-2 w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-3 rounded-xl font-semibold text-[15px] transition-all duration-300 hover:from-green-600 hover:to-green-700 shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.017 2.006c-5.516 0-9.999 4.481-9.999 9.996 0 1.746.444 3.388 1.234 4.815L2.003 21.99l5.245-1.238c1.391.745 2.977 1.143 4.769 1.143 5.515 0 9.998-4.481 9.998-9.996S17.532 2.006 12.017 2.006zm5.818 14.186c-.244.687-1.213 1.266-1.973 1.43-.511.11-1.18.195-3.426-.731-2.871-1.184-4.727-4.073-4.871-4.26-.144-.187-1.174-1.563-1.174-2.982 0-1.419.744-2.118 1.008-2.407.264-.289.576-.361.768-.361.192 0 .384.009.552.017.177.008.414-.067.648.495.239.576.816 1.991.888 2.135.072.144.12.313.024.5-.096.187-.144.304-.288.472-.144.168-.304.374-.433.5-.144.144-.288.304-.12.6.168.296.744 1.227 1.596 1.986 1.092.973 2.016 1.274 2.304 1.418.288.144.456.12.624-.072.168-.192.72-.839.912-1.127.192-.288.384-.24.648-.144.264.096 1.68.792 1.968.936.288.144.48.216.552.336.072.12.072.697-.168 1.385z"/>
+                </svg>
+                <span>{getText(settings.whatsapp_button_text)}</span>
+              </a>
+            )}
+            {settings.header_show_contact_button && (
+              <Link
+                href={settings.contact_button_link}
+                className={`block w-full text-center bg-gradient-to-r ${settings.contact_button_background} text-white px-5 py-3 rounded-xl font-semibold text-[15px] transition-all duration-300 shadow-lg`}
+                onClick={closeAllMenus}
+              >
+                {getText(settings.contact_button_text)}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Spacer for fixed/sticky header */}
-      {(isSticky || settings.header_position === 'fixed') && <div className="h-20" />}
+      {(isSticky || settings.header_position === 'fixed') && <div className="h-16 lg:h-20" />}
     </>
   );
 }
