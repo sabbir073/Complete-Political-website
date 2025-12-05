@@ -179,15 +179,15 @@ export default function BNPFooter() {
             )}
           </div>
 
-          {/* Mobile: About Us & Resources - Two columns in one row */}
-          <div className="md:hidden grid grid-cols-2 gap-x-6 mb-6">
+          {/* Mobile: About Us, Resources, Updates - 3 columns in one row */}
+          <div className="md:hidden grid grid-cols-3 gap-x-4 mb-6">
             {/* About Us */}
             {footerSettings?.footer_column_1_show && footerSettings?.footer_layout !== '3-column' && (
               <div>
-                <h4 className="font-bold text-sm mb-2 pb-2 border-b border-white/20">
+                <h4 className="font-bold text-xs mb-2 pb-2 border-b border-white/20">
                   {footerSettings ? getText(footerSettings.footer_column_1_title) : t.footer?.sections?.aboutUs?.title || "About Us"}
                 </h4>
-                <ul className="space-y-1.5 text-sm">
+                <ul className="space-y-1.5 text-xs">
                   {getMenuItemsByColumn(1).map((menuItem, index) => (
                     <li key={`column1-mobile-${index}`}>
                       <Link href={menuItem.url} className={`transition-colors duration-300 opacity-90 hover:opacity-100 ${
@@ -204,10 +204,10 @@ export default function BNPFooter() {
             {/* Resources */}
             {footerSettings?.footer_column_2_show && (
               <div>
-                <h4 className="font-bold text-sm mb-2 pb-2 border-b border-white/20">
+                <h4 className="font-bold text-xs mb-2 pb-2 border-b border-white/20">
                   {footerSettings ? getText(footerSettings.footer_column_2_title) : t.footer?.sections?.resources?.title || "Resources"}
                 </h4>
-                <ul className="space-y-1.5 text-sm">
+                <ul className="space-y-1.5 text-xs">
                   {getMenuItemsByColumn(2).map((menuItem, index) => (
                     <li key={`column2-mobile-${index}`}>
                       <Link href={menuItem.url} className={`transition-colors duration-300 opacity-90 hover:opacity-100 ${
@@ -220,37 +220,37 @@ export default function BNPFooter() {
                 </ul>
               </div>
             )}
+
+            {/* Updates */}
+            {footerSettings?.footer_column_3_show && footerSettings?.footer_layout !== '3-column' && (
+              <div>
+                <h4 className="font-bold text-xs mb-2 pb-2 border-b border-white/20">
+                  {footerSettings ? getText(footerSettings.footer_column_3_title) : t.footer?.sections?.updates?.title || "Updates"}
+                </h4>
+                <ul className="space-y-1.5 text-xs">
+                  {getMenuItemsByColumn(3).map((menuItem, index) => (
+                    <li key={`column3-mobile-${index}`}>
+                      <Link href={menuItem.url} className={`transition-colors duration-300 opacity-90 hover:opacity-100 ${
+                        isDark ? "hover:text-red-400" : "hover:text-green-300"
+                      }`}>
+                        {getText({ en: menuItem.text_en, bn: menuItem.text_bn })}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
-          {/* Mobile: Updates - Single column, centered */}
-          {footerSettings?.footer_column_3_show && footerSettings?.footer_layout !== '3-column' && (
-            <div className="md:hidden text-center mb-6">
-              <h4 className="font-bold text-sm mb-2 pb-2 border-b border-white/20 inline-block px-4">
-                {footerSettings ? getText(footerSettings.footer_column_3_title) : t.footer?.sections?.updates?.title || "Updates"}
-              </h4>
-              <ul className="space-y-1.5 text-sm">
-                {getMenuItemsByColumn(3).map((menuItem, index) => (
-                  <li key={`column3-mobile-${index}`}>
-                    <Link href={menuItem.url} className={`transition-colors duration-300 opacity-90 hover:opacity-100 ${
-                      isDark ? "hover:text-red-400" : "hover:text-green-300"
-                    }`}>
-                      {getText({ en: menuItem.text_en, bn: menuItem.text_bn })}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Mobile: Join Us - Single column, centered */}
+          {/* Mobile: Join Us - Single column, full width buttons */}
           {footerSettings?.footer_column_4_show && footerSettings?.footer_layout === '5-column' && (
-            <div className="md:hidden text-center mb-6">
-              <h4 className="font-bold text-sm mb-3 pb-2 border-b border-white/20 inline-block px-4">
+            <div className="md:hidden mb-6">
+              <h4 className="font-bold text-sm mb-3 text-center">
                 {footerSettings ? getText(footerSettings.footer_column_4_title) : t.footer?.sections?.joinUs?.title || "Join Us"}
               </h4>
-              <div className="flex flex-col items-center space-y-2">
+              <div className="flex flex-col space-y-2">
                 {footerSettings?.footer_column_4_button_1_show && (
-                  <Link href={footerSettings?.footer_column_4_button_1_url || "/membership"} className={`w-48 px-4 py-2.5 rounded-md text-center text-sm font-semibold transition-all duration-300 ${
+                  <Link href={footerSettings?.footer_column_4_button_1_url || "/membership"} className={`w-full px-4 py-3 rounded-md text-center text-sm font-semibold transition-all duration-300 ${
                     isDark
                       ? "bg-red-600 hover:bg-red-700 text-white"
                       : "bg-green-600 hover:bg-green-700 text-white"
@@ -259,7 +259,7 @@ export default function BNPFooter() {
                   </Link>
                 )}
                 {footerSettings?.footer_column_4_button_2_show && (
-                  <Link href={footerSettings?.footer_column_4_button_2_url || "/general-membership"} className={`w-48 px-4 py-2.5 rounded-md text-center text-sm font-semibold transition-all duration-300 ${
+                  <Link href={footerSettings?.footer_column_4_button_2_url || "/general-membership"} className={`w-full px-4 py-3 rounded-md text-center text-sm font-semibold transition-all duration-300 ${
                     isDark
                       ? "bg-red-600 hover:bg-red-700 text-white"
                       : "bg-green-600 hover:bg-green-700 text-white"
@@ -268,7 +268,7 @@ export default function BNPFooter() {
                   </Link>
                 )}
                 {footerSettings?.footer_column_4_button_3_show && (
-                  <Link href={footerSettings?.footer_column_4_button_3_url || "/donate"} className={`w-48 px-4 py-2.5 rounded-md text-center text-sm font-semibold transition-all duration-300 ${
+                  <Link href={footerSettings?.footer_column_4_button_3_url || "/donate"} className={`w-full px-4 py-3 rounded-md text-center text-sm font-semibold transition-all duration-300 ${
                     isDark
                       ? "bg-red-600 hover:bg-red-700 text-white"
                       : "bg-green-600 hover:bg-green-700 text-white"
@@ -457,23 +457,31 @@ export default function BNPFooter() {
         </div>
 
         {/* Footer Bottom */}
-        {footerSettings?.footer_bottom_show && (
-          <div 
-            className="py-4 px-6 text-sm text-center transition-colors duration-300"
-            style={{
-              borderTop: footerSettings?.footer_border_show ? 
-                `1px solid ${isDark ? '#374151' : (footerSettings?.footer_bottom_border_color || '#22C55E')}` : 
-                'none',
-              color: isDark ? '#9CA3AF' : (footerSettings?.footer_text_color || '#FFFFFF'),
-              opacity: 0.9
-            }}
-          >
-            <p>{footerSettings ? getText(footerSettings.footer_bottom_copyright) : t.footer?.copyright || "© 2023 to 2025 Bangladesh Nationalist Party - BNP"}</p>
-            {footerSettings?.footer_bottom_developer_show && (
-              <p>{footerSettings ? getText(footerSettings.footer_bottom_developer) : t.footer?.developer || "Develop And Maintained By Md Sabbir Ahmed"}</p>
-            )}
-          </div>
-        )}
+        <div
+          className="py-4 px-6 text-sm text-center transition-colors duration-300"
+          style={{
+            borderTop: footerSettings?.footer_border_show ?
+              `1px solid ${isDark ? '#374151' : (footerSettings?.footer_bottom_border_color || '#22C55E')}` :
+              'none',
+            color: isDark ? '#9CA3AF' : (footerSettings?.footer_text_color || '#FFFFFF'),
+            opacity: 0.9
+          }}
+        >
+          <p>© S M Jahangir Hossain | 2025 | BNP</p>
+          <p>
+            Developed by{' '}
+            <Link
+              href="https://wa.me/8801974134628"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`underline transition-colors duration-300 ${
+                isDark ? "hover:text-green-400" : "hover:text-green-300"
+              }`}
+            >
+              Velocita Infosys
+            </Link>
+          </p>
+        </div>
       </footer>
 
       {/* CTA at Bottom */}
