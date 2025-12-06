@@ -62,7 +62,7 @@ const translations = {
       constituency: 'Dhaka-18 | BNP',
     },
     noBadges: 'No badges yet',
-    scanQr: 'Scan to verify',
+    scanQr: 'Scan',
     loading: 'Loading...',
   },
   bn: {
@@ -92,7 +92,7 @@ const translations = {
       constituency: 'ঢাকা-১৮ | বিএনপি',
     },
     noBadges: 'এখনো কোনো ব্যাজ নেই',
-    scanQr: 'যাচাই করতে স্ক্যান করুন',
+    scanQr: 'স্ক্যান করুন',
     loading: 'লোড হচ্ছে...',
   },
 };
