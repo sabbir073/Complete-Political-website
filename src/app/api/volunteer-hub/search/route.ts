@@ -37,6 +37,13 @@ const categoryLabels: Record<string, { en: string; bn: string }> = {
   youthMobilization: { en: 'Youth Mobilization', bn: 'যুব সংগঠন' }
 };
 
+// Gender labels for display
+const genderLabels: Record<string, { en: string; bn: string }> = {
+  male: { en: 'Male', bn: 'পুরুষ' },
+  female: { en: 'Female', bn: 'মহিলা' },
+  other: { en: 'Other', bn: 'অন্যান্য' }
+};
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -60,7 +67,7 @@ export async function GET(request: NextRequest) {
     // Search for volunteer
     const { data: volunteer, error } = await supabase
       .from('volunteers')
-      .select('volunteer_id, name, name_bn, thana, ward, categories, badges, status, created_at, photo_url')
+      .select('volunteer_id, name, name_bn, gender, thana, ward, categories, badges, status, created_at, photo_url')
       .eq('volunteer_id', id)
       .eq('is_active', true)
       .single();
@@ -79,6 +86,10 @@ export async function GET(request: NextRequest) {
         volunteer_id: volunteer.volunteer_id,
         name: volunteer.name,
         name_bn: volunteer.name_bn,
+        gender: volunteer.gender ? {
+          key: volunteer.gender,
+          label: genderLabels[volunteer.gender] || { en: volunteer.gender, bn: volunteer.gender }
+        } : null,
         thana: {
           key: volunteer.thana,
           label: thanaLabels[volunteer.thana] || { en: volunteer.thana, bn: volunteer.thana }

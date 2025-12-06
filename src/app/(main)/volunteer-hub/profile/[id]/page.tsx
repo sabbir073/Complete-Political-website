@@ -12,6 +12,10 @@ interface VolunteerProfile {
   volunteer_id: string;
   name: string;
   name_bn?: string;
+  gender?: {
+    key: string;
+    label: { en: string; bn: string };
+  };
   thana: {
     key: string;
     label: { en: string; bn: string };
@@ -42,6 +46,7 @@ const translations = {
     backToHub: 'Back to Volunteer Hub',
     volunteerId: 'Volunteer ID',
     name: 'Name',
+    gender: 'Gender',
     thana: 'Thana',
     location: 'Location',
     ward: 'Ward',
@@ -72,6 +77,7 @@ const translations = {
     backToHub: 'ভলান্টিয়ার হাবে ফিরুন',
     volunteerId: 'স্বেচ্ছাসেবক আইডি',
     name: 'নাম',
+    gender: 'লিঙ্গ',
     thana: 'থানা',
     location: 'অবস্থান',
     ward: 'ওয়ার্ড',
@@ -277,7 +283,7 @@ export default function VolunteerProfilePage() {
   const statusInfo = getStatusInfo(volunteer.status);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 overflow-x-hidden">
       <div className="max-w-4xl mx-auto">
         {/* Back link */}
         <Link
@@ -328,6 +334,19 @@ export default function VolunteerProfilePage() {
                   {volunteer.volunteer_id}
                 </p>
               </div>
+
+              {/* Gender */}
+              {volunteer.gender && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <span className="text-2xl">{volunteer.gender.key === 'male' ? '👨' : volunteer.gender.key === 'female' ? '👩' : '🧑'}</span>
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t.gender}</p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {language === 'bn' ? volunteer.gender.label.bn : volunteer.gender.label.en}
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Location */}
               <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
@@ -399,7 +418,7 @@ export default function VolunteerProfilePage() {
           </div>
 
           {/* ID Card Preview & Download */}
-          <div>
+          <div className="overflow-x-auto">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               {t.downloadCard}
             </h2>
@@ -409,6 +428,7 @@ export default function VolunteerProfilePage() {
               ref={cardRef}
               style={{
                 width: '350px',
+                maxWidth: '100%',
                 backgroundColor: '#ffffff',
                 borderRadius: '12px',
                 overflow: 'hidden',
@@ -487,12 +507,16 @@ export default function VolunteerProfilePage() {
                       </p>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '11px' }}>
-                      <div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', fontSize: '11px' }}>
+                      <div style={{ flex: '1 1 60px' }}>
+                        <p style={{ lineHeight: '1.4', color: '#6b7280', margin: 0, paddingBottom: '2px' }}>{t.gender}</p>
+                        <p style={{ fontWeight: 500, lineHeight: '1.4', color: '#111827', margin: 0, paddingBottom: '2px' }}>{volunteer.gender?.label.en || '-'}</p>
+                      </div>
+                      <div style={{ flex: '1 1 60px' }}>
                         <p style={{ lineHeight: '1.4', color: '#6b7280', margin: 0, paddingBottom: '2px' }}>{t.thana}</p>
                         <p style={{ fontWeight: 500, lineHeight: '1.4', color: '#111827', margin: 0, paddingBottom: '2px' }}>{volunteer.thana.label.en}</p>
                       </div>
-                      <div>
+                      <div style={{ flex: '1 1 60px' }}>
                         <p style={{ lineHeight: '1.4', color: '#6b7280', margin: 0, paddingBottom: '2px' }}>{t.ward}</p>
                         <p style={{ fontWeight: 500, lineHeight: '1.4', color: '#111827', margin: 0, paddingBottom: '2px' }}>Ward {volunteer.ward}</p>
                       </div>
@@ -532,6 +556,7 @@ export default function VolunteerProfilePage() {
             <button
               onClick={downloadIdCard}
               disabled={downloading}
+              style={{ maxWidth: '350px' }}
               className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {downloading ? (

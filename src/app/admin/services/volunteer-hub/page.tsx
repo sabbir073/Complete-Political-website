@@ -11,6 +11,7 @@ interface Volunteer {
   phone: string;
   email: string | null;
   age: number;
+  gender: string | null;
   thana: string;
   thana_label: { en: string; bn: string };
   ward: string;
@@ -106,6 +107,7 @@ export default function AdminVolunteerHubPage() {
     name_bn: '',
     phone: '',
     age: 0,
+    gender: '',
     thana: '',
     ward: '',
     address: '',
@@ -247,6 +249,7 @@ export default function AdminVolunteerHubPage() {
       name_bn: selectedVolunteer.name_bn || '',
       phone: selectedVolunteer.phone,
       age: selectedVolunteer.age,
+      gender: selectedVolunteer.gender || '',
       thana: selectedVolunteer.thana,
       ward: selectedVolunteer.ward,
       address: selectedVolunteer.address,
@@ -653,10 +656,14 @@ export default function AdminVolunteerHubPage() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className={`text-xs font-medium uppercase ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Age</label>
                     <p className={isDark ? 'text-white' : 'text-gray-900'}>{selectedVolunteer.age}</p>
+                  </div>
+                  <div>
+                    <label className={`text-xs font-medium uppercase ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Gender</label>
+                    <p className={isDark ? 'text-white' : 'text-gray-900'}>{selectedVolunteer.gender ? selectedVolunteer.gender.charAt(0).toUpperCase() + selectedVolunteer.gender.slice(1) : '-'}</p>
                   </div>
                   <div>
                     <label className={`text-xs font-medium uppercase ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Ward</label>
@@ -906,7 +913,7 @@ export default function AdminVolunteerHubPage() {
                   className={`w-full px-3 py-2 rounded-lg border ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Age</label>
                   <input
@@ -915,6 +922,19 @@ export default function AdminVolunteerHubPage() {
                     onChange={(e) => setEditForm({ ...editForm, age: parseInt(e.target.value) || 0 })}
                     className={`w-full px-3 py-2 rounded-lg border ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
                   />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Gender</label>
+                  <select
+                    value={editForm.gender}
+                    onChange={(e) => setEditForm({ ...editForm, gender: e.target.value })}
+                    className={`w-full px-3 py-2 rounded-lg border ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
+                  >
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
                 <div>
                   <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Ward</label>

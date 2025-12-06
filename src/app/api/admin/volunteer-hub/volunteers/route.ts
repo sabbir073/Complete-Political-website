@@ -208,7 +208,7 @@ export async function PATCH(request: NextRequest) {
 
       case 'update':
         // General update
-        const allowedFields = ['name', 'name_bn', 'phone', 'age', 'thana', 'ward', 'address', 'categories', 'admin_notes', 'photo_url', 'is_active'];
+        const allowedFields = ['name', 'name_bn', 'phone', 'age', 'gender', 'thana', 'ward', 'address', 'categories', 'admin_notes', 'photo_url', 'is_active'];
         allowedFields.forEach(field => {
           if (data?.[field] !== undefined) {
             updateData[field] = data[field];

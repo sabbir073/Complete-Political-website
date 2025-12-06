@@ -74,6 +74,13 @@ const categoryOptions = [
 // Ward options for Dhaka-18
 const wardOptions = ['01', '17', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '53', '54'];
 
+// Gender options
+const genderOptions = [
+  { value: 'male', label: { en: 'Male', bn: 'পুরুষ' } },
+  { value: 'female', label: { en: 'Female', bn: 'মহিলা' } },
+  { value: 'other', label: { en: 'Other', bn: 'অন্যান্য' } },
+];
+
 export default function VolunteerHubPage() {
   const { language } = useLanguage();
   const { theme } = useTheme();
@@ -94,6 +101,7 @@ export default function VolunteerHubPage() {
     name: '',
     phone: '',
     age: '',
+    gender: '',
     thana: '',
     ward: '',
     address: '',
@@ -123,6 +131,8 @@ export default function VolunteerHubPage() {
     name: language === 'bn' ? 'পূর্ণ নাম' : 'Full Name',
     phone: language === 'bn' ? 'ফোন নম্বর' : 'Phone Number',
     age: language === 'bn' ? 'বয়স' : 'Age',
+    gender: language === 'bn' ? 'লিঙ্গ' : 'Gender',
+    selectGender: language === 'bn' ? 'লিঙ্গ নির্বাচন করুন' : 'Select Gender',
     thana: language === 'bn' ? 'থানা' : 'Thana',
     ward: language === 'bn' ? 'ওয়ার্ড' : 'Ward',
     address: language === 'bn' ? 'ঠিকানা' : 'Address',
@@ -283,6 +293,7 @@ export default function VolunteerHubPage() {
       name: '',
       phone: '',
       age: '',
+      gender: '',
       thana: '',
       ward: '',
       address: '',
@@ -520,25 +531,27 @@ export default function VolunteerHubPage() {
                 />
               </div>
 
-              {/* Phone & Age */}
+              {/* Phone */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {t.phone} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="01XXXXXXXXX"
+                  required
+                  className={`w-full px-4 py-3 rounded-xl border ${
+                    isDark
+                      ? 'bg-gray-700 border-gray-600 text-white'
+                      : 'bg-gray-50 border-gray-300 text-gray-900'
+                  }`}
+                />
+              </div>
+
+              {/* Age & Gender */}
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {t.phone} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="01XXXXXXXXX"
-                    required
-                    className={`w-full px-4 py-3 rounded-xl border ${
-                      isDark
-                        ? 'bg-gray-700 border-gray-600 text-white'
-                        : 'bg-gray-50 border-gray-300 text-gray-900'
-                    }`}
-                  />
-                </div>
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     {t.age} <span className="text-red-500">*</span>
@@ -556,6 +569,28 @@ export default function VolunteerHubPage() {
                         : 'bg-gray-50 border-gray-300 text-gray-900'
                     }`}
                   />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {t.gender} <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    required
+                    className={`w-full px-4 py-3 rounded-xl border ${
+                      isDark
+                        ? 'bg-gray-700 border-gray-600 text-white'
+                        : 'bg-gray-50 border-gray-300 text-gray-900'
+                    }`}
+                  >
+                    <option value="">{t.selectGender}</option>
+                    {genderOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>
+                        {language === 'bn' ? opt.label.bn : opt.label.en}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
 

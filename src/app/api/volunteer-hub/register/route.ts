@@ -74,6 +74,9 @@ const validCategories = [
   'youthMobilization'
 ];
 
+// Valid genders
+const validGenders = ['male', 'female', 'other'];
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -82,6 +85,7 @@ export async function POST(request: NextRequest) {
       name,
       phone,
       age,
+      gender,
       thana,
       ward,
       address,
@@ -93,7 +97,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!name || !phone || !age || !thana || !ward || !address || !categories || !why_sm_jahangir) {
+    if (!name || !phone || !age || !gender || !thana || !ward || !address || !categories || !why_sm_jahangir) {
       return NextResponse.json(
         { success: false, error: 'All required fields must be provided' },
         { status: 400 }
@@ -135,6 +139,14 @@ export async function POST(request: NextRequest) {
     if (isNaN(ageNum) || ageNum < 16 || ageNum > 100) {
       return NextResponse.json(
         { success: false, error: 'Age must be between 16 and 100' },
+        { status: 400 }
+      );
+    }
+
+    // Validate gender
+    if (!validGenders.includes(gender)) {
+      return NextResponse.json(
+        { success: false, error: 'Please select a valid gender' },
         { status: 400 }
       );
     }
@@ -194,6 +206,7 @@ export async function POST(request: NextRequest) {
         phone: phone.replace(/[\s-]/g, ''),
         email: email?.trim() || null,
         age: ageNum,
+        gender,
         thana,
         ward: ward.trim(),
         address: address.trim(),
