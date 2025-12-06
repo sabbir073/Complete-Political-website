@@ -46,6 +46,7 @@
     "findBlood": "Find Blood",
     "becomeDonor": "Become a Donor",
     "requestBlood": "Request Blood",
+    "volunteerHub": "Volunteer Hub",
     "publicParticipation": "Public Participation",
     "pollsSurveys": "Polls & Surveys",
     "askMeAnything": "Ask Me Anything",
@@ -384,6 +385,82 @@
       "subtitle": "Get in touch directly for your opinions and suggestions",
       "callButton": "Call Now",
       "homeButton": "Home Page"
+    }
+  },
+  "volunteerHub": {
+    "title": "Volunteer Hub",
+    "subtitle": "Join the Movement for Change in Dhaka-18",
+    "registerBtn": "Become a Volunteer",
+    "searchBtn": "Find Volunteer",
+    "searchPlaceholder": "Enter 8-digit Volunteer ID",
+    "stats": {
+      "total": "Total Volunteers",
+      "verified": "Verified",
+      "pending": "Pending Verification",
+      "thanas": "Thanas Covered"
+    },
+    "form": {
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "age": "Age",
+      "thana": "Thana",
+      "ward": "Ward",
+      "address": "Address",
+      "categories": "Select Categories (at least one)",
+      "whyQuestion": "Why do you think S M Jahangir should be MP for Dhaka-18?",
+      "submit": "Register as Volunteer",
+      "email": "Email (Optional)"
+    },
+    "card": {
+      "title": "Volunteer ID Card",
+      "download": "Download ID Card",
+      "issueDate": "Issue Date",
+      "volunteerIdLabel": "Volunteer ID"
+    },
+    "profile": {
+      "verified": "Verified Volunteer",
+      "pending": "Verification Pending",
+      "memberSince": "Member Since",
+      "categories": "Categories",
+      "location": "Location",
+      "badges": "Badges",
+      "downloadCard": "Download ID Card"
+    },
+    "categories": {
+      "socialActivism": "Social Activism",
+      "disasterManagement": "Disaster Management",
+      "socialMediaActivism": "Social Media Activism",
+      "creativeWriting": "Creative Writing",
+      "itSupport": "IT Support",
+      "healthcareSupport": "Healthcare Support",
+      "educationTutoring": "Education & Tutoring",
+      "legalAid": "Legal Aid",
+      "eventManagement": "Event Management",
+      "securityDiscipline": "Security & Discipline",
+      "transportationLogistics": "Transportation & Logistics",
+      "mediaPhotography": "Media & Photography",
+      "financeAccounting": "Finance & Accounting",
+      "womensAffairs": "Women's Affairs",
+      "youthMobilization": "Youth Mobilization"
+    },
+    "thanas": {
+      "uttaraEast": "Uttara East",
+      "uttaraWest": "Uttara West",
+      "turag": "Turag",
+      "dakshinkhan": "Dakshinkhan",
+      "uttarkhan": "Uttarkhan",
+      "khilkhet": "Khilkhet",
+      "airport": "Airport",
+      "vatara": "Vatara"
+    },
+    "success": {
+      "title": "Registration Successful!",
+      "message": "Welcome to the Volunteer Hub. Your unique Volunteer ID is:",
+      "saveId": "Please save this ID. You can use it to access your profile and download your ID card anytime."
+    },
+    "search": {
+      "notFound": "No volunteer found with this ID",
+      "enterValidId": "Please enter a valid 8-digit Volunteer ID"
     }
   }
 }

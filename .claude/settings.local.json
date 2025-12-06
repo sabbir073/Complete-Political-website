@@ -59,7 +59,9 @@
       "Bash(ls:*)",
       "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\abc (1).svg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\dhaka-18-map.svg\")",
       "Bash(awk:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

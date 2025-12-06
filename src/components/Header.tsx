@@ -60,6 +60,7 @@ const menuItems = [
         ],
       },
       { href: "/blood-hub", key: "bloodHub" },
+      { href: "/volunteer-hub", key: "volunteerHub" },
       {
         href: "/participation",
         key: "publicParticipation",
@@ -67,7 +68,6 @@ const menuItems = [
           { href: "/polls", key: "pollsSurveys" },
           { href: "/ama", key: "askMeAnything" },
           { href: "/forum", key: "communityForum" },
-          { href: "/volunteer", key: "volunteer" },
         ],
       },
       {

@@ -46,6 +46,7 @@
     "findBlood": "রক্ত খুঁজুন",
     "becomeDonor": "রক্তদাতা হন",
     "requestBlood": "রক্তের অনুরোধ",
+    "volunteerHub": "স্বেচ্ছাসেবক হাব",
     "publicParticipation": "জন অংশগ্রহণ",
     "pollsSurveys": "পোল ও সার্ভে",
     "askMeAnything": "প্রশ্নোত্তর",
@@ -384,6 +385,82 @@
       "subtitle": "আপনার মতামত ও পরামর্শের জন্য সরাসরি যোগাযোগ করুন",
       "callButton": "ফোন করুন",
       "homeButton": "হোম পেজ"
+    }
+  },
+  "volunteerHub": {
+    "title": "স্বেচ্ছাসেবক হাব",
+    "subtitle": "ঢাকা-১৮ এর পরিবর্তনের আন্দোলনে যোগ দিন",
+    "registerBtn": "স্বেচ্ছাসেবক হন",
+    "searchBtn": "স্বেচ্ছাসেবক খুঁজুন",
+    "searchPlaceholder": "৮ সংখ্যার স্বেচ্ছাসেবক আইডি দিন",
+    "stats": {
+      "total": "মোট স্বেচ্ছাসেবক",
+      "verified": "যাচাইকৃত",
+      "pending": "যাচাই অপেক্ষমান",
+      "thanas": "থানা কভারেজ"
+    },
+    "form": {
+      "name": "পূর্ণ নাম",
+      "phone": "ফোন নম্বর",
+      "age": "বয়স",
+      "thana": "থানা",
+      "ward": "ওয়ার্ড",
+      "address": "ঠিকানা",
+      "categories": "ক্যাটাগরি নির্বাচন করুন (অন্তত একটি)",
+      "whyQuestion": "আপনি কেন মনে করেন এস এম জাহাঙ্গীর ঢাকা-১৮ এর এমপি হওয়া উচিত?",
+      "submit": "স্বেচ্ছাসেবক হিসেবে নিবন্ধন করুন",
+      "email": "ইমেইল (ঐচ্ছিক)"
+    },
+    "card": {
+      "title": "স্বেচ্ছাসেবক পরিচয়পত্র",
+      "download": "পরিচয়পত্র ডাউনলোড করুন",
+      "issueDate": "ইস্যু তারিখ",
+      "volunteerIdLabel": "স্বেচ্ছাসেবক আইডি"
+    },
+    "profile": {
+      "verified": "যাচাইকৃত স্বেচ্ছাসেবক",
+      "pending": "যাচাই অপেক্ষমান",
+      "memberSince": "সদস্য হয়েছেন",
+      "categories": "ক্যাটাগরি",
+      "location": "অবস্থান",
+      "badges": "ব্যাজ",
+      "downloadCard": "পরিচয়পত্র ডাউনলোড করুন"
+    },
+    "categories": {
+      "socialActivism": "সামাজিক সক্রিয়তা",
+      "disasterManagement": "দুর্যোগ ব্যবস্থাপনা",
+      "socialMediaActivism": "সোশ্যাল মিডিয়া সক্রিয়তা",
+      "creativeWriting": "সৃজনশীল লেখালেখি",
+      "itSupport": "আইটি সহায়তা",
+      "healthcareSupport": "স্বাস্থ্যসেবা সহায়তা",
+      "educationTutoring": "শিক্ষা ও টিউটরিং",
+      "legalAid": "আইনি সহায়তা",
+      "eventManagement": "ইভেন্ট ম্যানেজমেন্ট",
+      "securityDiscipline": "নিরাপত্তা ও শৃঙ্খলা",
+      "transportationLogistics": "পরিবহন ও লজিস্টিক্স",
+      "mediaPhotography": "মিডিয়া ও ফটোগ্রাফি",
+      "financeAccounting": "অর্থ ও হিসাব",
+      "womensAffairs": "নারী বিষয়ক",
+      "youthMobilization": "যুব সংগঠন"
+    },
+    "thanas": {
+      "uttaraEast": "উত্তরা পূর্ব",
+      "uttaraWest": "উত্তরা পশ্চিম",
+      "turag": "তুরাগ",
+      "dakshinkhan": "দক্ষিণখান",
+      "uttarkhan": "উত্তরখান",
+      "khilkhet": "খিলক্ষেত",
+      "airport": "বিমানবন্দর",
+      "vatara": "ভাটারা"
+    },
+    "success": {
+      "title": "নিবন্ধন সফল!",
+      "message": "স্বেচ্ছাসেবক হাবে স্বাগতম। আপনার অনন্য স্বেচ্ছাসেবক আইডি হলো:",
+      "saveId": "এই আইডি সংরক্ষণ করুন। আপনি যেকোনো সময় আপনার প্রোফাইল দেখতে এবং পরিচয়পত্র ডাউনলোড করতে এটি ব্যবহার করতে পারবেন।"
+    },
+    "search": {
+      "notFound": "এই আইডি দিয়ে কোনো স্বেচ্ছাসেবক পাওয়া যায়নি",
+      "enterValidId": "অনুগ্রহ করে একটি বৈধ ৮ সংখ্যার স্বেচ্ছাসেবক আইডি দিন"
     }
   }
 }
