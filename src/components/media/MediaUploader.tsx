@@ -40,14 +40,14 @@ export default function MediaUploader({
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  // S3 Native Multipart upload for large files
-  // Uses presigned URLs to upload directly to S3 - works in serverless environments
+  // S3 Multipart upload for large files
+  // Uses server-proxied part uploads to avoid CORS issues with ETag headers
   const uploadFileMultipart = async (
     file: File,
     uploadId: string,
     onProgress: (progress: number) => void
   ): Promise<MediaItem> => {
-    // Step 1: Initiate multipart upload and get presigned URLs
+    // Step 1: Initiate multipart upload
     const initiateResponse = await fetch('/api/media/upload/multipart/initiate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -70,41 +70,43 @@ export default function MediaUploader({
       throw new Error(initData.error || 'Failed to initiate upload');
     }
 
-    const { uploadId: s3UploadId, s3Key, urls, totalParts, partSize, filename, originalFilename, fileType, type } = initData;
+    const { uploadId: s3UploadId, s3Key, totalParts, partSize, filename, originalFilename, fileType, type } = initData;
     const completedParts: { PartNumber: number; ETag: string }[] = [];
 
     try {
-      // Step 2: Upload parts directly to S3 using presigned URLs
+      // Step 2: Upload parts through server (server proxies to S3 and returns ETag)
       for (let i = 0; i < totalParts; i++) {
         const partNumber = i + 1;
         const start = i * partSize;
         const end = Math.min(start + partSize, file.size);
         const partData = file.slice(start, end);
 
-        const urlInfo = urls.find((u: { partNumber: number; signedUrl: string | null }) => u.partNumber === partNumber);
-        if (!urlInfo || !urlInfo.signedUrl) {
-          throw new Error(`No upload URL for part ${partNumber}`);
-        }
+        // Upload part through our server API
+        const formData = new FormData();
+        formData.append('file', partData);
+        formData.append('uploadId', s3UploadId);
+        formData.append('s3Key', s3Key);
+        formData.append('partNumber', partNumber.toString());
 
-        // Upload directly to S3
-        const uploadResponse = await fetch(urlInfo.signedUrl, {
-          method: 'PUT',
-          body: partData,
+        const partResponse = await fetch('/api/media/upload/multipart/part', {
+          method: 'POST',
+          body: formData,
         });
 
-        if (!uploadResponse.ok) {
-          throw new Error(`Failed to upload part ${partNumber}: ${uploadResponse.statusText}`);
+        if (!partResponse.ok) {
+          const error = await partResponse.json().catch(() => ({ error: 'Failed to upload part' }));
+          throw new Error(error.error || `Failed to upload part ${partNumber}`);
         }
 
-        // Get ETag from response headers (required for completing multipart upload)
-        const etag = uploadResponse.headers.get('ETag');
-        if (!etag) {
-          throw new Error(`No ETag returned for part ${partNumber}`);
+        const partResult = await partResponse.json();
+
+        if (!partResult.success) {
+          throw new Error(partResult.error || `Failed to upload part ${partNumber}`);
         }
 
         completedParts.push({
-          PartNumber: partNumber,
-          ETag: etag.replace(/"/g, '') // Remove quotes from ETag
+          PartNumber: partResult.partNumber,
+          ETag: partResult.etag.replace(/"/g, '') // Remove quotes from ETag
         });
 
         // Update progress (90% for parts, 10% for completion)

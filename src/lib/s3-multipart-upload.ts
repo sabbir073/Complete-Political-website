@@ -1,11 +1,14 @@
 /**
- * S3 Native Multipart Upload Utility
+ * S3 Multipart Upload Utility
  *
- * This module provides a unified approach to uploading files using S3's native multipart upload.
+ * This module provides a unified approach to uploading files using S3's multipart upload.
  * It works in serverless environments and handles files of any size efficiently.
  *
  * For files < 1MB: Uses direct upload (single request)
- * For files >= 1MB: Uses S3 multipart with presigned URLs (direct to S3)
+ * For files >= 1MB: Uses S3 multipart with server-proxied part uploads
+ *
+ * Note: We use server-proxied uploads instead of presigned URLs to avoid CORS issues
+ * with ETag headers (browsers can't read ETag from S3 CORS responses without config)
  */
 
 // S3 multipart minimum part size (5MB, except last part)
@@ -19,6 +22,8 @@ export interface UploadConfig {
   regularEndpoint: string;
   // API endpoint for multipart initiate
   initiateEndpoint: string;
+  // API endpoint for uploading individual parts
+  partEndpoint: string;
   // API endpoint for multipart complete
   completeEndpoint: string;
 }
@@ -132,8 +137,8 @@ async function uploadDirect(
 }
 
 /**
- * S3 Multipart upload for large files (>= 5MB)
- * Uses presigned URLs to upload directly to S3
+ * S3 Multipart upload for large files (>= 1MB)
+ * Uses server-proxied part uploads to avoid CORS issues with ETag headers
  */
 async function uploadMultipart(
   file: File | Blob,
@@ -141,7 +146,7 @@ async function uploadMultipart(
   config: UploadConfig,
   onProgress?: (progress: number) => void
 ): Promise<UploadResult> {
-  // Step 1: Initiate multipart upload and get presigned URLs
+  // Step 1: Initiate multipart upload
   const initiateResponse = await fetch(config.initiateEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -167,7 +172,6 @@ async function uploadMultipart(
   const {
     uploadId: s3UploadId,
     s3Key,
-    urls,
     totalParts,
     partSize,
     filename: serverFilename,
@@ -179,40 +183,39 @@ async function uploadMultipart(
   const completedParts: { PartNumber: number; ETag: string }[] = [];
 
   try {
-    // Step 2: Upload parts directly to S3 using presigned URLs
+    // Step 2: Upload parts through server (server proxies to S3 and returns ETag)
     for (let i = 0; i < totalParts; i++) {
       const partNumber = i + 1;
       const start = i * partSize;
       const end = Math.min(start + partSize, file.size);
       const partData = file.slice(start, end);
 
-      const urlInfo = urls.find(
-        (u: { partNumber: number; signedUrl: string | null }) => u.partNumber === partNumber
-      );
+      // Upload part through our server API
+      const formData = new FormData();
+      formData.append('file', partData);
+      formData.append('uploadId', s3UploadId);
+      formData.append('s3Key', s3Key);
+      formData.append('partNumber', partNumber.toString());
 
-      if (!urlInfo || !urlInfo.signedUrl) {
-        throw new Error(`No upload URL for part ${partNumber}`);
-      }
-
-      // Upload directly to S3
-      const uploadResponse = await fetch(urlInfo.signedUrl, {
-        method: 'PUT',
-        body: partData,
+      const partResponse = await fetch(config.partEndpoint, {
+        method: 'POST',
+        body: formData,
       });
 
-      if (!uploadResponse.ok) {
-        throw new Error(`Failed to upload part ${partNumber}: ${uploadResponse.statusText}`);
+      if (!partResponse.ok) {
+        const error = await partResponse.json().catch(() => ({ error: 'Failed to upload part' }));
+        throw new Error(error.error || `Failed to upload part ${partNumber}`);
       }
 
-      // Get ETag from response headers (required for completing multipart upload)
-      const etag = uploadResponse.headers.get('ETag');
-      if (!etag) {
-        throw new Error(`No ETag returned for part ${partNumber}`);
+      const partResult = await partResponse.json();
+
+      if (!partResult.success) {
+        throw new Error(partResult.error || `Failed to upload part ${partNumber}`);
       }
 
       completedParts.push({
-        PartNumber: partNumber,
-        ETag: etag.replace(/"/g, ''), // Remove quotes from ETag
+        PartNumber: partResult.partNumber,
+        ETag: partResult.etag.replace(/"/g, ''), // Remove quotes from ETag
       });
 
       // Update progress (90% for parts, 10% for completion)
@@ -284,6 +287,7 @@ async function uploadMultipart(
 export const mediaUploadConfig: UploadConfig = {
   regularEndpoint: '/api/media/upload',
   initiateEndpoint: '/api/media/upload/multipart/initiate',
+  partEndpoint: '/api/media/upload/multipart/part',
   completeEndpoint: '/api/media/upload/multipart/complete',
 };
 
@@ -298,6 +302,7 @@ export function uploadMediaFile(
 export const complaintsUploadConfig: UploadConfig = {
   regularEndpoint: '/api/complaints/upload',
   initiateEndpoint: '/api/complaints/upload/multipart/initiate',
+  partEndpoint: '/api/complaints/upload/multipart/part',
   completeEndpoint: '/api/complaints/upload/multipart/complete',
 };
 
@@ -312,6 +317,7 @@ export function uploadComplaintFile(
 export const emergencyUploadConfig: UploadConfig = {
   regularEndpoint: '/api/emergency/upload',
   initiateEndpoint: '/api/emergency/upload/multipart/initiate',
+  partEndpoint: '/api/emergency/upload/multipart/part',
   completeEndpoint: '/api/emergency/upload/multipart/complete',
 };
 
@@ -327,6 +333,7 @@ export function uploadEmergencyFile(
 export const volunteerUploadConfig: UploadConfig = {
   regularEndpoint: '/api/volunteer-hub/upload',
   initiateEndpoint: '/api/volunteer-hub/upload/multipart/initiate',
+  partEndpoint: '/api/volunteer-hub/upload/multipart/part',
   completeEndpoint: '/api/volunteer-hub/upload/multipart/complete',
 };
 
