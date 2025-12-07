@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
+import { uploadFile } from '@/lib/chunked-upload';
 
 interface Volunteer {
   id: string;
@@ -115,6 +116,7 @@ export default function AdminVolunteerHubPage() {
     photo_url: '',
   });
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [photoUploadProgress, setPhotoUploadProgress] = useState(0);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -268,32 +270,40 @@ export default function AdminVolunteerHubPage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB');
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image size must be less than 10MB');
       return;
     }
 
     setPhotoUploading(true);
+    setPhotoUploadProgress(0);
 
     try {
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', file);
+      // Use chunked upload for larger files
+      const result = await uploadFile(
+        file,
+        file.name,
+        {
+          regular: '/api/volunteer-hub/upload',
+          chunk: '/api/volunteer-hub/upload/chunk',
+          complete: '/api/volunteer-hub/upload/complete',
+        },
+        {
+          onProgress: (progress) => setPhotoUploadProgress(progress),
+          threshold: 512 * 1024, // Use chunked upload for files > 512KB
+        }
+      );
 
-      const res = await fetch('/api/volunteer-hub/upload', {
-        method: 'POST',
-        body: uploadFormData
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        setEditForm(prev => ({ ...prev, photo_url: data.url }));
+      if (result.success && result.url) {
+        setEditForm(prev => ({ ...prev, photo_url: result.url! }));
       } else {
-        alert(data.error || 'Failed to upload photo');
+        alert(result.error || 'Failed to upload photo');
       }
     } catch {
       alert('Failed to upload photo');
     } finally {
       setPhotoUploading(false);
+      setPhotoUploadProgress(0);
     }
   };
 
@@ -981,18 +991,28 @@ export default function AdminVolunteerHubPage() {
                       </div>
                     )}
                   </div>
-                  <label className={`cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm ${
-                    isDark ? 'border-gray-600 bg-gray-700 text-gray-300' : 'border-gray-300 bg-white text-gray-700'
-                  } ${photoUploading ? 'opacity-50' : ''}`}>
-                    {photoUploading ? 'Uploading...' : 'Change Photo'}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      disabled={photoUploading}
-                      className="hidden"
-                    />
-                  </label>
+                  <div className="flex-1">
+                    <label className={`cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-sm ${
+                      isDark ? 'border-gray-600 bg-gray-700 text-gray-300' : 'border-gray-300 bg-white text-gray-700'
+                    } ${photoUploading ? 'opacity-50' : ''}`}>
+                      {photoUploading ? `Uploading... ${photoUploadProgress}%` : 'Change Photo'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        disabled={photoUploading}
+                        className="hidden"
+                      />
+                    </label>
+                    {photoUploading && (
+                      <div className="mt-2 w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-green-500 transition-all duration-300"
+                          style={{ width: `${photoUploadProgress}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <div>

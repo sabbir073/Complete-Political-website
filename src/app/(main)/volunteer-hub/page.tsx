@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
+import { uploadFile } from '@/lib/chunked-upload';
 
 // Types
 interface ThanaStats {
@@ -115,6 +116,7 @@ export default function VolunteerHubPage() {
   const [registrationSuccess, setRegistrationSuccess] = useState<{ volunteer_id: string } | null>(null);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoUploadProgress, setPhotoUploadProgress] = useState(0);
 
   // Translations
   const t = {
@@ -221,13 +223,14 @@ export default function VolunteerHubPage() {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setFormError(language === 'bn' ? 'ছবির সাইজ ৫MB এর বেশি হতে পারবে না' : 'Image size must be less than 5MB');
+    // Validate file size (max 10MB for chunked upload)
+    if (file.size > 10 * 1024 * 1024) {
+      setFormError(language === 'bn' ? 'ছবির সাইজ ১০MB এর বেশি হতে পারবে না' : 'Image size must be less than 10MB');
       return;
     }
 
     setPhotoUploading(true);
+    setPhotoUploadProgress(0);
     setFormError('');
 
     try {
@@ -238,20 +241,25 @@ export default function VolunteerHubPage() {
       };
       reader.readAsDataURL(file);
 
-      // Upload to S3
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', file);
+      // Upload using chunked upload for larger files
+      const result = await uploadFile(
+        file,
+        file.name,
+        {
+          regular: '/api/volunteer-hub/upload',
+          chunk: '/api/volunteer-hub/upload/chunk',
+          complete: '/api/volunteer-hub/upload/complete',
+        },
+        {
+          onProgress: (progress) => setPhotoUploadProgress(progress),
+          threshold: 512 * 1024, // Use chunked upload for files > 512KB
+        }
+      );
 
-      const res = await fetch('/api/volunteer-hub/upload', {
-        method: 'POST',
-        body: uploadFormData
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        setFormData(prev => ({ ...prev, photo_url: data.url }));
+      if (result.success && result.url) {
+        setFormData(prev => ({ ...prev, photo_url: result.url! }));
       } else {
-        setFormError(data.error || (language === 'bn' ? 'ছবি আপলোড ব্যর্থ হয়েছে' : 'Failed to upload photo'));
+        setFormError(result.error || (language === 'bn' ? 'ছবি আপলোড ব্যর্থ হয়েছে' : 'Failed to upload photo'));
         setPhotoPreview(null);
       }
     } catch {
@@ -259,6 +267,7 @@ export default function VolunteerHubPage() {
       setPhotoPreview(null);
     } finally {
       setPhotoUploading(false);
+      setPhotoUploadProgress(0);
     }
   };
 
@@ -743,7 +752,7 @@ export default function VolunteerHubPage() {
                       {photoUploading ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                          <span>{t.photoUploading}</span>
+                          <span>{t.photoUploading} {photoUploadProgress}%</span>
                         </>
                       ) : (
                         <>
@@ -761,8 +770,16 @@ export default function VolunteerHubPage() {
                         className="hidden"
                       />
                     </label>
+                    {photoUploading && (
+                      <div className="mt-2 w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-green-500 transition-all duration-300"
+                          style={{ width: `${photoUploadProgress}%` }}
+                        />
+                      </div>
+                    )}
                     <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                      {language === 'bn' ? 'সর্বোচ্চ ৫MB' : 'Max 5MB'}
+                      {language === 'bn' ? 'সর্বোচ্চ ১০MB' : 'Max 10MB'}
                     </p>
                   </div>
                 </div>

@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import { createClient } from '@/lib/supabase/server';
 import { createServiceClient } from '@/lib/supabase/service';
 import { uploadToS3, validateAWSConfig } from '@/lib/aws-s3';
@@ -8,37 +9,45 @@ import {
   generateS3Key,
   fileToBuffer
 } from '@/lib/media-utils';
-import { BatchUploadResponse } from '@/types/media.types';
 
-// Next.js 13+ App Router: Use route segment config
-export const maxDuration = 60; // 60 seconds timeout
-export const dynamic = 'force-dynamic';
+export interface UploadResult {
+  filename: string;
+  success: boolean;
+  error?: string;
+  mediaItem?: any;
+}
 
-export async function POST(request: NextRequest) {
+export interface UploadResponse {
+  success: boolean;
+  results: UploadResult[];
+  message: string;
+}
+
+export async function uploadMedia(formData: FormData): Promise<UploadResponse> {
   try {
     // Validate AWS configuration
     try {
       validateAWSConfig();
     } catch (configError) {
-      return NextResponse.json({ 
+      return {
         success: false,
-        message: 'AWS configuration error. Please check environment variables.',
-        error: configError instanceof Error ? configError.message : 'Configuration error'
-      }, { status: 500 });
+        results: [],
+        message: configError instanceof Error ? configError.message : 'AWS configuration error'
+      };
     }
 
     // Use regular client for auth check
     const supabase = await createClient();
-    
+
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
     if (authError || !user) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Unauthorized',
-        error: authError?.message || 'No user found'
-      }, { status: 401 });
+      return {
+        success: false,
+        results: [],
+        message: 'Unauthorized'
+      };
     }
 
     // Use the RPC function to get user role (avoids RLS recursion)
@@ -47,28 +56,28 @@ export async function POST(request: NextRequest) {
 
     // Check if user has permission
     if (!userRole || !['admin', 'moderator'].includes(userRole)) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Insufficient permissions',
-        error: `User role '${userRole}' is not allowed to upload media`
-      }, { status: 403 });
+      return {
+        success: false,
+        results: [],
+        message: 'Insufficient permissions'
+      };
     }
 
     // Use service client for database operations (bypasses RLS)
     const serviceClient = createServiceClient();
 
     // Parse form data
-    const formData = await request.formData();
     const files = formData.getAll('files') as File[];
 
     if (!files || files.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'No files provided' 
-      }, { status: 400 });
+      return {
+        success: false,
+        results: [],
+        message: 'No files provided'
+      };
     }
 
-    const results: BatchUploadResponse['results'] = [];
+    const results: UploadResult[] = [];
 
     // Process each file
     for (const file of files) {
@@ -93,7 +102,7 @@ export async function POST(request: NextRequest) {
 
         // Upload to S3
         const uploadResult = await uploadToS3(buffer, s3Key, file.type);
-        
+
         if (!uploadResult.success) {
           results.push({
             filename: file.name,
@@ -102,15 +111,6 @@ export async function POST(request: NextRequest) {
           });
           continue;
         }
-
-        // Get file dimensions/duration (basic info)
-        let width: number | undefined;
-        let height: number | undefined;
-        let duration: number | undefined;
-
-        // For images, we'll get dimensions on the client side
-        // For videos, we'll get duration on the client side
-        // Server-side media processing can be added later if needed
 
         // Save to database using service client to bypass RLS
         const { data: mediaItem, error: dbError } = await serviceClient
@@ -124,16 +124,12 @@ export async function POST(request: NextRequest) {
             s3_key: s3Key,
             s3_url: uploadResult.s3Url!,
             cloudfront_url: uploadResult.cloudFrontUrl,
-            width,
-            height,
-            duration,
             uploaded_by: user.id
           })
           .select()
           .single();
 
         if (dbError) {
-          
           // Try to clean up S3 file
           try {
             const { deleteFromS3 } = await import('@/lib/aws-s3');
@@ -169,47 +165,18 @@ export async function POST(request: NextRequest) {
     const successCount = results.filter(r => r.success).length;
     const totalCount = results.length;
 
-    const response: BatchUploadResponse = {
+    return {
       success: successCount > 0,
       results,
       message: `${successCount}/${totalCount} files uploaded successfully`
     };
 
-    return NextResponse.json(response);
-
   } catch (error) {
     console.error('Upload error:', error);
-    return NextResponse.json({ 
+    return {
       success: false,
-      message: 'Internal server error',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
-  }
-}
-
-// GET - Get upload status or presigned URL (alternative upload method)
-export async function GET() {
-  try {
-    const supabase = await createClient();
-    
-    // Check authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // This could be used for getting upload progress or presigned URLs
-    // For now, return basic upload configuration
-    return NextResponse.json({
-      maxImageSize: 10 * 1024 * 1024, // 10MB
-      maxVideoSize: 100 * 1024 * 1024, // 100MB
-      supportedImageTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'],
-      supportedVideoTypes: ['video/mp4', 'video/mov', 'video/avi', 'video/quicktime'],
-      awsConfigured: !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY)
-    });
-
-  } catch (error) {
-    console.error('Upload config error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+      results: [],
+      message: error instanceof Error ? error.message : 'Unknown error'
+    };
   }
 }

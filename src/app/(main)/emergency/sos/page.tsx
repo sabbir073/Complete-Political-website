@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
+import { uploadFile } from '@/lib/chunked-upload';
 
 interface LocationData {
     latitude: number;
@@ -37,6 +38,7 @@ export default function EmergencySOSPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
 
     // Refs
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -183,20 +185,29 @@ export default function EmergencySOSPage() {
         setSubmitError(null);
 
         try {
-            // Upload audio if exists
+            // Upload audio if exists using chunked upload for large files
             let audioUrlForDb = null;
             if (audioBlob) {
-                const formData = new FormData();
-                formData.append('file', audioBlob, 'emergency-audio.webm');
+                setUploadProgress(0);
 
-                const uploadResponse = await fetch('/api/emergency/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
+                const uploadResult = await uploadFile(
+                    audioBlob,
+                    'emergency-audio.webm',
+                    {
+                        regular: '/api/emergency/upload',
+                        chunk: '/api/emergency/upload/chunk',
+                        complete: '/api/emergency/upload/complete',
+                    },
+                    {
+                        onProgress: (progress) => setUploadProgress(progress),
+                        threshold: 512 * 1024, // Use chunked upload for files > 512KB
+                    }
+                );
 
-                if (uploadResponse.ok) {
-                    const uploadData = await uploadResponse.json();
-                    audioUrlForDb = uploadData.url;
+                if (uploadResult.success && uploadResult.url) {
+                    audioUrlForDb = uploadResult.url;
+                } else if (!uploadResult.success) {
+                    throw new Error(uploadResult.error || 'Audio upload failed');
                 }
             }
 

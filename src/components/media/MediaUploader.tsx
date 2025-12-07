@@ -7,6 +7,11 @@ import { MediaItem, UploadProgress } from '@/types/media.types';
 import { validateFile, formatFileSize, getImageDimensions, getVideoDuration } from '@/lib/media-utils';
 import { useTheme } from '@/providers/ThemeProvider';
 
+// Chunk size: 512KB (safe for most servers)
+const CHUNK_SIZE = 512 * 1024;
+// Threshold for chunked upload: 1MB
+const CHUNKED_UPLOAD_THRESHOLD = 1 * 1024 * 1024;
+
 interface MediaUploaderProps {
   onUploadComplete?: (mediaItems: MediaItem[]) => void;
   onUploadError?: (error: string) => void;
@@ -29,15 +34,121 @@ export default function MediaUploader({
   const [uploads, setUploads] = useState<UploadProgress[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
+  // Generate unique upload ID
+  const generateUploadId = () => {
+    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
+  // Chunked upload for large files
+  const uploadFileChunked = async (
+    file: File,
+    uploadId: string,
+    onProgress: (progress: number) => void
+  ): Promise<MediaItem> => {
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+    const chunkUploadId = generateUploadId();
+
+    // Upload chunks
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const formData = new FormData();
+      formData.append('chunk', chunk);
+      formData.append('uploadId', chunkUploadId);
+      formData.append('chunkIndex', chunkIndex.toString());
+      formData.append('totalChunks', totalChunks.toString());
+      formData.append('filename', file.name);
+      formData.append('fileType', file.type);
+      formData.append('fileSize', file.size.toString());
+
+      const response = await fetch('/api/media/upload/chunk', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || `Chunk ${chunkIndex} upload failed`);
+      }
+
+      // Update progress
+      const progress = Math.round(((chunkIndex + 1) / totalChunks) * 90); // 90% for chunks
+      onProgress(progress);
+    }
+
+    // Complete the upload
+    const completeResponse = await fetch('/api/media/upload/complete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ uploadId: chunkUploadId })
+    });
+
+    if (!completeResponse.ok) {
+      const error = await completeResponse.json();
+      throw new Error(error.error || 'Failed to complete upload');
+    }
+
+    const result = await completeResponse.json();
+
+    if (!result.success || !result.results[0]?.success) {
+      throw new Error(result.results[0]?.error || result.message || 'Upload failed');
+    }
+
+    onProgress(100);
+    return result.results[0].mediaItem;
+  };
+
+  // Regular upload for small files (using XHR for progress)
+  const uploadFileRegular = async (
+    file: File,
+    onProgress: (progress: number) => void
+  ): Promise<MediaItem> => {
+    const formData = new FormData();
+    formData.append('files', file);
+
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+
+      xhr.upload.addEventListener('progress', (event) => {
+        if (event.lengthComputable) {
+          const progress = Math.round((event.loaded / event.total) * 100);
+          onProgress(progress);
+        }
+      });
+
+      xhr.addEventListener('load', () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const response = JSON.parse(xhr.responseText);
+          if (response.success && response.results[0]?.success) {
+            resolve(response.results[0].mediaItem);
+          } else {
+            reject(new Error(response.results[0]?.error || 'Upload failed'));
+          }
+        } else {
+          reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
+        }
+      });
+
+      xhr.addEventListener('error', () => {
+        reject(new Error('Network error during upload'));
+      });
+
+      xhr.open('POST', '/api/media/upload');
+      xhr.send(formData);
+    });
+  };
+
   const uploadFiles = useCallback(async (uploadItems: UploadProgress[]) => {
     const completedUploads: MediaItem[] = [];
 
     for (let i = 0; i < uploadItems.length; i++) {
       const upload = uploadItems[i];
-      
+
       try {
         // Update status to uploading
-        const startingUploads = uploadItems.map(u => 
+        const startingUploads = uploadItems.map(u =>
           u.id === upload.id ? { ...u, status: 'uploading' as const, progress: 0 } : u
         );
         setUploads(startingUploads);
@@ -64,48 +175,24 @@ export default function MediaUploader({
           }
         }
 
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('files', upload.file);
+        // Progress callback
+        const updateProgress = (progress: number) => {
+          const progressUploads = uploadItems.map(u =>
+            u.id === upload.id ? { ...u, progress, status: 'uploading' as const } : u
+          );
+          setUploads(progressUploads);
+          onUploadProgress?.(progressUploads);
+        };
 
-        // Upload with progress tracking
-        const xhr = new XMLHttpRequest();
-        
-        const uploadPromise = new Promise<MediaItem>((resolve, reject) => {
-          xhr.upload.addEventListener('progress', (event) => {
-            if (event.lengthComputable) {
-              const progress = Math.round((event.loaded / event.total) * 100);
-              const progressUploads = uploadItems.map(u => 
-                u.id === upload.id ? { ...u, progress, status: 'uploading' as const } : u
-              );
-              setUploads(progressUploads);
-              onUploadProgress?.(progressUploads);
-            }
-          });
-
-          xhr.addEventListener('load', () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              const response = JSON.parse(xhr.responseText);
-              if (response.success && response.results[0]?.success) {
-                resolve(response.results[0].mediaItem);
-              } else {
-                reject(new Error(response.results[0]?.error || 'Upload failed'));
-              }
-            } else {
-              reject(new Error(`HTTP ${xhr.status}: ${xhr.statusText}`));
-            }
-          });
-
-          xhr.addEventListener('error', () => {
-            reject(new Error('Network error during upload'));
-          });
-
-          xhr.open('POST', '/api/media/upload');
-          xhr.send(formData);
-        });
-
-        // Process upload
-        const mediaItem = await uploadPromise;
+        // Choose upload method based on file size
+        let mediaItem: MediaItem;
+        if (upload.file.size > CHUNKED_UPLOAD_THRESHOLD) {
+          // Use chunked upload for large files
+          mediaItem = await uploadFileChunked(upload.file, upload.id, updateProgress);
+        } else {
+          // Use regular upload for small files
+          mediaItem = await uploadFileRegular(upload.file, updateProgress);
+        }
 
         // Update metadata if we got dimensions/duration
         if ((width && height) || duration) {
@@ -124,12 +211,12 @@ export default function MediaUploader({
         }
 
         // Update status to completed
-        const finishedUploads = uploadItems.map(u => 
-          u.id === upload.id ? { 
-            ...u, 
-            status: 'completed' as const, 
-            progress: 100, 
-            mediaItem 
+        const finishedUploads = uploadItems.map(u =>
+          u.id === upload.id ? {
+            ...u,
+            status: 'completed' as const,
+            progress: 100,
+            mediaItem
           } : u
         );
         setUploads(finishedUploads);
@@ -139,13 +226,13 @@ export default function MediaUploader({
 
       } catch (error) {
         console.error(`Upload failed for ${upload.file.name}:`, error);
-        
+
         // Update status to error
-        const errorUploads = uploadItems.map(u => 
-          u.id === upload.id ? { 
-            ...u, 
-            status: 'error' as const, 
-            error: error instanceof Error ? error.message : 'Upload failed' 
+        const errorUploads = uploadItems.map(u =>
+          u.id === upload.id ? {
+            ...u,
+            status: 'error' as const,
+            error: error instanceof Error ? error.message : 'Upload failed'
           } : u
         );
         setUploads(errorUploads);
@@ -156,7 +243,7 @@ export default function MediaUploader({
     }
 
     setIsUploading(false);
-    
+
     if (completedUploads.length > 0) {
       onUploadComplete?.(completedUploads);
     }
@@ -225,17 +312,17 @@ export default function MediaUploader({
         {...getRootProps()}
         className={`
           border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200
-          ${isDragActive 
-            ? 'border-blue-500 bg-blue-500/10' 
-            : isDark 
-              ? 'border-gray-600 hover:border-gray-500 bg-gray-800' 
+          ${isDragActive
+            ? 'border-blue-500 bg-blue-500/10'
+            : isDark
+              ? 'border-gray-600 hover:border-gray-500 bg-gray-800'
               : 'border-gray-300 hover:border-gray-400 bg-gray-50'
           }
           ${isUploading ? 'cursor-not-allowed opacity-50' : ''}
         `}
       >
         <input {...getInputProps()} />
-        
+
         <div className="space-y-4">
           <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
             isDark ? 'bg-gray-700' : 'bg-gray-200'
@@ -244,13 +331,13 @@ export default function MediaUploader({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
           </div>
-          
+
           <div>
             <p className={`text-lg font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {isDragActive ? 'Drop files here' : isUploading ? 'Uploading...' : 'Drop files or click to browse'}
             </p>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Images up to 10MB, Videos up to 100MB
+              Images up to 20MB, Videos up to 100MB
             </p>
             <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
               Supports: JPG, PNG, WebP, GIF, MP4, MOV, AVI
@@ -265,7 +352,7 @@ export default function MediaUploader({
           <h4 className={`font-medium mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Upload Progress ({uploads.filter(u => u.status === 'completed').length}/{uploads.length})
           </h4>
-          
+
           <div className="space-y-3">
             {uploads.map((upload) => (
               <div key={upload.id} className={`p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-white'}`}>
@@ -292,17 +379,18 @@ export default function MediaUploader({
                         </svg>
                       )}
                     </div>
-                    
+
                     <div className="flex-1">
                       <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {upload.file.name}
                       </p>
                       <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         {formatFileSize(upload.file.size)}
+                        {upload.file.size > CHUNKED_UPLOAD_THRESHOLD && ' (chunked)'}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     {upload.status === 'error' && (
                       <button
@@ -322,22 +410,22 @@ export default function MediaUploader({
                     </button>
                   </div>
                 </div>
-                
+
                 {/* Progress Bar */}
                 {(upload.status === 'uploading' || upload.status === 'pending') && (
                   <div className={`w-full h-2 rounded-full overflow-hidden ${isDark ? 'bg-gray-600' : 'bg-gray-200'}`}>
-                    <div 
+                    <div
                       className="h-full bg-blue-500 transition-all duration-300"
                       style={{ width: `${upload.progress}%` }}
                     />
                   </div>
                 )}
-                
+
                 {/* Error Message */}
                 {upload.status === 'error' && upload.error && (
                   <p className="text-xs text-red-500 mt-1">{upload.error}</p>
                 )}
-                
+
                 {/* Success Message */}
                 {upload.status === 'completed' && (
                   <p className="text-xs text-green-500 mt-1">Upload completed successfully</p>
