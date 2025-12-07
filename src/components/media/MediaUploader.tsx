@@ -10,8 +10,8 @@ import { useTheme } from '@/providers/ThemeProvider';
 // S3 multipart upload settings
 // Minimum part size for S3 multipart is 5MB (except last part)
 const S3_PART_SIZE = 5 * 1024 * 1024;
-// Threshold for multipart upload: 5MB (anything larger uses multipart)
-const MULTIPART_UPLOAD_THRESHOLD = 5 * 1024 * 1024;
+// Threshold for multipart upload: 1MB (anything larger uses multipart)
+const MULTIPART_UPLOAD_THRESHOLD = 1 * 1024 * 1024;
 
 interface MediaUploaderProps {
   onUploadComplete?: (mediaItems: MediaItem[]) => void;
