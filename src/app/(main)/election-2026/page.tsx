@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 
 // Random profile images of SM Jahangir
 const profileImages = [
@@ -183,7 +183,8 @@ export default function Election2026Page() {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        logging: false,
       });
 
       const link = document.createElement('a');
@@ -375,7 +376,7 @@ export default function Election2026Page() {
                       {/* Top Bar with BNP Logo and Slogan */}
                       <div style={{
                         background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                        padding: '10px 14px',
+                        padding: '2px 14px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
@@ -393,10 +394,10 @@ export default function Election2026Page() {
                           />
                         </div>
                         <div style={{ textAlign: 'right', color: 'white' }}>
-                          <p style={{ fontSize: '10px', margin: 0, opacity: 0.9 }}>
+                          <p style={{ fontSize: '14px', fontWeight: '600', margin: 0 }}>
                             {language === 'bn' ? 'বাংলাদেশ জাতীয়তাবাদী দল' : 'Bangladesh Nationalist Party'}
                           </p>
-                          <p style={{ fontSize: '12px', fontWeight: 'bold', margin: '2px 0 0 0' }}>
+                          <p style={{ fontSize: '10px', fontWeight: 'bold', margin: '2px 0 0 0' }}>
                             {language === 'bn' ? 'দেশ বাঁচাও, মানুষ বাঁচাও' : 'Save the Country, Save the People'}
                           </p>
                         </div>
@@ -404,33 +405,36 @@ export default function Election2026Page() {
 
                       {/* National Election Banner */}
                       <div style={{
+                        width: '100%',
                         background: 'linear-gradient(90deg, #dc2626 0%, #b91c1c 100%)',
-                        padding: '8px 14px',
+                        paddingTop: '3px',
+                        paddingBottom: '3px',
                         textAlign: 'center',
+                        overflow: 'hidden',
                       }}>
-                        <p style={{
+                        <span style={{
                           color: 'white',
                           fontSize: '11px',
                           fontWeight: 'bold',
-                          margin: 0,
                           letterSpacing: '0.5px',
                           textTransform: 'uppercase',
+                          display: 'block',
+                          margin: '0',
+                          padding: '0',
                         }}>
                           {language === 'bn' ? 'বাংলাদেশ জাতীয় সংসদ নির্বাচন ২০২৬' : 'BANGLADESH NATIONAL PARLIAMENT ELECTION 2026'}
-                        </p>
+                        </span>
                       </div>
 
                       {/* Inspirational Message */}
                       <div style={{
-                        background: '#fef3c7',
-                        padding: '8px 14px',
+                        padding: '2px 14px',
                         textAlign: 'center',
-                        borderBottom: '1px solid #f59e0b',
                       }}>
                         <p style={{
-                          color: '#92400e',
-                          fontSize: '12px',
-                          fontWeight: '600',
+                          color: '#047857',
+                          fontSize: '18px',
+                          fontWeight: '700',
                           margin: 0,
                           fontStyle: 'italic',
                         }}>
@@ -446,11 +450,10 @@ export default function Election2026Page() {
                       }}>
                         {/* SM Jahangir Photo */}
                         <div style={{
-                          width: '100px',
-                          height: '100px',
-                          borderRadius: '50%',
+                          width: '120px',
+                          height: '120px',
+                          borderRadius: '12px',
                           margin: '0 auto 10px',
-                          border: '4px solid #059669',
                           overflow: 'hidden',
                           boxShadow: '0 4px 15px rgba(5, 150, 105, 0.3)',
                         }}>
@@ -483,40 +486,47 @@ export default function Election2026Page() {
                           {t.smJahangir}
                         </h3>
 
-                        {/* Dhaka-18 with Paddy */}
+                        {/* Dhaka-18 with Paddy - Using div for html2canvas compatibility */}
                         <div style={{
-                          display: 'inline-flex',
+                          display: 'flex',
+                          justifyContent: 'center',
                           alignItems: 'center',
-                          gap: '8px',
-                          background: '#ecfdf5',
-                          padding: '6px 14px',
-                          borderRadius: '20px',
-                          border: '1px solid #059669',
                           marginBottom: '12px',
                         }}>
-                          <img
-                            src="/supportcard/paddy.png"
-                            alt="Paddy"
-                            style={{ width: '24px', height: '24px', objectFit: 'contain' }}
-                            crossOrigin="anonymous"
-                          />
-                          <div style={{ textAlign: 'center' }}>
-                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#047857' }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: '#ecfdf5',
+                            padding: '6px 14px',
+                            borderRadius: '20px',
+                          }}>
+                            <img
+                              src="/supportcard/paddy.png"
+                              alt="Paddy"
+                              style={{ width: '40px', height: '40px', objectFit: 'contain', marginRight: '10px' }}
+                              crossOrigin="anonymous"
+                            />
+                            <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#047857' }}>
                               {t.dhaka18}
                             </span>
-                            <span style={{ fontSize: '10px', color: '#059669', marginLeft: '4px' }}>
-                              {t.paddySymbol}
-                            </span>
+                            <img
+                              src="/supportcard/paddy.png"
+                              alt="Paddy"
+                              style={{
+                                width: '40px',
+                                height: '40px',
+                                objectFit: 'contain',
+                                marginLeft: '10px',
+                                WebkitTransform: 'scaleX(-1)',
+                                transform: 'scaleX(-1)',
+                              }}
+                              crossOrigin="anonymous"
+                            />
                           </div>
-                          <img
-                            src="/supportcard/paddy.png"
-                            alt="Paddy"
-                            style={{ width: '24px', height: '24px', objectFit: 'contain', transform: 'scaleX(-1)' }}
-                            crossOrigin="anonymous"
-                          />
                         </div>
 
-                        {/* Supporter Name Only */}
+                        {/* Supporter Name */}
                         <div style={{
                           background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
                           borderRadius: '10px',
@@ -529,6 +539,9 @@ export default function Election2026Page() {
                             color: '#059669',
                             margin: '0',
                           }}>
+                            <span style={{ fontWeight: '500', color: '#6b7280' }}>
+                              {language === 'bn' ? 'সমর্থক: ' : 'Supporter: '}
+                            </span>
                             {pledgeSuccess.name}
                           </p>
                         </div>

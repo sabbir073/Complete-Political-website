@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useLanguage } from '@/providers/LanguageProvider';
 import Link from 'next/link';
 import QRCode from 'qrcode';
-import html2canvas from 'html2canvas';
+import html2canvas from 'html2canvas-pro';
 
 // Types
 interface VolunteerProfile {
