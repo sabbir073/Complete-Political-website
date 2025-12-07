@@ -41,13 +41,14 @@ export default function MediaUploader({
   };
 
   // S3 Multipart upload for large files
-  // Uses server-proxied part uploads to avoid CORS issues with ETag headers
+  // Uses presigned URLs for direct S3 upload, then verifies parts to get ETags
+  // This bypasses Vercel's 4.5MB serverless function body limit
   const uploadFileMultipart = async (
     file: File,
     uploadId: string,
     onProgress: (progress: number) => void
   ): Promise<MediaItem> => {
-    // Step 1: Initiate multipart upload
+    // Step 1: Initiate multipart upload (also returns presigned URLs for all parts)
     const initiateResponse = await fetch('/api/media/upload/multipart/initiate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -70,43 +71,62 @@ export default function MediaUploader({
       throw new Error(initData.error || 'Failed to initiate upload');
     }
 
-    const { uploadId: s3UploadId, s3Key, totalParts, partSize, filename, originalFilename, fileType, type } = initData;
+    const { uploadId: s3UploadId, s3Key, totalParts, partSize, filename, originalFilename, fileType, type, urls } = initData;
     const completedParts: { PartNumber: number; ETag: string }[] = [];
 
     try {
-      // Step 2: Upload parts through server (server proxies to S3 and returns ETag)
+      // Step 2: Upload parts directly to S3 using presigned URLs
       for (let i = 0; i < totalParts; i++) {
         const partNumber = i + 1;
         const start = i * partSize;
         const end = Math.min(start + partSize, file.size);
         const partData = file.slice(start, end);
 
-        // Upload part through our server API
-        const formData = new FormData();
-        formData.append('file', partData);
-        formData.append('uploadId', s3UploadId);
-        formData.append('s3Key', s3Key);
-        formData.append('partNumber', partNumber.toString());
-
-        const partResponse = await fetch('/api/media/upload/multipart/part', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!partResponse.ok) {
-          const error = await partResponse.json().catch(() => ({ error: 'Failed to upload part' }));
-          throw new Error(error.error || `Failed to upload part ${partNumber}`);
+        // Get the presigned URL for this part
+        const urlInfo = urls.find((u: { partNumber: number; signedUrl: string }) => u.partNumber === partNumber);
+        if (!urlInfo || !urlInfo.signedUrl) {
+          throw new Error(`No presigned URL for part ${partNumber}`);
         }
 
-        const partResult = await partResponse.json();
+        // Upload directly to S3 using presigned URL
+        const s3Response = await fetch(urlInfo.signedUrl, {
+          method: 'PUT',
+          body: partData,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+          },
+        });
 
-        if (!partResult.success) {
-          throw new Error(partResult.error || `Failed to upload part ${partNumber}`);
+        if (!s3Response.ok) {
+          throw new Error(`Failed to upload part ${partNumber} to S3: ${s3Response.status}`);
+        }
+
+        // Step 2b: Verify the part was uploaded and get ETag from our server
+        // (Browser can't read ETag from S3 response due to CORS)
+        const verifyResponse = await fetch('/api/media/upload/multipart/part', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uploadId: s3UploadId,
+            s3Key,
+            partNumber,
+          }),
+        });
+
+        if (!verifyResponse.ok) {
+          const error = await verifyResponse.json().catch(() => ({ error: 'Failed to verify part' }));
+          throw new Error(error.error || `Failed to verify part ${partNumber}`);
+        }
+
+        const verifyResult = await verifyResponse.json();
+
+        if (!verifyResult.success) {
+          throw new Error(verifyResult.error || `Failed to verify part ${partNumber}`);
         }
 
         completedParts.push({
-          PartNumber: partResult.partNumber,
-          ETag: partResult.etag.replace(/"/g, '') // Remove quotes from ETag
+          PartNumber: verifyResult.partNumber,
+          ETag: verifyResult.etag.replace(/"/g, '') // Remove quotes from ETag
         });
 
         // Update progress (90% for parts, 10% for completion)

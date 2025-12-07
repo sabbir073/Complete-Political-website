@@ -6,6 +6,7 @@ import {
   UploadPartCommand,
   CompleteMultipartUploadCommand,
   AbortMultipartUploadCommand,
+  ListPartsCommand,
   CompletedPart,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -293,6 +294,36 @@ export async function getPresignedPartUrls(
       success: false,
       urls: [],
       error: error instanceof Error ? error.message : 'Failed to generate part upload URLs',
+    };
+  }
+}
+
+// List uploaded parts to get their ETags (used after presigned URL uploads)
+export async function listUploadedParts(key: string, uploadId: string) {
+  try {
+    const command = new ListPartsCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      UploadId: uploadId,
+    });
+
+    const response = await s3Client.send(command);
+    const parts = response.Parts?.map(part => ({
+      PartNumber: part.PartNumber!,
+      ETag: part.ETag!,
+      Size: part.Size,
+    })) || [];
+
+    return {
+      success: true,
+      parts,
+    };
+  } catch (error) {
+    console.error('List Parts Error:', error);
+    return {
+      success: false,
+      parts: [],
+      error: error instanceof Error ? error.message : 'Failed to list parts',
     };
   }
 }

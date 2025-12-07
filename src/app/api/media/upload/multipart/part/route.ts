@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
-import { uploadPart, validateAWSConfig } from '@/lib/aws-s3';
+import { listUploadedParts, validateAWSConfig } from '@/lib/aws-s3';
 
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
-// POST - Upload a single part (server-proxied to avoid CORS issues with ETag)
+// POST - Verify a part was uploaded to S3 and return its ETag
+// Browser uploads directly to S3 using presigned URL, then calls this to get the ETag
+// This bypasses Vercel's 4.5MB body size limit for serverless functions
 export async function POST(request: NextRequest) {
   try {
     // Validate AWS configuration
@@ -38,45 +40,49 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
     }
 
-    // Get form data
-    const formData = await request.formData();
-    const file = formData.get('file') as File | null;
-    const uploadId = formData.get('uploadId') as string | null;
-    const s3Key = formData.get('s3Key') as string | null;
-    const partNumber = formData.get('partNumber') as string | null;
+    // Get JSON body (small payload - just the part info)
+    const body = await request.json();
+    const { uploadId, s3Key, partNumber } = body;
 
-    if (!file || !uploadId || !s3Key || !partNumber) {
+    if (!uploadId || !s3Key || !partNumber) {
       return NextResponse.json({
         success: false,
-        error: 'Missing required fields: file, uploadId, s3Key, partNumber'
+        error: 'Missing required fields: uploadId, s3Key, partNumber'
       }, { status: 400 });
     }
 
-    // Convert file to buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    // Upload part to S3
-    const result = await uploadPart(s3Key, uploadId, parseInt(partNumber), buffer);
+    // List parts from S3 to get the ETag
+    const result = await listUploadedParts(s3Key, uploadId);
 
     if (!result.success) {
       return NextResponse.json({
         success: false,
-        error: result.error || 'Failed to upload part'
+        error: result.error || 'Failed to verify part'
       }, { status: 500 });
+    }
+
+    // Find the specific part
+    const part = result.parts.find(p => p.PartNumber === parseInt(partNumber));
+
+    if (!part) {
+      return NextResponse.json({
+        success: false,
+        error: `Part ${partNumber} not found. It may not have been uploaded yet.`
+      }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      etag: result.etag,
-      partNumber: result.partNumber
+      etag: part.ETag,
+      partNumber: part.PartNumber,
+      size: part.Size
     });
 
   } catch (error) {
-    console.error('Upload part error:', error);
+    console.error('Verify part error:', error);
     return NextResponse.json({
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to upload part'
+      error: error instanceof Error ? error.message : 'Failed to verify part'
     }, { status: 500 });
   }
 }
