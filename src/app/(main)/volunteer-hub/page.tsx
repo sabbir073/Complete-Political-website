@@ -394,13 +394,13 @@ export default function VolunteerHubPage() {
           {activeTab === 'search' ? (
             /* Search Tab */
             <div>
-              <div className="flex gap-3 mb-6">
+              <div className="flex flex-col sm:flex-row gap-3 mb-6">
                 <input
                   type="text"
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value.replace(/\D/g, '').slice(0, 8))}
                   placeholder={t.searchPlaceholder}
-                  className={`flex-1 px-4 py-3 rounded-xl border text-lg tracking-widest text-center font-mono ${
+                  className={`w-full sm:flex-1 px-4 py-3 rounded-xl border text-lg tracking-widest text-center font-mono ${
                     isDark
                       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
                       : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
@@ -410,7 +410,7 @@ export default function VolunteerHubPage() {
                 <button
                   onClick={handleSearch}
                   disabled={searchLoading}
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors disabled:opacity-50"
                 >
                   {searchLoading ? '...' : t.searchBtn}
                 </button>

@@ -412,7 +412,7 @@ export default function BloodHubPage() {
                                 {language === 'bn' ? 'রক্তের গ্রুপ অনুসন্ধান করুন' : 'Search for Blood Group'}
                             </h3>
 
-                            <div className="flex flex-col md:flex-row gap-4 items-center justify-center mb-6">
+                            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center mb-6">
                                 <select
                                     value={searchBloodGroup}
                                     onChange={(e) => {
@@ -420,7 +420,7 @@ export default function BloodHubPage() {
                                         setSearchResult(null);
                                         setShowRequestForm(false);
                                     }}
-                                    className={`px-4 py-3 rounded-xl border text-lg ${
+                                    className={`w-full sm:w-auto px-4 py-3 rounded-xl border text-lg ${
                                         isDark
                                             ? 'bg-gray-800 border-gray-700 text-white'
                                             : 'bg-gray-50 border-gray-200 text-gray-900'
@@ -434,7 +434,7 @@ export default function BloodHubPage() {
                                 <button
                                     onClick={handleSearch}
                                     disabled={!searchBloodGroup}
-                                    className="px-8 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-medium hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                    className="w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-medium hover:from-red-600 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
                                     {language === 'bn' ? 'খুঁজুন' : 'Search'}
                                 </button>
