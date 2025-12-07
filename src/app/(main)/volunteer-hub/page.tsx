@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 import Link from 'next/link';
-import { uploadFile } from '@/lib/chunked-upload';
+import { uploadVolunteerPhoto } from '@/lib/s3-multipart-upload';
 
 // Types
 interface ThanaStats {
@@ -248,23 +248,16 @@ export default function VolunteerHubPage() {
       };
       reader.readAsDataURL(file);
 
-      // Upload using chunked upload for larger files
-      const result = await uploadFile(
-        file,
-        file.name,
-        {
-          regular: '/api/volunteer-hub/upload',
-          chunk: '/api/volunteer-hub/upload/chunk',
-          complete: '/api/volunteer-hub/upload/complete',
+      // Upload photo using shared multipart utility
+      const result = await uploadVolunteerPhoto(file, {
+        onProgress: (progress) => {
+          setPhotoUploadProgress(progress);
         },
-        {
-          onProgress: (progress) => setPhotoUploadProgress(progress),
-          threshold: 512 * 1024, // Use chunked upload for files > 512KB
-        }
-      );
+      });
 
       if (result.success && result.url) {
         setFormData(prev => ({ ...prev, photo_url: result.url! }));
+        setPhotoUploadProgress(100);
       } else {
         setFormError(result.error || (language === 'bn' ? 'ছবি আপলোড ব্যর্থ হয়েছে' : 'Failed to upload photo'));
         setPhotoPreview(null);

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 import toast from 'react-hot-toast';
+import { uploadComplaintFile } from '@/lib/s3-multipart-upload';
 
 interface ComplaintStatus {
     tracking_id: string;
@@ -34,7 +35,6 @@ interface UploadingFile {
     attachment?: Attachment;
 }
 
-const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_FILE_SIZE = 200 * 1024 * 1024; // 200MB
 const MAX_FILES = 5;
 const SUPPORTED_TYPES = [
@@ -127,7 +127,7 @@ export default function ComplaintsPage() {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    // Upload file using chunked upload for large files
+    // Upload file using S3 multipart upload utility
     const uploadFile = useCallback(async (file: File, index: number) => {
         const updateProgress = (progress: number, status: UploadingFile['status'], error?: string, attachment?: Attachment) => {
             setUploadingFiles(prev => prev.map((f, i) =>
@@ -136,135 +136,26 @@ export default function ComplaintsPage() {
         };
 
         try {
-            // For smaller files (< 10MB), use direct upload
-            if (file.size < 10 * 1024 * 1024) {
-                updateProgress(0, 'uploading');
+            updateProgress(0, 'uploading');
 
-                const formData = new FormData();
-                formData.append('file', file);
-
-                const xhr = new XMLHttpRequest();
-
-                await new Promise<void>((resolve, reject) => {
-                    xhr.upload.onprogress = (e) => {
-                        if (e.lengthComputable) {
-                            const progress = Math.round((e.loaded / e.total) * 100);
-                            updateProgress(progress, 'uploading');
-                        }
-                    };
-
-                    xhr.onload = () => {
-                        if (xhr.status >= 200 && xhr.status < 300) {
-                            const result = JSON.parse(xhr.responseText);
-                            if (result.success) {
-                                const attachment: Attachment = {
-                                    url: result.url,
-                                    s3Key: result.s3Key,
-                                    filename: result.filename || file.name,
-                                    fileType: file.type,
-                                    fileSize: file.size,
-                                };
-                                updateProgress(100, 'completed', undefined, attachment);
-                                setAttachments(prev => [...prev, attachment]);
-                                resolve();
-                            } else {
-                                reject(new Error(result.error || 'Upload failed'));
-                            }
-                        } else {
-                            reject(new Error('Upload failed'));
-                        }
-                    };
-
-                    xhr.onerror = () => reject(new Error('Network error'));
-
-                    xhr.open('POST', '/api/complaints/upload');
-                    xhr.send(formData);
-                });
-            } else {
-                // For larger files, use chunked multipart upload
-                updateProgress(0, 'uploading');
-
-                // Step 1: Initialize multipart upload
-                const initResponse = await fetch('/api/complaints/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'init-multipart',
-                        filename: file.name,
-                        fileType: file.type,
-                        fileSize: file.size,
-                    }),
-                });
-
-                const initResult = await initResponse.json();
-                if (!initResult.success) {
-                    throw new Error(initResult.error || 'Failed to initialize upload');
-                }
-
-                const { uploadId, key } = initResult;
-                const totalParts = Math.ceil(file.size / CHUNK_SIZE);
-                const parts: { ETag: string; PartNumber: number }[] = [];
-
-                // Step 2: Upload each part
-                for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
-                    const start = (partNumber - 1) * CHUNK_SIZE;
-                    const end = Math.min(start + CHUNK_SIZE, file.size);
-                    const chunk = file.slice(start, end);
-
-                    const partFormData = new FormData();
-                    partFormData.append('file', chunk);
-                    partFormData.append('uploadId', uploadId);
-                    partFormData.append('key', key);
-                    partFormData.append('partNumber', partNumber.toString());
-
-                    const partResponse = await fetch('/api/complaints/upload', {
-                        method: 'POST',
-                        body: partFormData,
-                    });
-
-                    const partResult = await partResponse.json();
-                    if (!partResult.success) {
-                        // Abort the upload on error
-                        await fetch('/api/complaints/upload', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ action: 'abort-multipart', uploadId, key }),
-                        });
-                        throw new Error(partResult.error || 'Failed to upload part');
-                    }
-
-                    parts.push({ ETag: partResult.etag, PartNumber: partResult.partNumber });
-
-                    const progress = Math.round((partNumber / totalParts) * 100);
+            const result = await uploadComplaintFile(file, {
+                onProgress: (progress) => {
                     updateProgress(progress, 'uploading');
-                }
+                },
+            });
 
-                // Step 3: Complete multipart upload
-                const completeResponse = await fetch('/api/complaints/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'complete-multipart',
-                        uploadId,
-                        key,
-                        parts,
-                    }),
-                });
-
-                const completeResult = await completeResponse.json();
-                if (!completeResult.success) {
-                    throw new Error(completeResult.error || 'Failed to complete upload');
-                }
-
+            if (result.success) {
                 const attachment: Attachment = {
-                    url: completeResult.url,
-                    s3Key: completeResult.s3Key,
-                    filename: file.name,
-                    fileType: file.type,
-                    fileSize: file.size,
+                    url: result.url!,
+                    s3Key: result.s3Key!,
+                    filename: result.filename || file.name,
+                    fileType: result.fileType || file.type,
+                    fileSize: result.fileSize || file.size,
                 };
                 updateProgress(100, 'completed', undefined, attachment);
                 setAttachments(prev => [...prev, attachment]);
+            } else {
+                throw new Error(result.error || 'Upload failed');
             }
         } catch (error) {
             console.error('Upload error:', error);

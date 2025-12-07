@@ -231,6 +231,72 @@ export async function abortMultipartUpload(key: string, uploadId: string) {
   }
 }
 
+// Generate presigned URL for uploading a part directly from browser
+export async function getPresignedPartUrl(
+  key: string,
+  uploadId: string,
+  partNumber: number
+) {
+  try {
+    const command = new UploadPartCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      UploadId: uploadId,
+      PartNumber: partNumber,
+    });
+
+    const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 }); // 1 hour
+    return {
+      success: true,
+      signedUrl,
+      partNumber,
+    };
+  } catch (error) {
+    console.error('Presigned Part URL Error:', error);
+    return {
+      success: false,
+      signedUrl: null,
+      error: error instanceof Error ? error.message : 'Failed to generate part upload URL',
+    };
+  }
+}
+
+// Generate multiple presigned URLs for all parts at once
+export async function getPresignedPartUrls(
+  key: string,
+  uploadId: string,
+  totalParts: number
+) {
+  try {
+    const urlPromises = [];
+    for (let i = 1; i <= totalParts; i++) {
+      urlPromises.push(getPresignedPartUrl(key, uploadId, i));
+    }
+
+    const results = await Promise.all(urlPromises);
+    const urls = results.map((result, index) => ({
+      partNumber: index + 1,
+      signedUrl: result.success ? result.signedUrl : null,
+      error: result.success ? null : result.error,
+    }));
+
+    const hasErrors = urls.some(u => u.error);
+
+    return {
+      success: !hasErrors,
+      urls,
+      error: hasErrors ? 'Some URLs failed to generate' : null,
+    };
+  } catch (error) {
+    console.error('Presigned Part URLs Error:', error);
+    return {
+      success: false,
+      urls: [],
+      error: error instanceof Error ? error.message : 'Failed to generate part upload URLs',
+    };
+  }
+}
+
 // Get S3 URL helpers
 export function getS3Url(key: string) {
   return `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;

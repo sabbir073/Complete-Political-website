@@ -61,7 +61,9 @@
       "Bash(awk:*)",
       "Bash(cat:*)",
       "Bash(grep:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\lib\\chunk-store.ts\")",
+      "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\lib\\chunked-upload.ts\")"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

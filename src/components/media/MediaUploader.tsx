@@ -7,10 +7,11 @@ import { MediaItem, UploadProgress } from '@/types/media.types';
 import { validateFile, formatFileSize, getImageDimensions, getVideoDuration } from '@/lib/media-utils';
 import { useTheme } from '@/providers/ThemeProvider';
 
-// Chunk size: 512KB (safe for most servers)
-const CHUNK_SIZE = 512 * 1024;
-// Threshold for chunked upload: 1MB
-const CHUNKED_UPLOAD_THRESHOLD = 1 * 1024 * 1024;
+// S3 multipart upload settings
+// Minimum part size for S3 multipart is 5MB (except last part)
+const S3_PART_SIZE = 5 * 1024 * 1024;
+// Threshold for multipart upload: 5MB (anything larger uses multipart)
+const MULTIPART_UPLOAD_THRESHOLD = 5 * 1024 * 1024;
 
 interface MediaUploaderProps {
   onUploadComplete?: (mediaItems: MediaItem[]) => void;
@@ -39,65 +40,121 @@ export default function MediaUploader({
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
 
-  // Chunked upload for large files
-  const uploadFileChunked = async (
+  // S3 Native Multipart upload for large files
+  // Uses presigned URLs to upload directly to S3 - works in serverless environments
+  const uploadFileMultipart = async (
     file: File,
     uploadId: string,
     onProgress: (progress: number) => void
   ): Promise<MediaItem> => {
-    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-    const chunkUploadId = generateUploadId();
-
-    // Upload chunks
-    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      const start = chunkIndex * CHUNK_SIZE;
-      const end = Math.min(start + CHUNK_SIZE, file.size);
-      const chunk = file.slice(start, end);
-
-      const formData = new FormData();
-      formData.append('chunk', chunk);
-      formData.append('uploadId', chunkUploadId);
-      formData.append('chunkIndex', chunkIndex.toString());
-      formData.append('totalChunks', totalChunks.toString());
-      formData.append('filename', file.name);
-      formData.append('fileType', file.type);
-      formData.append('fileSize', file.size.toString());
-
-      const response = await fetch('/api/media/upload/chunk', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || `Chunk ${chunkIndex} upload failed`);
-      }
-
-      // Update progress
-      const progress = Math.round(((chunkIndex + 1) / totalChunks) * 90); // 90% for chunks
-      onProgress(progress);
-    }
-
-    // Complete the upload
-    const completeResponse = await fetch('/api/media/upload/complete', {
+    // Step 1: Initiate multipart upload and get presigned URLs
+    const initiateResponse = await fetch('/api/media/upload/multipart/initiate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ uploadId: chunkUploadId })
+      body: JSON.stringify({
+        filename: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        partSize: S3_PART_SIZE
+      })
     });
 
-    if (!completeResponse.ok) {
-      const error = await completeResponse.json();
-      throw new Error(error.error || 'Failed to complete upload');
+    if (!initiateResponse.ok) {
+      const error = await initiateResponse.json();
+      throw new Error(error.error || 'Failed to initiate upload');
     }
 
-    const result = await completeResponse.json();
+    const initData = await initiateResponse.json();
 
-    if (!result.success || !result.results[0]?.success) {
-      throw new Error(result.results[0]?.error || result.message || 'Upload failed');
+    if (!initData.success) {
+      throw new Error(initData.error || 'Failed to initiate upload');
     }
 
-    onProgress(100);
-    return result.results[0].mediaItem;
+    const { uploadId: s3UploadId, s3Key, urls, totalParts, partSize, filename, originalFilename, fileType, type } = initData;
+    const completedParts: { PartNumber: number; ETag: string }[] = [];
+
+    try {
+      // Step 2: Upload parts directly to S3 using presigned URLs
+      for (let i = 0; i < totalParts; i++) {
+        const partNumber = i + 1;
+        const start = i * partSize;
+        const end = Math.min(start + partSize, file.size);
+        const partData = file.slice(start, end);
+
+        const urlInfo = urls.find((u: { partNumber: number; signedUrl: string | null }) => u.partNumber === partNumber);
+        if (!urlInfo || !urlInfo.signedUrl) {
+          throw new Error(`No upload URL for part ${partNumber}`);
+        }
+
+        // Upload directly to S3
+        const uploadResponse = await fetch(urlInfo.signedUrl, {
+          method: 'PUT',
+          body: partData,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Failed to upload part ${partNumber}: ${uploadResponse.statusText}`);
+        }
+
+        // Get ETag from response headers (required for completing multipart upload)
+        const etag = uploadResponse.headers.get('ETag');
+        if (!etag) {
+          throw new Error(`No ETag returned for part ${partNumber}`);
+        }
+
+        completedParts.push({
+          PartNumber: partNumber,
+          ETag: etag.replace(/"/g, '') // Remove quotes from ETag
+        });
+
+        // Update progress (90% for parts, 10% for completion)
+        const progress = Math.round(((i + 1) / totalParts) * 90);
+        onProgress(progress);
+      }
+
+      // Step 3: Complete the multipart upload
+      const completeResponse = await fetch('/api/media/upload/multipart/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uploadId: s3UploadId,
+          s3Key,
+          parts: completedParts,
+          filename,
+          originalFilename,
+          fileType,
+          type,
+          fileSize: file.size
+        })
+      });
+
+      if (!completeResponse.ok) {
+        const error = await completeResponse.json();
+        throw new Error(error.error || 'Failed to complete upload');
+      }
+
+      const result = await completeResponse.json();
+
+      if (!result.success || !result.results[0]?.success) {
+        throw new Error(result.results[0]?.error || result.message || 'Upload failed');
+      }
+
+      onProgress(100);
+      return result.results[0].mediaItem;
+
+    } catch (error) {
+      // Abort the multipart upload on failure
+      try {
+        await fetch('/api/media/upload/multipart/complete', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uploadId: s3UploadId, s3Key })
+        });
+      } catch (abortError) {
+        console.warn('Failed to abort multipart upload:', abortError);
+      }
+      throw error;
+    }
   };
 
   // Regular upload for small files (using XHR for progress)
@@ -186,9 +243,9 @@ export default function MediaUploader({
 
         // Choose upload method based on file size
         let mediaItem: MediaItem;
-        if (upload.file.size > CHUNKED_UPLOAD_THRESHOLD) {
-          // Use chunked upload for large files
-          mediaItem = await uploadFileChunked(upload.file, upload.id, updateProgress);
+        if (upload.file.size > MULTIPART_UPLOAD_THRESHOLD) {
+          // Use S3 native multipart upload for large files
+          mediaItem = await uploadFileMultipart(upload.file, upload.id, updateProgress);
         } else {
           // Use regular upload for small files
           mediaItem = await uploadFileRegular(upload.file, updateProgress);
@@ -386,7 +443,7 @@ export default function MediaUploader({
                       </p>
                       <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         {formatFileSize(upload.file.size)}
-                        {upload.file.size > CHUNKED_UPLOAD_THRESHOLD && ' (chunked)'}
+                        {upload.file.size > MULTIPART_UPLOAD_THRESHOLD && ' (multipart)'}
                       </p>
                     </div>
                   </div>

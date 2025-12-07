@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
-import { uploadFile } from '@/lib/chunked-upload';
+import { uploadEmergencyFile } from '@/lib/s3-multipart-upload';
 
 interface LocationData {
     latitude: number;
@@ -185,28 +185,21 @@ export default function EmergencySOSPage() {
         setSubmitError(null);
 
         try {
-            // Upload audio if exists using chunked upload for large files
+            // Upload audio if exists using S3 multipart utility
             let audioUrlForDb = null;
             if (audioBlob) {
                 setUploadProgress(0);
 
-                const uploadResult = await uploadFile(
-                    audioBlob,
-                    'emergency-audio.webm',
-                    {
-                        regular: '/api/emergency/upload',
-                        chunk: '/api/emergency/upload/chunk',
-                        complete: '/api/emergency/upload/complete',
+                const uploadResult = await uploadEmergencyFile(audioBlob, 'emergency-audio.webm', {
+                    onProgress: (progress) => {
+                        setUploadProgress(progress);
                     },
-                    {
-                        onProgress: (progress) => setUploadProgress(progress),
-                        threshold: 512 * 1024, // Use chunked upload for files > 512KB
-                    }
-                );
+                });
 
                 if (uploadResult.success && uploadResult.url) {
                     audioUrlForDb = uploadResult.url;
-                } else if (!uploadResult.success) {
+                    setUploadProgress(100);
+                } else {
                     throw new Error(uploadResult.error || 'Audio upload failed');
                 }
             }
