@@ -96,8 +96,8 @@ export async function POST(request: NextRequest) {
       photo_url
     } = body;
 
-    // Validate required fields
-    if (!name || !phone || !age || !gender || !thana || !ward || !address || !categories || !why_sm_jahangir) {
+    // Validate required fields (photo_url is now required)
+    if (!name || !phone || !age || !gender || !thana || !ward || !address || !categories || !why_sm_jahangir || !photo_url) {
       return NextResponse.json(
         { success: false, error: 'All required fields must be provided' },
         { status: 400 }

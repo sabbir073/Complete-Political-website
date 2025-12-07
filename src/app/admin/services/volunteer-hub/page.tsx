@@ -265,13 +265,18 @@ export default function AdminVolunteerHubPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Only images are allowed');
+    // Validate file type - only PNG and JPG allowed
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Only PNG and JPG files are accepted');
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Image size must be less than 10MB');
+    // Validate file size (max 2MB)
+    const maxSize = 2 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      alert(`Image size must be less than 2MB. Your file: ${sizeMB}MB`);
       return;
     }
 
@@ -978,7 +983,7 @@ export default function AdminVolunteerHubPage() {
                 />
               </div>
               <div>
-                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Photo</label>
+                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Photo (PNG/JPG, Max 2MB)</label>
                 <div className="flex items-center gap-4">
                   <div className={`w-16 h-16 rounded-full overflow-hidden border-2 flex-shrink-0 ${
                     isDark ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-gray-100'
@@ -998,7 +1003,7 @@ export default function AdminVolunteerHubPage() {
                       {photoUploading ? `Uploading... ${photoUploadProgress}%` : 'Change Photo'}
                       <input
                         type="file"
-                        accept="image/*"
+                        accept=".png,.jpg,.jpeg,image/png,image/jpeg"
                         onChange={handlePhotoUpload}
                         disabled={photoUploading}
                         className="hidden"

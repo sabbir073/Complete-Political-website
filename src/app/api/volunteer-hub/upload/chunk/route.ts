@@ -5,15 +5,14 @@ import {
   ChunkData,
 } from '@/lib/chunk-store';
 
-// Supported image types for volunteer photos
+// Supported image types for volunteer photos - only PNG and JPG
 const SUPPORTED_TYPES = [
   'image/jpeg',
   'image/jpg',
   'image/png',
-  'image/webp',
 ];
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB max for photos (increased for chunked)
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB max for photos
 
 // POST - Upload a chunk
 export async function POST(request: NextRequest) {
@@ -44,11 +43,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Validate file type
+    // Validate file type - only PNG and JPG
     if (!SUPPORTED_TYPES.includes(fileType)) {
       return NextResponse.json({
         success: false,
-        error: `Unsupported file type: ${fileType}. Supported types: JPEG, PNG, WebP`,
+        error: `Only PNG and JPG files are accepted. Your file type: ${fileType}`,
       }, { status: 400 });
     }
 

@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { uploadToS3, validateAWSConfig } from '@/lib/aws-s3';
 
-// Supported image types for volunteer photos
+// Supported image types for volunteer photos - only PNG and JPG
 const SUPPORTED_TYPES = [
   'image/jpeg',
   'image/jpg',
   'image/png',
-  'image/webp',
 ];
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB max for photos
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB max for photos
 
 // Generate S3 key for volunteer photos
 function generateVolunteerS3Key(filename: string): string {
@@ -57,11 +56,11 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Validate file type
+    // Validate file type - only PNG and JPG
     if (!SUPPORTED_TYPES.includes(file.type)) {
       return NextResponse.json({
         success: false,
-        error: `Unsupported file type: ${file.type}. Supported types: JPEG, PNG, WebP`,
+        error: `Only PNG and JPG files are accepted. Your file type: ${file.type}`,
       }, { status: 400 });
     }
 

@@ -141,7 +141,7 @@ export default function VolunteerHubPage() {
     categories: language === 'bn' ? 'ক্যাটাগরি নির্বাচন করুন' : 'Select Categories',
     whyQuestion: language === 'bn' ? 'আপনি কেন মনে করেন এস এম জাহাঙ্গীর ঢাকা-১৮ এর এমপি হওয়া উচিত?' : 'Why do you think S M Jahangir should be MP for Dhaka-18?',
     email: language === 'bn' ? 'ইমেইল (ঐচ্ছিক)' : 'Email (Optional)',
-    photo: language === 'bn' ? 'ছবি আপলোড করুন (ঐচ্ছিক)' : 'Upload Photo (Optional)',
+    photo: language === 'bn' ? 'ছবি আপলোড করুন *' : 'Upload Photo *',
     photoUploading: language === 'bn' ? 'ছবি আপলোড হচ্ছে...' : 'Uploading photo...',
     submit: language === 'bn' ? 'নিবন্ধন করুন' : 'Register',
     selectThana: language === 'bn' ? 'থানা নির্বাচন করুন' : 'Select Thana',
@@ -217,15 +217,22 @@ export default function VolunteerHubPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setFormError(language === 'bn' ? 'শুধুমাত্র ছবি আপলোড করা যাবে' : 'Only images are allowed');
+    // Validate file type - only PNG and JPG allowed
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      setFormError(language === 'bn'
+        ? 'শুধুমাত্র PNG এবং JPG ফাইল গ্রহণযোগ্য'
+        : 'Only PNG and JPG files are accepted');
       return;
     }
 
-    // Validate file size (max 10MB for chunked upload)
-    if (file.size > 10 * 1024 * 1024) {
-      setFormError(language === 'bn' ? 'ছবির সাইজ ১০MB এর বেশি হতে পারবে না' : 'Image size must be less than 10MB');
+    // Validate file size (max 2MB)
+    const maxSize = 2 * 1024 * 1024; // 2MB
+    if (file.size > maxSize) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      setFormError(language === 'bn'
+        ? `ছবির সাইজ ২MB এর বেশি হতে পারবে না। আপনার ফাইল: ${sizeMB}MB`
+        : `Image size must be less than 2MB. Your file: ${sizeMB}MB`);
       return;
     }
 
@@ -275,6 +282,15 @@ export default function VolunteerHubPage() {
     e.preventDefault();
     setFormLoading(true);
     setFormError('');
+
+    // Validate photo is required
+    if (!formData.photo_url) {
+      setFormError(language === 'bn'
+        ? 'ছবি আপলোড করা আবশ্যক'
+        : 'Photo is required');
+      setFormLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/volunteer-hub/register', {
@@ -764,7 +780,7 @@ export default function VolunteerHubPage() {
                       )}
                       <input
                         type="file"
-                        accept="image/*"
+                        accept=".png,.jpg,.jpeg,image/png,image/jpeg"
                         onChange={handlePhotoUpload}
                         disabled={photoUploading}
                         className="hidden"
@@ -779,7 +795,7 @@ export default function VolunteerHubPage() {
                       </div>
                     )}
                     <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                      {language === 'bn' ? 'সর্বোচ্চ ১০MB' : 'Max 10MB'}
+                      {language === 'bn' ? 'PNG/JPG, সর্বোচ্চ ২MB' : 'PNG/JPG only, Max 2MB'}
                     </p>
                   </div>
                 </div>
