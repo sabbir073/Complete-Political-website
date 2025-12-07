@@ -101,12 +101,14 @@ export async function POST(request: NextRequest) {
 
         // Helper function to convert datetime-local to proper ISO string
         // datetime-local gives format: "2025-11-29T14:30" (no timezone)
-        // We need to treat this as the actual event time (Bangladesh Time UTC+6)
+        // We need to treat this as Bangladesh Time (UTC+6) and store it properly
         const convertToISOWithTimezone = (dateTimeLocal: string): string => {
             if (!dateTimeLocal) return '';
-            // Append Bangladesh timezone offset (+06:00) to the datetime-local value
-            // This ensures the time entered is treated as Bangladesh time
-            return new Date(dateTimeLocal).toISOString();
+            // datetime-local format is "YYYY-MM-DDTHH:mm"
+            // Append Bangladesh timezone offset (+06:00) to treat the input as Bangladesh time
+            // Then convert to ISO string for consistent storage
+            const bdTimeString = `${dateTimeLocal}:00+06:00`;
+            return new Date(bdTimeString).toISOString();
         };
 
         // Prepare event data with proper date handling

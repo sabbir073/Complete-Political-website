@@ -61,6 +61,7 @@ const menuItems = [
       },
       { href: "/blood-hub", key: "bloodHub" },
       { href: "/volunteer-hub", key: "volunteerHub" },
+      { href: "/election-2026", key: "election2026" },
       {
         href: "/participation",
         key: "publicParticipation",
