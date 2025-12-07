@@ -187,10 +187,23 @@ export function useHomeSettings() {
       setLoading(true);
       setError(null);
 
-      // Fetch settings from multiple APIs
+      // Fetch settings from multiple APIs with cache-busting to prevent stale data on mobile
+      const timestamp = Date.now();
       const [heroResponse, leadersResponse] = await Promise.all([
-        fetch('/api/settings/hero?translations=true'),
-        fetch('/api/settings/leaders?translations=true')
+        fetch(`/api/settings/hero?translations=true&_t=${timestamp}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        }),
+        fetch(`/api/settings/leaders?translations=true&_t=${timestamp}`, {
+          cache: 'no-store',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          }
+        })
       ]);
 
       const allSettings: any[] = [];

@@ -79,16 +79,28 @@ export async function GET(request: NextRequest) {
       
       // Handle multilingual settings
       if (setting.is_multilingual) {
-        if (setting.translations && typeof setting.translations === 'object') {
-          // Use actual translations
+        if (setting.translations && typeof setting.translations === 'object' && (setting.translations.en || setting.translations.bn)) {
+          // Use actual translations from setting_translations table
           const translations = setting.translations;
           effectiveValue = {
             en: translations.en || (typeof setting.default_value === 'object' && setting.default_value ? setting.default_value.en : setting.default_value) || '',
             bn: translations.bn || (typeof setting.default_value === 'object' && setting.default_value ? setting.default_value.bn : '') || ''
           };
+        } else if (typeof effectiveValue === 'object' && effectiveValue !== null && (effectiveValue.en || effectiveValue.bn)) {
+          // setting_value is already a multilingual object {en: "", bn: ""}
+          effectiveValue = {
+            en: effectiveValue.en || '',
+            bn: effectiveValue.bn || ''
+          };
+        } else if (typeof effectiveValue === 'string' && effectiveValue.trim() !== '') {
+          // setting_value is a plain string - use it as English value
+          effectiveValue = {
+            en: effectiveValue,
+            bn: (typeof setting.default_value === 'object' && setting.default_value?.bn) || ''
+          };
         } else {
-          // Fallback for multilingual settings without translations
-          const defaultValue = setting.default_value || effectiveValue || '';
+          // Fallback to default_value
+          const defaultValue = setting.default_value || '';
           effectiveValue = {
             en: typeof defaultValue === 'object' ? (defaultValue.en || '') : String(defaultValue),
             bn: typeof defaultValue === 'object' ? (defaultValue.bn || '') : ''
@@ -102,7 +114,8 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return NextResponse.json({
+    // Create response with cache-control headers to prevent stale data on mobile
+    const response = NextResponse.json({
       success: true,
       data: {
         category: 'hero',
@@ -110,6 +123,13 @@ export async function GET(request: NextRequest) {
         count: formattedSettings.length
       }
     });
+
+    // Set cache-control headers to prevent caching
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+
+    return response;
 
   } catch (error) {
     console.error('Public hero settings API error:', error);

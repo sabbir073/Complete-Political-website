@@ -360,13 +360,11 @@ export default function Election2026Page() {
                   </p>
 
                   {/* Beautiful Support Card - Responsive Version */}
-                  <div className="mb-4 sm:mb-6 flex justify-center overflow-x-auto px-2 -mx-2">
+                  <div className="mb-4 sm:mb-6 flex justify-center">
                     <div
                       ref={cardRef}
-                      className="transform scale-[0.85] sm:scale-100 origin-top"
+                      className="w-full max-w-[340px]"
                       style={{
-                        width: '340px',
-                        minWidth: '340px',
                         backgroundColor: '#ffffff',
                         borderRadius: '16px',
                         overflow: 'hidden',
