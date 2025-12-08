@@ -92,41 +92,21 @@ export default function MediaUploader({
         const s3Response = await fetch(urlInfo.signedUrl, {
           method: 'PUT',
           body: partData,
-          headers: {
-            'Content-Type': file.type || 'application/octet-stream',
-          },
         });
 
         if (!s3Response.ok) {
           throw new Error(`Failed to upload part ${partNumber} to S3: ${s3Response.status}`);
         }
 
-        // Step 2b: Verify the part was uploaded and get ETag from our server
-        // (Browser can't read ETag from S3 response due to CORS)
-        const verifyResponse = await fetch('/api/media/upload/multipart/part', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            uploadId: s3UploadId,
-            s3Key,
-            partNumber,
-          }),
-        });
-
-        if (!verifyResponse.ok) {
-          const error = await verifyResponse.json().catch(() => ({ error: 'Failed to verify part' }));
-          throw new Error(error.error || `Failed to verify part ${partNumber}`);
-        }
-
-        const verifyResult = await verifyResponse.json();
-
-        if (!verifyResult.success) {
-          throw new Error(verifyResult.error || `Failed to verify part ${partNumber}`);
+        // Get ETag directly from S3 response (requires CORS ExposeHeaders: ["ETag"])
+        const etag = s3Response.headers.get('ETag');
+        if (!etag) {
+          throw new Error(`No ETag returned for part ${partNumber}. Check S3 CORS ExposeHeaders config.`);
         }
 
         completedParts.push({
-          PartNumber: verifyResult.partNumber,
-          ETag: verifyResult.etag.replace(/"/g, '') // Remove quotes from ETag
+          PartNumber: partNumber,
+          ETag: etag.replace(/"/g, '') // Remove quotes from ETag
         });
 
         // Update progress (90% for parts, 10% for completion)

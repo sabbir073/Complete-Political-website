@@ -10,7 +10,7 @@
  * The multipart upload flow:
  * 1. Browser calls /initiate to get uploadId and presigned URLs for all parts
  * 2. Browser uploads each part directly to S3 using presigned URL
- * 3. Browser calls /part to verify upload and get ETag (bypasses CORS ETag issue)
+ * 3. Browser reads ETag from S3 response (requires S3 CORS ExposeHeaders: ["ETag"])
  * 4. Browser calls /complete with all ETags to finalize the upload
  *
  * This approach bypasses Vercel's 4.5MB body size limit for serverless functions.
@@ -27,8 +27,6 @@ export interface UploadConfig {
   regularEndpoint: string;
   // API endpoint for multipart initiate
   initiateEndpoint: string;
-  // API endpoint for uploading individual parts
-  partEndpoint: string;
   // API endpoint for multipart complete
   completeEndpoint: string;
 }
@@ -143,8 +141,9 @@ async function uploadDirect(
 
 /**
  * S3 Multipart upload for large files (>= 1MB)
- * Uses presigned URLs for direct S3 upload, then verifies parts to get ETags
+ * Uses presigned URLs for direct S3 upload, reads ETag from response
  * This bypasses Vercel's 4.5MB serverless function body size limit
+ * Requires S3 CORS config with ExposeHeaders: ["ETag"]
  */
 async function uploadMultipart(
   file: File | Blob,
@@ -207,41 +206,21 @@ async function uploadMultipart(
       const s3Response = await fetch(urlInfo.signedUrl, {
         method: 'PUT',
         body: partData,
-        headers: {
-          'Content-Type': file.type || 'application/octet-stream',
-        },
       });
 
       if (!s3Response.ok) {
         throw new Error(`Failed to upload part ${partNumber} to S3: ${s3Response.status}`);
       }
 
-      // Step 2b: Verify the part was uploaded and get ETag from our server
-      // (Browser can't read ETag from S3 response due to CORS)
-      const verifyResponse = await fetch(config.partEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          uploadId: s3UploadId,
-          s3Key,
-          partNumber,
-        }),
-      });
-
-      if (!verifyResponse.ok) {
-        const error = await verifyResponse.json().catch(() => ({ error: 'Failed to verify part' }));
-        throw new Error(error.error || `Failed to verify part ${partNumber}`);
-      }
-
-      const verifyResult = await verifyResponse.json();
-
-      if (!verifyResult.success) {
-        throw new Error(verifyResult.error || `Failed to verify part ${partNumber}`);
+      // Get ETag directly from S3 response (requires CORS ExposeHeaders: ["ETag"])
+      const etag = s3Response.headers.get('ETag');
+      if (!etag) {
+        throw new Error(`No ETag returned for part ${partNumber}. Check S3 CORS ExposeHeaders config.`);
       }
 
       completedParts.push({
-        PartNumber: verifyResult.partNumber,
-        ETag: verifyResult.etag.replace(/"/g, ''), // Remove quotes from ETag
+        PartNumber: partNumber,
+        ETag: etag.replace(/"/g, ''), // Remove quotes from ETag
       });
 
       // Update progress (90% for parts, 10% for completion)
@@ -313,7 +292,6 @@ async function uploadMultipart(
 export const mediaUploadConfig: UploadConfig = {
   regularEndpoint: '/api/media/upload',
   initiateEndpoint: '/api/media/upload/multipart/initiate',
-  partEndpoint: '/api/media/upload/multipart/part',
   completeEndpoint: '/api/media/upload/multipart/complete',
 };
 
@@ -328,7 +306,6 @@ export function uploadMediaFile(
 export const complaintsUploadConfig: UploadConfig = {
   regularEndpoint: '/api/complaints/upload',
   initiateEndpoint: '/api/complaints/upload/multipart/initiate',
-  partEndpoint: '/api/complaints/upload/multipart/part',
   completeEndpoint: '/api/complaints/upload/multipart/complete',
 };
 
@@ -343,7 +320,6 @@ export function uploadComplaintFile(
 export const emergencyUploadConfig: UploadConfig = {
   regularEndpoint: '/api/emergency/upload',
   initiateEndpoint: '/api/emergency/upload/multipart/initiate',
-  partEndpoint: '/api/emergency/upload/multipart/part',
   completeEndpoint: '/api/emergency/upload/multipart/complete',
 };
 
@@ -359,7 +335,6 @@ export function uploadEmergencyFile(
 export const volunteerUploadConfig: UploadConfig = {
   regularEndpoint: '/api/volunteer-hub/upload',
   initiateEndpoint: '/api/volunteer-hub/upload/multipart/initiate',
-  partEndpoint: '/api/volunteer-hub/upload/multipart/part',
   completeEndpoint: '/api/volunteer-hub/upload/multipart/complete',
 };
 
