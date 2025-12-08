@@ -31,13 +31,13 @@ export default function MediaSelector({
 
   const handleMediaSelect = (media: MediaItem | MediaItem[]) => {
     const mediaArray = Array.isArray(media) ? media : [media];
-    
+
     if (multiple) {
       setSelectedMedia(mediaArray);
     } else {
-      // For single selection, immediately call onSelect and close
+      // For single selection, immediately call onSelect
+      // Note: Don't call onClose() here as the wrapper in useMediaSelector handles closing
       onSelect(media);
-      onClose();
     }
   };
 
