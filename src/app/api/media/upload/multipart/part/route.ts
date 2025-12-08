@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/server';
 import { listUploadedParts, validateAWSConfig } from '@/lib/aws-s3';
 
 export const maxDuration = 60;
@@ -22,21 +21,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check authentication
-    const supabase = createServerComponentClient({ cookies });
-    const { data: { session } } = await supabase.auth.getSession();
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!session) {
+    if (authError || !user) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check user role
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single();
+    const { data: userRole } = await supabase
+      .rpc('get_user_role', { user_id: user.id });
 
-    if (!profile || !['admin', 'moderator'].includes(profile.role)) {
+    if (!userRole || !['admin', 'moderator'].includes(userRole)) {
       return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 });
     }
 
