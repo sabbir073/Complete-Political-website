@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         *,
         category:categories(*)
       `, { count: 'exact' })
-            .order('event_date', { ascending: false });
+            .order('created_at', { ascending: false });
 
         // Apply filters
         if (status) {

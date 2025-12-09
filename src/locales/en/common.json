@@ -127,8 +127,8 @@
     ]
   },
   "events": {
-    "sectionLabel": "Humanity & Country",
-    "title": "Recent Events & Activities",
+    "sectionLabel": "Serving the people of Dhaka-18",
+    "title": "Latest Events",
     "viewAll": "View All",
     "viewAllEvents": "View All Events",
     "eventList": [
@@ -177,17 +177,17 @@
     ]
   },
   "aboutMe": {
-    "sectionLabel": "About Me",
-    "title": "Foundations for a",
-    "titleHighlight": "Thriving Community",
-    "paragraph1": "Our commitment to building stronger communities starts with understanding the needs of every citizen. Through decades of dedicated service, we have worked tirelessly to create opportunities, foster growth, and ensure prosperity for all.",
-    "paragraph2": "From rural development initiatives to urban infrastructure projects, our vision encompasses comprehensive progress that touches every aspect of community life. We believe in transparent governance, inclusive policies, and sustainable development that benefits future generations.",
+    "sectionLabel": "A leader forged through struggle",
+    "title": "S M Jahangir",
+    "titleHighlight": "Hossain",
+    "paragraph1": "S M Jahangir Hossain stands as a symbol of unwavering dedication to the people of Dhaka-18. As Joint Convener of Dhaka North BNP and a leader who endured over 329 cases and years of imprisonment for his political beliefs, he has proven that no sacrifice is too great when fighting for democracy, justice, and the rights of ordinary citizens.",
+    "paragraph2": "Nominated by BNP for the upcoming national election, S M Jahangir Hossain carries the vision of building a humane, just, and welfare-oriented Bangladesh. His commitment extends beyond politics — it is a promise to serve the communities of Uttara, Uttarkhan, Dakkhinkhan, Turag, Khilkhet, and Vatara (partial) with integrity, ensuring every voice is heard and every need is addressed.",
     "learnMore": "Learn More",
-    "videoTitle": "Watch Our Story",
-    "videoSubtitle": "Discover the journey of community transformation"
+    "videoTitle": "The Journey of Resilience",
+    "videoSubtitle": "A story of sacrifice, struggle, and service to the nation"
   },
   "photoGallery": {
-    "sectionLabel": "Visual Chapters",
+    "sectionLabel": "Pictures speak louder",
     "title": "Photo Gallery",
     "viewAll": "View All",
     "viewAllPhotos": "View All Photos",
@@ -231,8 +231,8 @@
     ]
   },
   "blog": {
-    "sectionLabel": "Stay Informed",
-    "title": "Latest News",
+    "sectionLabel": "Updates from the frontline",
+    "title": "News",
     "viewAll": "View All",
     "viewAllNews": "View All News",
     "readMore": "Read More",
@@ -261,8 +261,8 @@
     ]
   },
   "videoGallery": {
-    "sectionLabel": "Media Center",
-    "title": "Showcase of Stories",
+    "sectionLabel": "Real stories, real impact",
+    "title": "Video Gallery",
     "viewAll": "View All",
     "viewAllVideos": "View All Videos",
     "watchNow": "Watch Now",

@@ -67,7 +67,7 @@ const menuItems = [
         submenu: [
           { href: "/polls", key: "pollsSurveys" },
           { href: "/ama", key: "askMeAnything" },
-          { href: "/forum", key: "communityForum" },
+          { href: "/community-forum", key: "communityForum" },
         ],
       },
       {

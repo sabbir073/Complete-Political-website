@@ -9,6 +9,31 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
+/* Global cursor pointer for all interactive elements */
+button,
+[role="button"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+a,
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+label[for],
+.cursor-pointer,
+[onclick],
+[tabindex]:not([tabindex="-1"]) {
+  cursor: pointer;
+}
+
+/* Disabled elements should show not-allowed cursor */
+button:disabled,
+[disabled],
+.disabled {
+  cursor: not-allowed;
+}
+
 /* Custom Scrollbar for Modal */
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
@@ -63,4 +88,32 @@ nav .group:hover .absolute {
 /* Critical system modals (like AboutMe, VideoGallery) should be topmost */
 .modal-overlay {
   z-index: 99999999 !important;
+}
+
+/* Welcome Popup Animations */
+@keyframes gradient-x {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
 }

@@ -63,7 +63,8 @@
       "Bash(grep:*)",
       "Bash(wc:*)",
       "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\lib\\chunk-store.ts\")",
-      "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\lib\\chunked-upload.ts\")"
+      "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\lib\\chunked-upload.ts\")",
+      "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\bnp-1b3225.jpg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\bnp-welcome.jpg\")"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

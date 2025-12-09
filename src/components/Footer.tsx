@@ -68,10 +68,12 @@ export default function BNPFooter() {
             {footerSettings ? getText(footerSettings.footer_cta_subtitle) : t.footer?.cta?.subtitle || "Join the Fight for Democracy & Voting Rights"}
           </p>
           <Link
-            href={footerSettings?.footer_cta_button_url || "/join"}
+            href={footerSettings?.footer_cta_button_url || "https://www.bnpbd.org/login/primary-member-fee"}
+            target="_blank"
+            rel="noopener noreferrer"
             className={`inline-block font-semibold px-6 py-3 rounded-md transition-all duration-300 hover:scale-105 ${
-              isDark 
-                ? "bg-gray-100 text-gray-900 hover:bg-white" 
+              isDark
+                ? "bg-gray-100 text-gray-900 hover:bg-white"
                 : "bg-white text-[#003B2F] hover:bg-gray-200"
             }`}
           >

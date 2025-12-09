@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
         *,
         category:categories(*)
       `, { count: 'exact' })
-            .order('display_order', { ascending: true })
             .order('created_at', { ascending: false });
 
         if (status) query = query.eq('status', status);

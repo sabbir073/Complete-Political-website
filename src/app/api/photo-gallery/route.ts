@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
             return NextResponse.json(album);
         } else {
-            // List all published albums with their photos
+            // List all published albums with their photos (newest first)
             const { data, error } = await supabase
                 .from('photo_albums')
                 .select(`
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
           photos:photo_gallery(*)
         `)
                 .eq('status', 'published')
-                .order('display_order', { ascending: true })
+                .order('created_at', { ascending: false })
                 .limit(limit);
 
             if (error) {

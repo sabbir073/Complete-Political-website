@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         category:categories(*)
       `)
             .eq('status', 'published')
-            .order('display_order', { ascending: true });
+            .order('created_at', { ascending: false });
 
         if (category) {
             query = query.eq('category_id', category);
