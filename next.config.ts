@@ -33,7 +33,16 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "script-src 'self' 'unsafe-eval' 'unsafe-inline'; object-src 'none'; img-src 'self' data: https://dahf45b8zc9m5.cloudfront.net https://smjahangirhossain.s3.ap-south-1.amazonaws.com https: blob:;",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com https://*.firebaseapp.com https://*.googleapis.com",
+              "frame-src 'self' https://www.google.com https://*.firebaseapp.com https://*.googleapis.com",
+              "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://identitytoolkit.googleapis.com https://securetoken.googleapis.com wss://*.firebaseio.com https://www.google.com https://www.gstatic.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: https://dahf45b8zc9m5.cloudfront.net https://smjahangirhossain.s3.ap-south-1.amazonaws.com https: blob:",
+              "object-src 'none'",
+            ].join('; '),
           },
         ],
       },

@@ -129,6 +129,8 @@ export async function sendOTP(
       errorMessage = 'reCAPTCHA verification failed. Please refresh and try again.';
     } else if (error.code === 'auth/missing-client-identifier') {
       errorMessage = 'App verification failed. Please refresh the page.';
+    } else if (error.code === 'auth/billing-not-enabled') {
+      errorMessage = 'Phone authentication requires Firebase billing to be enabled. Please upgrade to Blaze plan in Firebase Console.';
     }
 
     return { success: false, error: errorMessage };
