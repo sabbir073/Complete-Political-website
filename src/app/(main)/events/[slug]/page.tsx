@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = event.title_en || "Event";
   const description = event.excerpt_en || event.description_en?.replace(/<[^>]*>/g, '').substring(0, 160) || `Event: ${title}`;
-  const image = event.featured_image || "/og-events.jpg";
+  const image = event.featured_image || "/event.jpg";
 
   return generateSeoMetadata({
     title: title,

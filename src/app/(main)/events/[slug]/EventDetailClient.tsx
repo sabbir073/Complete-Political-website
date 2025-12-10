@@ -229,19 +229,6 @@ export default function EventDetailClient({ slug, initialEvent }: Props) {
                                 <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
                                     {getText(event.title_en, event.title_bn)}
                                 </h1>
-
-                                {/* Share Section in Hero */}
-                                <div className="mt-4">
-                                    <SocialShare
-                                        url={shareUrl}
-                                        title={getText(event.title_en, event.title_bn)}
-                                        description={getText(event.excerpt_en, event.excerpt_bn) || getText(event.title_en, event.title_bn)}
-                                        image={event.featured_image}
-                                        hashtags={["SMJahangir", "Dhaka18", "Event"]}
-                                        variant="icons"
-                                        size="md"
-                                    />
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -310,19 +297,20 @@ export default function EventDetailClient({ slug, initialEvent }: Props) {
 
                         {/* Share Section at bottom of content */}
                         <div className={`mt-8 pt-8 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                            <h3 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                {language === 'bn' ? 'এই ইভেন্ট শেয়ার করুন' : 'Share This Event'}
-                            </h3>
-                            <SocialShare
-                                url={shareUrl}
-                                title={getText(event.title_en, event.title_bn)}
-                                description={getText(event.excerpt_en, event.excerpt_bn) || getText(event.title_en, event.title_bn)}
-                                image={event.featured_image}
-                                hashtags={["SMJahangir", "Dhaka18", "Event", event.category?.name_en?.replace(/\s+/g, '') || ""]}
-                                variant="buttons"
-                                size="sm"
-                                showLabel={false}
-                            />
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                                    {language === 'bn' ? 'এই ইভেন্ট শেয়ার করুন' : 'Share This Event'}
+                                </h3>
+                                <SocialShare
+                                    url={shareUrl}
+                                    title={getText(event.title_en, event.title_bn)}
+                                    description={getText(event.excerpt_en, event.excerpt_bn) || getText(event.title_en, event.title_bn)}
+                                    image={event.featured_image}
+                                    hashtags={["SMJahangir", "Dhaka18", "Event"]}
+                                    variant="icons"
+                                    size="md"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -473,21 +461,6 @@ export default function EventDetailClient({ slug, initialEvent }: Props) {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Share Button */}
-                            <div className={`mb-6 pt-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                                <p className={`font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                                    {language === 'bn' ? 'শেয়ার করুন' : 'Share'}
-                                </p>
-                                <SocialShare
-                                    url={shareUrl}
-                                    title={getText(event.title_en, event.title_bn)}
-                                    description={getText(event.excerpt_en, event.excerpt_bn) || ""}
-                                    hashtags={["SMJahangir", "Dhaka18"]}
-                                    variant="dropdown"
-                                    size="md"
-                                />
-                            </div>
 
                             {/* Back to Events */}
                             <Link href="/events" className="block mt-6">
