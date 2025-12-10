@@ -9,7 +9,8 @@ interface Props {
 // Fetch poll data for metadata
 async function getPoll(id: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/polls/${id}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || siteConfig.url;
+    const response = await fetch(`${baseUrl}/api/polls/${id}`, {
       cache: 'no-store',
     });
     if (!response.ok) return null;
@@ -40,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: title,
     description: description,
     url: `/polls/${id}`,
-    image: "/og-polls.jpg",
+    image: "/bnp-welcome.jpg",
     type: "article",
     publishedTime: poll.start_datetime,
     tags: ["poll", "survey", "opinion", "vote", "Dhaka-18"],

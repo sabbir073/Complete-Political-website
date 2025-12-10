@@ -1,28 +1,20 @@
 import { Metadata } from "next";
 import { generateMetadata as generateSeoMetadata, siteConfig, generateEventJsonLd, generateBreadcrumbJsonLd } from "@/lib/seo";
-import { createClient } from "@/lib/supabase/server";
 import EventDetailClient from "./EventDetailClient";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// Fetch event data for metadata directly from database
+// Fetch event data for metadata
 async function getEvent(slug: string) {
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from('events')
-      .select(`
-        *,
-        category:categories(*)
-      `)
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .single();
-
-    if (error || !data) return null;
-    return data;
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || siteConfig.url;
+    const response = await fetch(`${baseUrl}/api/events/${slug}`, {
+      cache: 'no-store',
+    });
+    if (!response.ok) return null;
+    return await response.json();
   } catch {
     return null;
   }
