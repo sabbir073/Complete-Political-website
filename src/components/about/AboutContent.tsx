@@ -99,18 +99,8 @@ const AboutContent: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
             <div className={`text-center lg:text-left transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}>
-              {/* Election 2026 Badge */}
-              <div className={`inline-flex items-center px-6 py-3 backdrop-blur-md border rounded-full mb-4 ${
-                isDark ? "bg-red-600/30 border-red-500/50" : "bg-red-600/20 border-red-500/30"
-              }`}>
-                <div className={`w-2 h-2 rounded-full mr-3 animate-pulse bg-red-500`}></div>
-                <span className="text-white text-sm font-bold">
-                  {t.aboutPage?.electionBanner?.subtitle || "National Election 2026"}
-                </span>
-              </div>
-
               {/* Badge */}
-              <div className={`inline-flex items-center px-6 py-3 backdrop-blur-md border rounded-full mb-8 ml-0 lg:ml-4 ${
+              <div className={`inline-flex items-center px-6 py-3 backdrop-blur-md border rounded-full mb-8 ${
                 isDark ? "bg-gray-800/50 border-gray-600/50" : "bg-white/10 border-white/20"
               }`}>
                 <div className={`w-2 h-2 rounded-full mr-3 animate-pulse ${
@@ -195,7 +185,7 @@ const AboutContent: React.FC = () => {
                 <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/20 p-6">
                   <div className="relative rounded-2xl overflow-hidden">
                     <Image
-                      src="/events/event2.jpg"
+                      src="/about-hero.jpg"
                       alt="S M Jahangir Hossain"
                       width={500}
                       height={600}

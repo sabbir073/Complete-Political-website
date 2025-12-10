@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { generateMetadata as generateSEO, generateBreadcrumbJsonLd, generateImageGalleryJsonLd, siteConfig } from "@/lib/seo";
+import { createClient } from "@/lib/supabase/server";
 import AlbumDetailClient from "./AlbumDetailClient";
 
 interface AlbumData {
@@ -28,19 +29,36 @@ interface AlbumData {
     created_at?: string;
 }
 
+// Fetch album data directly from database for SEO metadata
 async function getAlbumData(slug: string): Promise<AlbumData | null> {
     try {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const res = await fetch(`${baseUrl}/api/photo-gallery?album=${slug}`, {
-            cache: 'no-store'
-        });
+        const supabase = await createClient();
 
-        if (!res.ok) return null;
+        // Fetch album with category
+        const { data: album, error: albumError } = await supabase
+            .from('photo_albums')
+            .select(`
+                *,
+                category:photo_gallery_categories(*)
+            `)
+            .eq('slug', slug)
+            .eq('is_active', true)
+            .single();
 
-        const data = await res.json();
-        if (data.error) return null;
+        if (albumError || !album) return null;
 
-        return data;
+        // Fetch photos for this album
+        const { data: photos } = await supabase
+            .from('photos')
+            .select('*')
+            .eq('album_id', album.id)
+            .eq('is_active', true)
+            .order('display_order', { ascending: true });
+
+        return {
+            ...album,
+            photos: photos || []
+        };
     } catch (error) {
         console.error('Error fetching album:', error);
         return null;
