@@ -225,10 +225,74 @@ interface LanguageData {
       currentYear: string;
       currentLabel: string;
     };
+    electionBanner: {
+      title: string;
+      subtitle: string;
+      constituency: string;
+      areas: string;
+      slogan: string;
+    };
     stats: Array<{
       number: string;
       label: string;
     }>;
+    biography: {
+      title: string;
+      subtitle: string;
+      earlyLife: {
+        title: string;
+        content: string;
+      };
+      education: {
+        title: string;
+        content: string;
+      };
+      politicalAwakening: {
+        title: string;
+        content: string;
+      };
+      [key: string]: { title: string; content: string } | string | undefined;
+    };
+    struggle: {
+      title: string;
+      subtitle: string;
+      intro: string;
+      cases: {
+        title: string;
+        content: string;
+      };
+      imprisonment: {
+        title: string;
+        content: string;
+      };
+      persecution: {
+        title: string;
+        content: string;
+      };
+      resilience: {
+        title: string;
+        content: string;
+      };
+      [key: string]: { title: string; content: string } | string | undefined;
+    };
+    vision: {
+      title: string;
+      subtitle: string;
+      intro: string;
+      areas: Array<{
+        icon: string;
+        title: string;
+        description: string;
+      }>;
+    };
+    achievements: {
+      title: string;
+      subtitle: string;
+      items: Array<{
+        title: string;
+        description: string;
+      }>;
+    };
     personalInfo: {
       title: string;
       data: Array<{
@@ -257,12 +321,29 @@ interface LanguageData {
       text: string;
       author: string;
     };
+    familyLife: {
+      title: string;
+      content: string;
+    };
+    message: {
+      title: string;
+      content: string;
+    };
     contact: {
       title: string;
       subtitle: string;
       callButton: string;
       homeButton: string;
+      volunteerButton: string;
     };
+  };
+  volunteerHub?: {
+    title: string;
+    subtitle: string;
+    registerBtn: string;
+    searchBtn: string;
+    searchPlaceholder: string;
+    [key: string]: unknown;
   };
 }
 

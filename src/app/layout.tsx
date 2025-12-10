@@ -1,28 +1,80 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "../styles/sweetalert.css";
 import { LanguageProvider } from "@/providers/LanguageProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import AuthInitializer from "@/components/AuthInitializer";
 import { Toaster } from "react-hot-toast";
+import { siteConfig, generatePersonJsonLd, generateWebsiteJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Political Party - A Country That Belongs To Everyone",
-  description: "Join us in the fight for democracy, voting rights, and a thriving community.",
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: `${siteConfig.name} | BNP Nominated MP Candidate - Dhaka-18`,
+    template: `%s | ${siteConfig.shortName}`,
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  authors: [{ name: siteConfig.author, url: siteConfig.url }],
+  creator: siteConfig.author,
+  publisher: siteConfig.author,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: "https://yourdomain.com/",
-    siteName: "Political Party",
+    locale: siteConfig.locale,
+    alternateLocale: siteConfig.alternateLocale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} | BNP Nominated MP Candidate - Dhaka-18`,
+    description: siteConfig.description,
     images: [
       {
-        url: "https://yourdomain.com/og-image.jpg",
+        url: `${siteConfig.url}/og-default.jpg`,
         width: 1200,
         height: 630,
-        alt: "Political Party Banner",
+        alt: `${siteConfig.name} - BNP Nominated MP Candidate for Dhaka-18`,
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} | BNP Nominated MP Candidate - Dhaka-18`,
+    description: siteConfig.description,
+    images: [`${siteConfig.url}/og-default.jpg`],
+    creator: siteConfig.twitter,
+    site: siteConfig.twitter,
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
+  alternates: {
+    canonical: siteConfig.url,
+    languages: {
+      "en-US": siteConfig.url,
+      "bn-BD": `${siteConfig.url}?lang=bn`,
+    },
+  },
+  category: "politics",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#111827" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -30,8 +82,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const personJsonLd = generatePersonJsonLd();
+  const websiteJsonLd = generateWebsiteJsonLd();
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-white dark:bg-gray-900 transition-colors" suppressHydrationWarning>
         <ThemeProvider>
           <LanguageProvider>

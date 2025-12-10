@@ -50,13 +50,17 @@ const AboutContent: React.FC = () => {
   // Achievements from translations
   const achievements = t.aboutPage?.achievements?.items || [];
 
-  // Struggle sections
-  const struggleSections = [
-    { key: 'cases', icon: '⚖️' },
-    { key: 'imprisonment', icon: '🔒' },
-    { key: 'persecution', icon: '💪' },
-    { key: 'resilience', icon: '🌟' }
-  ];
+  // Struggle sections - get data from translations
+  const getStruggleSections = () => {
+    const struggle = t.aboutPage?.struggle;
+    return [
+      { key: 'cases', icon: '⚖️', data: struggle?.cases },
+      { key: 'imprisonment', icon: '🔒', data: struggle?.imprisonment },
+      { key: 'persecution', icon: '💪', data: struggle?.persecution },
+      { key: 'resilience', icon: '🌟', data: struggle?.resilience }
+    ];
+  };
+  const struggleSections = getStruggleSections();
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
@@ -291,9 +295,13 @@ const AboutContent: React.FC = () => {
 
           {/* Biography Cards */}
           <div className="grid md:grid-cols-3 gap-8">
-            {['earlyLife', 'education', 'politicalAwakening'].map((key, index) => (
+            {[
+              { key: 'earlyLife', data: t.aboutPage?.biography?.earlyLife },
+              { key: 'education', data: t.aboutPage?.biography?.education },
+              { key: 'politicalAwakening', data: t.aboutPage?.biography?.politicalAwakening }
+            ].map((item, index) => (
               <div
-                key={key}
+                key={item.key}
                 className={`rounded-2xl p-8 transition-all duration-500 hover:shadow-xl ${
                   isDark
                     ? "bg-gray-800 border border-gray-700 hover:border-red-500/30"
@@ -304,12 +312,12 @@ const AboutContent: React.FC = () => {
                 <h3 className={`text-xl font-bold mb-4 ${
                   isDark ? "text-red-400" : "text-primaryRed"
                 }`}>
-                  {t.aboutPage?.biography?.[key]?.title || key}
+                  {item.data?.title || item.key}
                 </h3>
                 <p className={`leading-relaxed ${
                   isDark ? "text-gray-300" : "text-gray-600"
                 }`}>
-                  {t.aboutPage?.biography?.[key]?.content || ""}
+                  {item.data?.content || ""}
                 </p>
               </div>
             ))}
@@ -346,7 +354,7 @@ const AboutContent: React.FC = () => {
 
           {/* Struggle Cards */}
           <div className="grid md:grid-cols-2 gap-8">
-            {struggleSections.map((section, index) => (
+            {struggleSections.map((section) => (
               <div
                 key={section.key}
                 className={`rounded-2xl p-8 transition-all duration-500 hover:shadow-xl ${
@@ -361,12 +369,12 @@ const AboutContent: React.FC = () => {
                     <h3 className={`text-xl font-bold mb-3 ${
                       isDark ? "text-red-400" : "text-primaryRed"
                     }`}>
-                      {t.aboutPage?.struggle?.[section.key]?.title || section.key}
+                      {section.data?.title || section.key}
                     </h3>
                     <p className={`leading-relaxed ${
                       isDark ? "text-gray-300" : "text-gray-600"
                     }`}>
-                      {t.aboutPage?.struggle?.[section.key]?.content || ""}
+                      {section.data?.content || ""}
                     </p>
                   </div>
                 </div>

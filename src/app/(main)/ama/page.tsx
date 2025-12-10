@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '@/providers/ThemeProvider';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { format } from 'date-fns';
+import SocialShare from '@/components/SocialShare';
+import { siteConfig } from '@/lib/seo';
 
 interface Category {
   id: string;
@@ -241,6 +243,19 @@ export default function AMAPage() {
           >
             {language === 'bn' ? '❓ প্রশ্ন করুন' : '❓ Ask a Question'}
           </button>
+
+          {/* Social Share in Hero */}
+          <div className="mt-6 flex justify-center">
+            <SocialShare
+              url={`${siteConfig.url}/ama`}
+              title={language === 'bn' ? 'জিজ্ঞাসা করুন - এস এম জাহাঙ্গীর হোসেন' : 'Ask Me Anything - S M Jahangir Hossain'}
+              description={language === 'bn'
+                ? 'এস এম জাহাঙ্গীর হোসেনকে সরাসরি প্রশ্ন করুন। আপনার প্রশ্নের উত্তর পান।'
+                : 'Ask S M Jahangir Hossain directly. Get answers to your questions.'}
+              variant="icons"
+              size="md"
+            />
+          </div>
         </div>
       </div>
 
@@ -365,6 +380,7 @@ export default function AMAPage() {
             {questions.map((question) => (
               <div
                 key={question.id}
+                id={`question-${question.id}`}
                 className={`rounded-2xl p-6 transition-all ${
                   isDark ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:shadow-lg'
                 } ${question.status === 'answered' ? 'border-l-4 border-green-500' : ''}`}
@@ -507,6 +523,25 @@ export default function AMAPage() {
                         </svg>
                         <span className="font-medium">{question.answer_downvotes || 0}</span>
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Share Button for Answered Questions */}
+                {question.status === 'answered' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <span className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {language === 'bn' ? 'এই প্রশ্ন-উত্তর শেয়ার করুন:' : 'Share this Q&A:'}
+                      </span>
+                      <SocialShare
+                        url={`${siteConfig.url}/ama#question-${question.id}`}
+                        title={getText(question.question_en, question.question_bn).substring(0, 100)}
+                        description={getText(question.answer_en, question.answer_bn)?.substring(0, 200) || ''}
+                        variant="icons"
+                        size="sm"
+                        showLabel={false}
+                      />
                     </div>
                   </div>
                 )}

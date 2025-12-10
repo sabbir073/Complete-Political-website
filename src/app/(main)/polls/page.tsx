@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
 import PhoneVerification from '@/components/auth/PhoneVerification';
+import Link from 'next/link';
 
 interface PollOption {
   id: string;
@@ -329,9 +330,8 @@ export default function PollsPage() {
             {polls.map((poll) => (
               <div
                 key={poll.id}
-                onClick={() => handleOpenPoll(poll)}
                 className={`
-                  cursor-pointer rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl
+                  rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl
                   ${isDark ? 'bg-gray-800' : 'bg-white'}
                 `}
               >
@@ -368,13 +368,16 @@ export default function PollsPage() {
 
                 {/* Card Body */}
                 <div className="p-5">
-                  <h3
-                    className={`text-lg font-bold mb-2 line-clamp-2 ${
-                      isDark ? 'text-white' : 'text-gray-900'
-                    }`}
-                  >
-                    {getText(poll.title_en, poll.title_bn)}
-                  </h3>
+                  {/* Clickable Title - navigates to single poll page */}
+                  <Link href={`/polls/${poll.id}`}>
+                    <h3
+                      className={`text-lg font-bold mb-2 line-clamp-2 hover:underline cursor-pointer ${
+                        isDark ? 'text-white hover:text-green-400' : 'text-gray-900 hover:text-green-600'
+                      }`}
+                    >
+                      {getText(poll.title_en, poll.title_bn)}
+                    </h3>
+                  </Link>
 
                   {(poll.description_en || poll.description_bn) && (
                     <p
@@ -446,34 +449,95 @@ export default function PollsPage() {
                     </div>
                   )}
 
-                  {/* Action hint */}
-                  <div className="mt-4 flex items-center justify-center">
-                    <span
-                      className={`text-sm font-medium ${
-                        poll.computed_status === 'active' && !poll.has_voted
-                          ? 'text-green-600'
-                          : isDark
-                          ? 'text-gray-500'
-                          : 'text-gray-400'
+                  {/* Action Buttons */}
+                  <div className="mt-4 flex items-center gap-2">
+                    {/* Vote Now Button - opens voting popup */}
+                    {poll.computed_status === 'active' && !poll.has_voted && (
+                      <button
+                        onClick={() => handleOpenPoll(poll)}
+                        className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                          />
+                        </svg>
+                        {language === 'bn' ? 'ভোট দিন' : 'Vote Now'}
+                      </button>
+                    )}
+
+                    {/* View Results Button - for voted/closed polls */}
+                    {(poll.has_voted || poll.computed_status === 'closed') && (
+                      <button
+                        onClick={() => handleOpenPoll(poll)}
+                        className={`flex-1 py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
+                          isDark
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        {language === 'bn' ? 'ফলাফল দেখুন' : 'View Results'}
+                      </button>
+                    )}
+
+                    {/* View Details Link - always visible */}
+                    <Link
+                      href={`/polls/${poll.id}`}
+                      className={`py-2 px-4 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-1 ${
+                        isDark
+                          ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                       }`}
                     >
-                      {poll.computed_status === 'active' && !poll.has_voted
-                        ? language === 'bn'
-                          ? 'এখনই ভোট দিন →'
-                          : 'Vote Now →'
-                        : poll.has_voted
-                        ? language === 'bn'
-                          ? 'ফলাফল দেখুন →'
-                          : 'View Results →'
-                        : poll.computed_status === 'scheduled'
-                        ? language === 'bn'
-                          ? 'শীঘ্রই আসছে'
-                          : 'Coming Soon'
-                        : language === 'bn'
-                        ? 'ফলাফল দেখুন →'
-                        : 'View Results →'}
-                    </span>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </Link>
                   </div>
+
+                  {/* Scheduled poll notice */}
+                  {poll.computed_status === 'scheduled' && (
+                    <div className="mt-4 text-center">
+                      <span
+                        className={`text-sm font-medium ${
+                          isDark ? 'text-blue-400' : 'text-blue-600'
+                        }`}
+                      >
+                        {language === 'bn' ? 'শীঘ্রই আসছে' : 'Coming Soon'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
