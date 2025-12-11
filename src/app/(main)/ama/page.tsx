@@ -243,19 +243,6 @@ export default function AMAPage() {
           >
             {language === 'bn' ? '❓ প্রশ্ন করুন' : '❓ Ask a Question'}
           </button>
-
-          {/* Social Share in Hero */}
-          <div className="mt-6 flex justify-center">
-            <SocialShare
-              url={`${siteConfig.url}/ama`}
-              title={language === 'bn' ? 'জিজ্ঞাসা করুন - এস এম জাহাঙ্গীর হোসেন' : 'Ask Me Anything - S M Jahangir Hossain'}
-              description={language === 'bn'
-                ? 'এস এম জাহাঙ্গীর হোসেনকে সরাসরি প্রশ্ন করুন। আপনার প্রশ্নের উত্তর পান।'
-                : 'Ask S M Jahangir Hossain directly. Get answers to your questions.'}
-              variant="icons"
-              size="md"
-            />
-          </div>
         </div>
       </div>
 
@@ -535,7 +522,7 @@ export default function AMAPage() {
                         {language === 'bn' ? 'এই প্রশ্ন-উত্তর শেয়ার করুন:' : 'Share this Q&A:'}
                       </span>
                       <SocialShare
-                        url={`${siteConfig.url}/ama#question-${question.id}`}
+                        url={`${siteConfig.url}/ama/${question.id}`}
                         title={getText(question.question_en, question.question_bn).substring(0, 100)}
                         description={getText(question.answer_en, question.answer_bn)?.substring(0, 200) || ''}
                         variant="icons"

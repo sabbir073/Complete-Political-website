@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: title,
     description: description,
     url: `/polls/${id}`,
-    image: "/bnp-welcome.jpg",
+    image: "/og-default.jpg",
     type: "article",
     publishedTime: poll.start_datetime,
     tags: ["poll", "survey", "opinion", "vote", "Dhaka-18"],
