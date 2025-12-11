@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = news.title_en || "News";
   const description = news.excerpt_en || news.content_en?.replace(/<[^>]*>/g, '').substring(0, 160) || `News: ${title}`;
-  const image = news.featured_image || "/bnp-welcome.jpg";
+  const image = news.featured_image || "/og-default.jpg";
 
   return generateSeoMetadata({
     title: title,

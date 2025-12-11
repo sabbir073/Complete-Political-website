@@ -3,7 +3,7 @@ import { Metadata } from "next";
 // Site configuration
 export const siteConfig = {
   name: "S M Jahangir Hossain",
-  shortName: "SM Jahangir",
+  shortName: "S M Jahangir Hossain",
   description:
     "S M Jahangir Hossain - BNP Nominated MP Candidate for Dhaka-18 Constituency in National Election 2026. Join the movement for change.",
   url: "https://smjahangir.com",
