@@ -25,13 +25,13 @@ export const siteConfig = {
   locale: "en_US",
   alternateLocale: "bn_BD",
   // Facebook
-  facebookAppId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
+  facebookAppId: process.env.NEXT_PUBLIC_FB_APP_ID || "857382123547788",
   // Google Analytics
-  gaId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "",
+  gaId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-84MDX3JCSR",
   // Verification codes
-  googleVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
-  bingVerification: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "",
-  yandexVerification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
+  googleVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "yZiacXBf-N57q2xJ8vRyIJu1pOEwxMyiNX7C18nLFAM",
+  bingVerification: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "ED52E9CACA1993AA15D921FAAD2C0F2F",
+  yandexVerification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "51c642a0f90126b7",
 };
 
 // Generate base metadata
