@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import AuthInitializer from "@/components/AuthInitializer";
 import { Toaster } from "react-hot-toast";
 import { siteConfig, generatePersonJsonLd, generateWebsiteJsonLd } from "@/lib/seo";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -46,6 +47,9 @@ export const metadata: Metadata = {
       },
     ],
   },
+  facebook: siteConfig.facebookAppId ? {
+    appId: siteConfig.facebookAppId,
+  } : undefined,
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} | BNP Nominated MP Candidate - Dhaka-18`,
@@ -55,7 +59,11 @@ export const metadata: Metadata = {
     site: siteConfig.twitter,
   },
   verification: {
-    google: "your-google-verification-code",
+    google: siteConfig.googleVerification || undefined,
+    yandex: siteConfig.yandexVerification || undefined,
+    other: {
+      ...(siteConfig.bingVerification ? { "msvalidate.01": siteConfig.bingVerification } : {}),
+    },
   },
   alternates: {
     canonical: siteConfig.url,
@@ -65,6 +73,14 @@ export const metadata: Metadata = {
     },
   },
   category: "politics",
+  applicationName: siteConfig.name,
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
@@ -88,6 +104,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <GoogleAnalytics />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}

@@ -6,7 +6,7 @@ export const siteConfig = {
   shortName: "S M Jahangir Hossain",
   description:
     "S M Jahangir Hossain - BNP Nominated MP Candidate for Dhaka-18 Constituency in National Election 2026. Join the movement for change.",
-  url: "https://smjahangir.com",
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://smjahangir.com",
   ogImage: "/og-default.jpg",
   keywords: [
     "S M Jahangir Hossain",
@@ -24,6 +24,14 @@ export const siteConfig = {
   twitter: "@smjahangir",
   locale: "en_US",
   alternateLocale: "bn_BD",
+  // Facebook
+  facebookAppId: process.env.NEXT_PUBLIC_FB_APP_ID || "",
+  // Google Analytics
+  gaId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "",
+  // Verification codes
+  googleVerification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+  bingVerification: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "",
+  yandexVerification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION || "",
 };
 
 // Generate base metadata
@@ -90,6 +98,9 @@ export function generateMetadata({
         },
       ],
     },
+    facebook: siteConfig.facebookAppId ? {
+      appId: siteConfig.facebookAppId,
+    } : undefined,
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
