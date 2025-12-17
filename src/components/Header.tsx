@@ -62,7 +62,7 @@ const menuItems = [
       { href: "/blood-hub", key: "bloodHub" },
       { href: "/volunteer-hub", key: "volunteerHub" },
       {
-        href: "/participation",
+        href: "#",
         key: "publicParticipation",
         submenu: [
           { href: "/polls", key: "pollsSurveys" },
@@ -71,7 +71,7 @@ const menuItems = [
         ],
       },
       {
-        href: "/promises",
+        href: "#",
         key: "promisesProgress",
         submenu: [
           { href: "/promises", key: "promiseTracker" },
@@ -324,7 +324,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                         <div className="py-2">
                           {item.dropdown.map((subItem) => (
                             <div
-                              key={subItem.href}
+                              key={subItem.key}
                               className="relative group/sub"
                               onMouseEnter={() => subItem.submenu && setOpenSubmenu(subItem.key)}
                             >
@@ -363,7 +363,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                                     <div className="py-2">
                                       {subItem.submenu.map((subSubItem) => (
                                         <Link
-                                          key={subSubItem.href}
+                                          key={subSubItem.key}
                                           href={subSubItem.href}
                                           className={`block px-5 py-2.5 text-[14px] font-medium transition-all duration-200 ${
                                             isDark
@@ -605,7 +605,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                 {item.dropdown && mobileSubmenu === item.key && (
                   <div className={`${isDark ? "bg-gray-800/50" : "bg-gray-50"}`}>
                     {item.dropdown.map((subItem) => (
-                      <div key={subItem.href}>
+                      <div key={subItem.key}>
                         {subItem.submenu ? (
                           <>
                             <button
@@ -640,7 +640,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                               <div className={`${isDark ? "bg-gray-900/50" : "bg-white"}`}>
                                 {subItem.submenu.map((subSubItem) => (
                                   <Link
-                                    key={subSubItem.href}
+                                    key={subSubItem.key}
                                     href={subSubItem.href}
                                     className={`block pl-12 pr-5 py-3 text-[14px] font-medium transition-all duration-200 ${
                                       isDark

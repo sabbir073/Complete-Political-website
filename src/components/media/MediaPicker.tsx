@@ -37,7 +37,18 @@ export default function MediaPicker({
     if (!val) return [];
     if (Array.isArray(val)) return val;
     if (typeof val === 'string') {
-      if (!val) return [];
+      // Check if string is empty or just whitespace
+      if (!val || val.trim() === '') return [];
+      // Validate it's a valid URL (absolute or relative starting with /)
+      const isValidUrl = (url: string): boolean => {
+        try {
+          new URL(url);
+          return true;
+        } catch {
+          return url.startsWith('/');
+        }
+      };
+      if (!isValidUrl(val)) return [];
       // Create a mock MediaItem from the string URL
       return [{
         id: 'external',
@@ -194,6 +205,44 @@ function MediaPreviewCard({ item, onRemove, large = false }: MediaPreviewCardPro
   const { isDark } = useTheme();
   const isImage = item.file_type === 'image';
   const displayUrl = item.cloudfront_url || item.s3_url;
+
+  // Validate URL before rendering
+  const isValidDisplayUrl = (url: string | undefined): boolean => {
+    if (!url || url.trim() === '') return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return url.startsWith('/');
+    }
+  };
+
+  // If no valid URL, show placeholder
+  if (!isValidDisplayUrl(displayUrl)) {
+    return (
+      <div className={`
+        relative group rounded-lg overflow-hidden
+        ${large ? 'aspect-video' : 'aspect-square'}
+        ${isDark ? 'bg-gray-700' : 'bg-gray-200'}
+        flex items-center justify-center
+      `}>
+        <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+          No preview
+        </span>
+        {onRemove && (
+          <button
+            onClick={onRemove}
+            className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+            type="button"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={`

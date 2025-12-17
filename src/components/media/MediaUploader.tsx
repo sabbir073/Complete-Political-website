@@ -453,6 +453,7 @@ export default function MediaUploader({
                   <div className="flex items-center space-x-2">
                     {upload.status === 'error' && (
                       <button
+                        type="button"
                         onClick={() => retryUpload(upload.id)}
                         className="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                       >
@@ -460,6 +461,7 @@ export default function MediaUploader({
                       </button>
                     )}
                     <button
+                      type="button"
                       onClick={() => removeUpload(upload.id)}
                       className={`text-xs px-2 py-1 rounded hover:bg-opacity-80 ${
                         isDark ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700'

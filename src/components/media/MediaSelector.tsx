@@ -99,6 +99,7 @@ export default function MediaSelector({
             )}
             
             <button
+              type="button"
               onClick={onClose}
               className={`
                 p-2 rounded-lg transition-colors
@@ -138,19 +139,21 @@ export default function MediaSelector({
             
             <div className="flex items-center space-x-3">
               <button
+                type="button"
                 onClick={onClose}
                 className={`
                   px-4 py-2 rounded-lg font-medium transition-colors
-                  ${isDark 
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                  ${isDark
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }
                 `}
               >
                 Cancel
               </button>
-              
+
               <button
+                type="button"
                 onClick={handleConfirmSelection}
                 disabled={selectedMedia.length === 0 || (!!maxSelections && selectedMedia.length > maxSelections)}
                 className={`

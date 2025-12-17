@@ -98,10 +98,19 @@ export default function MediaLibrary({
     }
   }, [filter]);
 
-  // Initial load and fetch available dates
+  // Initial load and when filters change (reset items)
   useEffect(() => {
     fetchMedia(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter.fileType, filter.search, selectedDate]);
+
+  // Load more when offset changes (append items)
+  useEffect(() => {
+    if (filter.offset && filter.offset > 0) {
+      fetchMedia(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter.offset]);
 
   // Fetch available dates on component mount
   useEffect(() => {
@@ -111,12 +120,12 @@ export default function MediaLibrary({
   // Load more items
   const loadMore = () => {
     if (!hasMore || loading) return;
-    
+
     setFilter(prev => ({
       ...prev,
       offset: (prev.offset || 0) + (prev.limit || 20)
     }));
-    fetchMedia(false);
+    // fetchMedia is triggered by the useEffect watching filter.offset
   };
 
   // Handle search
@@ -239,6 +248,7 @@ export default function MediaLibrary({
         <div className="flex items-center space-x-2">
           {showUploader && (
             <button
+              type="button"
               onClick={() => setShowUploadArea(!showUploadArea)}
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors cursor-pointer"
             >
@@ -249,6 +259,7 @@ export default function MediaLibrary({
           {/* View Toggle */}
           <div className={`flex rounded-lg p-1 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
             <button
+              type="button"
               onClick={() => setView('grid')}
               className={`p-2 rounded ${view === 'grid' ? 'bg-blue-500 text-white' : isDark ? 'text-gray-400' : 'text-gray-600'}`}
             >
@@ -257,6 +268,7 @@ export default function MediaLibrary({
               </svg>
             </button>
             <button
+              type="button"
               onClick={() => setView('list')}
               className={`p-2 rounded ${view === 'list' ? 'bg-blue-500 text-white' : isDark ? 'text-gray-400' : 'text-gray-600'}`}
             >
@@ -335,6 +347,7 @@ export default function MediaLibrary({
             {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
             {multiple && (
               <button
+                type="button"
                 onClick={() => setSelectedItems(new Set())}
                 className="ml-2 text-blue-500 hover:text-blue-600 underline"
               >
@@ -383,6 +396,7 @@ export default function MediaLibrary({
       {hasMore && (
         <div className="text-center py-4">
           <button
+            type="button"
             onClick={loadMore}
             disabled={loading}
             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 transition-colors"
@@ -462,6 +476,7 @@ function MediaItemCard({ item, isSelected, view, onSelect, onDelete, onEdit, sel
           )}
           
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
@@ -473,8 +488,9 @@ function MediaItemCard({ item, isSelected, view, onSelect, onDelete, onEdit, sel
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           </button>
-          
+
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
@@ -523,6 +539,7 @@ function MediaItemCard({ item, isSelected, view, onSelect, onDelete, onEdit, sel
       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors">
         <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onEdit();
@@ -535,6 +552,7 @@ function MediaItemCard({ item, isSelected, view, onSelect, onDelete, onEdit, sel
             </svg>
           </button>
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
