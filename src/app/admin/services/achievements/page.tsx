@@ -273,8 +273,8 @@ export default function AdminAchievementsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const confirmed = await showDeleteConfirm('Delete Achievement', 'Are you sure you want to delete this achievement?');
-    if (!confirmed) return;
+    const result = await showDeleteConfirm('this achievement');
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/achievements?id=${id}`, { method: 'DELETE' });

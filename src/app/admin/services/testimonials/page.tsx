@@ -198,7 +198,24 @@ export default function AdminTestimonialsPage() {
   const [filter, setFilter] = useState('all');
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    category_id: string;
+    person_name_en: string;
+    person_name_bn: string;
+    person_photo: string;
+    location_en: string;
+    location_bn: string;
+    profession_en: string;
+    profession_bn: string;
+    content_en: string;
+    content_bn: string;
+    video_url: string;
+    rating: number;
+    is_verified: boolean;
+    is_featured: boolean;
+    status: 'pending' | 'approved' | 'rejected';
+    display_order: number;
+  }>({
     category_id: '',
     person_name_en: '',
     person_name_bn: '',
@@ -213,7 +230,7 @@ export default function AdminTestimonialsPage() {
     rating: 5,
     is_verified: false,
     is_featured: false,
-    status: 'approved' as const,
+    status: 'approved',
     display_order: 0
   });
 
@@ -343,8 +360,8 @@ export default function AdminTestimonialsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const confirmed = await showDeleteConfirm('Delete Testimonial', 'Are you sure you want to delete this testimonial?');
-    if (!confirmed) return;
+    const result = await showDeleteConfirm('this testimonial');
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/testimonials?id=${id}`, { method: 'DELETE' });

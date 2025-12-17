@@ -66,7 +66,8 @@
       "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\lib\\chunked-upload.ts\")",
       "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\bnp-1b3225.jpg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\bnp-welcome.jpg\")",
       "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\596861411_1435210998613893_4057368752627823128_n.jpg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\about-hero.jpg\")",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(npx next build)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

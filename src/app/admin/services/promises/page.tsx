@@ -106,16 +106,29 @@ export default function AdminPromisesPage() {
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState('all');
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    category_id: string;
+    title_en: string;
+    title_bn: string;
+    description_en: string;
+    description_bn: string;
+    target_date: string;
+    status: 'not_started' | 'in_progress' | 'completed' | 'delayed';
+    progress: number;
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    featured: boolean;
+    featured_image: string;
+    display_order: number;
+  }>({
     category_id: '',
     title_en: '',
     title_bn: '',
     description_en: '',
     description_bn: '',
     target_date: '',
-    status: 'not_started' as const,
+    status: 'not_started',
     progress: 0,
-    priority: 'medium' as const,
+    priority: 'medium',
     featured: false,
     featured_image: '',
     display_order: 0
@@ -250,8 +263,8 @@ export default function AdminPromisesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    const confirmed = await showDeleteConfirm('Delete Promise', 'Are you sure you want to delete this promise?');
-    if (!confirmed) return;
+    const result = await showDeleteConfirm('this promise');
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/promises?id=${id}`, { method: 'DELETE' });
@@ -372,8 +385,8 @@ export default function AdminPromisesPage() {
   };
 
   const handleDeleteUpdate = async (updateId: string) => {
-    const confirmed = await showDeleteConfirm('Delete Update', 'Are you sure you want to delete this update?');
-    if (!confirmed) return;
+    const result = await showDeleteConfirm('this update');
+    if (!result.isConfirmed) return;
 
     try {
       const response = await fetch(`/api/admin/promises/updates?id=${updateId}`, { method: 'DELETE' });

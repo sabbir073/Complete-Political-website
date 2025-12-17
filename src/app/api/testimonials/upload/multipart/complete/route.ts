@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      url: cloudFrontUrl || result.location,
+      url: cloudFrontUrl || result.cloudFrontUrl || result.s3Url,
       s3Key,
-      location: result.location
+      location: result.s3Url
     });
 
   } catch (error) {
