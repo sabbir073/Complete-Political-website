@@ -30,8 +30,8 @@ interface HeaderSettings {
 }
 
 const defaultSettings: HeaderSettings = {
-  header_logo_light: '/logo.png',
-  header_logo_dark: '/logo.png',
+  header_logo_light: '/Logo-PNG.png',
+  header_logo_dark: '/Logo-PNG.png',
   header_logo_alt: { en: 'S M Jahangir Hossain Logo', bn: 'এস এম জাহাঙ্গীর হোসেন লোগো' },
   header_logo_width: 90,
   header_logo_height: 60,

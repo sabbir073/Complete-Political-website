@@ -252,16 +252,8 @@ export default function VideosSettingsPage() {
     if (setting.setting_key.includes('image') && setting.setting_type === 'text') {
       return (
         <MediaPicker
-          value={setting.setting_value}
-          onChange={(media: any) => {
-            // Extract URL from MediaItem
-            const url = media
-              ? Array.isArray(media)
-                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
-                : media.cloudfront_url || media.s3_url || ''
-              : '';
-            handleSettingChange(setting.setting_key, url);
-          }}
+          value={setting.setting_value || ''}
+          onChange={(url: string) => handleSettingChange(setting.setting_key, url)}
           label={label}
           description={setting.description}
           fileType="image"
@@ -278,25 +270,17 @@ export default function VideosSettingsPage() {
           bn: String(setting.setting_value.bn || '')
         };
       } else {
-        multilingualValue = { 
-          en: String(setting.setting_value || ''), 
-          bn: '' 
+        multilingualValue = {
+          en: String(setting.setting_value || ''),
+          bn: ''
         };
       }
-      
+
       return (
         <MultilingualInput
           name={setting.setting_key}
           value={multilingualValue}
-          onChange={(media: any) => {
-            // Extract URL from MediaItem
-            const url = media
-              ? Array.isArray(media)
-                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
-                : media.cloudfront_url || media.s3_url || ''
-              : '';
-            handleSettingChange(setting.setting_key, url);
-          }}
+          onChange={(value) => handleSettingChange(setting.setting_key, value)}
           label={label}
           description={setting.description}
         />
@@ -307,15 +291,7 @@ export default function VideosSettingsPage() {
       <SettingInput
         name={setting.setting_key}
         value={setting.setting_value}
-        onChange={(media: any) => {
-            // Extract URL from MediaItem
-            const url = media
-              ? Array.isArray(media)
-                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
-                : media.cloudfront_url || media.s3_url || ''
-              : '';
-            handleSettingChange(setting.setting_key, url);
-          }}
+        onChange={(value) => handleSettingChange(setting.setting_key, value)}
         label={label}
         type={setting.setting_type as any}
         description={setting.description}

@@ -67,7 +67,12 @@
       "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\bnp-1b3225.jpg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\bnp-welcome.jpg\")",
       "Bash(copy \"C:\\Users\\Sabbir Ahmed\\Downloads\\596861411_1435210998613893_4057368752627823128_n.jpg\" \"C:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\public\\about-hero.jpg\")",
       "Bash(npm uninstall:*)",
-      "Bash(npx next build)"
+      "Bash(npx next build)",
+      "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\middleware.ts\")",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(move \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\(main)\\sitemap\" \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\(main)\\site-map\")",
+      "Bash(del \"c:\\Users\\Sabbir Ahmed\\OneDrive\\Desktop\\smjahangir\\finalsite\\src\\app\\(main)\\sitemap\\page.tsx\")"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

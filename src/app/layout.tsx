@@ -81,6 +81,20 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: siteConfig.shortName,
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/Logo-PNG.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/Logo-PNG.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 };
 
 export const viewport: Viewport = {

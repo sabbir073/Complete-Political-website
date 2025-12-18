@@ -294,7 +294,7 @@ export default function BNPFooter() {
             <div className="flex flex-col items-start">
               {footerSettings?.footer_logo_show && (
                 <Image
-                  src={footerSettings?.footer_logo_src || "/logo.png"}
+                  src={footerSettings?.footer_logo_src || "/Logo-PNG.png"}
                   alt={logoAltText || "Footer Logo"}
                   width={footerSettings?.footer_logo_width || 64}
                   height={footerSettings?.footer_logo_height || 48}

@@ -117,8 +117,8 @@ const menuItems = [
           { href: "/accessibility", key: "accessibility" },
         ],
       },
-      { href: "/sitemap", key: "siteMap" },
-      { href: "/install", key: "installApp" },
+      { href: "/site-map", key: "siteMap" },
+      { href: "#install", key: "installApp", isInstallAction: true },
     ],
   },
 ];

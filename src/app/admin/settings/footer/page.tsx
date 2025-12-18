@@ -281,16 +281,8 @@ export default function FooterSettingsPage() {
     if (setting.setting_key === 'footer_logo_src' || setting.setting_key === 'footer_cta_bg_image') {
       return (
         <MediaPicker
-          value={setting.setting_value}
-          onChange={(media: any) => {
-            // Extract URL from MediaItem
-            const url = media
-              ? Array.isArray(media)
-                ? media[0]?.cloudfront_url || media[0]?.s3_url || ''
-                : media.cloudfront_url || media.s3_url || ''
-              : '';
-            handleSettingChange(setting.setting_key, url);
-          }}
+          value={setting.setting_value || ''}
+          onChange={(url: string) => handleSettingChange(setting.setting_key, url)}
           label={label}
           description={setting.description}
           fileType="image"

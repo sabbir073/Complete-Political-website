@@ -110,7 +110,7 @@ const defaultSettings: FooterSettings = {
   
   // Logo settings
   footer_logo_show: true,
-  footer_logo_src: '/logo.png',
+  footer_logo_src: '/Logo-PNG.png',
   footer_logo_width: 64,
   footer_logo_height: 48,
   

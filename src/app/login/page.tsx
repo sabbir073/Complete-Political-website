@@ -111,7 +111,7 @@ function LoginPageContent() {
             }`}>
             <div className="flex justify-center mb-4">
               <Image
-                src="/logo.png"
+                src="/Logo-PNG.png"
                 alt="Logo"
                 width={64}
                 height={48}

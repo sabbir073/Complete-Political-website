@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -42,13 +42,13 @@ export async function middleware(request: NextRequest) {
 
   // If user is authenticated and tries to access login, redirect to admin
   if (session && isLoginRoute) {
-    console.log('🔄 Middleware: Authenticated user accessing login, redirecting to /admin');
+    console.log('🔄 Proxy: Authenticated user accessing login, redirecting to /admin');
     return NextResponse.redirect(new URL('/admin', request.url));
   }
 
   // If user is not authenticated and tries to access admin, redirect to login
   if (!session && isAdminRoute) {
-    console.log('🔒 Middleware: Unauthenticated user accessing admin, redirecting to /login');
+    console.log('🔒 Proxy: Unauthenticated user accessing admin, redirecting to /login');
     return NextResponse.redirect(new URL('/login', request.url));
   }
 

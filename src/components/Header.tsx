@@ -90,7 +90,6 @@ const menuItems = [
         href: "/tools",
         key: "digitalTools",
         submenu: [
-          { href: "/polls/live", key: "livePolling" },
           { href: "/challenges", key: "challenges" },
           { href: "/gamification", key: "gamification" },
           { href: "/store", key: "store" },
@@ -106,8 +105,8 @@ const menuItems = [
           { href: "/accessibility", key: "accessibility" },
         ],
       },
-      { href: "/sitemap", key: "siteMap" },
-      { href: "/install", key: "installApp" },
+      { href: "/site-map", key: "siteMap" },
+      { href: "#install", key: "installApp", isInstallAction: true },
     ],
   },
   { href: "/election-2026", key: "election2026" },
@@ -115,6 +114,12 @@ const menuItems = [
 
 interface HeaderProps {
   initialSettings?: any;
+}
+
+// BeforeInstallPromptEvent interface for TypeScript
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
 export default function Header({ initialSettings }: HeaderProps = {}) {
@@ -125,10 +130,68 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
   const [mobileSubmenu, setMobileSubmenu] = useState<string | null>(null);
   const [mobileSubSubmenu, setMobileSubSubmenu] = useState<string | null>(null);
   const [logoAltText, setLogoAltText] = useState('');
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const { language, changeLanguage, t } = useLanguage();
   const { theme, toggleTheme, isDark } = useTheme();
   const { settings, loading, error, getText } = useHeaderSettings(initialSettings);
+
+  // Listen for the beforeinstallprompt event
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    // Check if app is already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsAppInstalled(true);
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  // Handle install app click
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      // Show the install prompt
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else if (isAppInstalled) {
+      // App is already installed
+      alert(language === 'bn' ? 'অ্যাপটি ইতিমধ্যে ইনস্টল করা আছে!' : 'App is already installed!');
+    } else {
+      // Fallback for browsers that don't support beforeinstallprompt (iOS Safari, Firefox)
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+      if (isIOS || isSafari) {
+        alert(language === 'bn'
+          ? 'ইনস্টল করতে: Share বাটনে ক্লিক করুন → "Add to Home Screen" নির্বাচন করুন'
+          : 'To install: Tap the Share button → Select "Add to Home Screen"');
+      } else {
+        alert(language === 'bn'
+          ? 'ইনস্টল করতে: ব্রাউজার মেনু থেকে "Install App" বা "Add to Home Screen" নির্বাচন করুন'
+          : 'To install: Select "Install App" or "Add to Home Screen" from browser menu');
+      }
+    }
+    closeAllMenus();
+  };
 
   // Fetch alt text from media library
   useEffect(() => {
@@ -216,7 +279,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
         <div className="container mx-auto">
           <div className="flex justify-between items-center px-6 py-4">
             <Link href="/" className="flex-shrink-0">
-              <Image src="/logo.png" alt="Logo" width={90} height={60} className="h-auto max-h-14" priority />
+              <Image src="/Logo-PNG.png" alt="Logo" width={90} height={60} className="h-auto max-h-14" priority />
             </Link>
             <div className="text-sm text-gray-500 dark:text-gray-400">Loading...</div>
           </div>
@@ -322,12 +385,29 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                           : "bg-white border-gray-200"
                       }`}>
                         <div className="py-2">
-                          {item.dropdown.map((subItem) => (
+                          {item.dropdown.map((subItem: any) => (
                             <div
                               key={subItem.key}
                               className="relative group/sub"
                               onMouseEnter={() => subItem.submenu && setOpenSubmenu(subItem.key)}
                             >
+                              {subItem.isInstallAction ? (
+                                <button
+                                  onClick={handleInstallClick}
+                                  className={`w-full flex items-center justify-between px-5 py-3 text-[15px] font-medium transition-all duration-200 ${
+                                    isDark
+                                      ? "text-gray-300 hover:text-white hover:bg-gray-800"
+                                      : "text-gray-700 hover:text-red-600 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                    {getTranslation(item.key, subItem.key)}
+                                  </span>
+                                </button>
+                              ) : (
                               <Link
                                 href={subItem.href}
                                 className={`flex items-center justify-between px-5 py-3 text-[15px] font-medium transition-all duration-200 ${
@@ -347,6 +427,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                                   </svg>
                                 )}
                               </Link>
+                              )}
 
                               {/* Desktop Sub-submenu - CSS hover based */}
                               {subItem.submenu && (
@@ -361,7 +442,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                                       : "bg-white border-gray-200"
                                   }`}>
                                     <div className="py-2">
-                                      {subItem.submenu.map((subSubItem) => (
+                                      {subItem.submenu.map((subSubItem: any) => (
                                         <Link
                                           key={subSubItem.key}
                                           href={subSubItem.href}
@@ -638,7 +719,7 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                             {/* Sub-submenu */}
                             {mobileSubSubmenu === subItem.key && (
                               <div className={`${isDark ? "bg-gray-900/50" : "bg-white"}`}>
-                                {subItem.submenu.map((subSubItem) => (
+                                {subItem.submenu.map((subSubItem: any) => (
                                   <Link
                                     key={subSubItem.key}
                                     href={subSubItem.href}
@@ -655,6 +736,20 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
                               </div>
                             )}
                           </>
+                        ) : subItem.isInstallAction ? (
+                          <button
+                            onClick={handleInstallClick}
+                            className={`w-full text-left flex items-center gap-2 pl-8 pr-5 py-3.5 text-[15px] font-medium transition-all duration-200 ${
+                              isDark
+                                ? "text-gray-300 hover:text-white hover:bg-gray-700"
+                                : "text-gray-700 hover:text-red-600 hover:bg-gray-100"
+                            }`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            {getTranslation(item.key, subItem.key)}
+                          </button>
                         ) : (
                           <Link
                             href={subItem.href}
