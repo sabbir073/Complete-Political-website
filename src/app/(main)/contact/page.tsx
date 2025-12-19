@@ -110,7 +110,7 @@ export default function ContactPage() {
                                 {language === 'bn' ? 'ঠিকানা' : 'Address'}
                             </h3>
                             <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                {language === 'bn' ? 'ঢাকা, বাংলাদেশ' : 'Dhaka, Bangladesh'}
+                                {language === 'bn' ? 'বাড়ি-৭২, রোড-৬, সেক্টর-৯, উত্তরা, ঢাকা-১২৩০' : 'House-72, Road-6, Sector-9, Uttara, Dhaka-1230'}
                             </p>
                         </div>
 
@@ -124,7 +124,7 @@ export default function ContactPage() {
                                 {language === 'bn' ? 'ফোন' : 'Phone'}
                             </h3>
                             <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                +880 1XXX-XXXXXX
+                                +8801711563636
                             </p>
                         </div>
 
@@ -138,7 +138,7 @@ export default function ContactPage() {
                                 {language === 'bn' ? 'ইমেইল' : 'Email'}
                             </h3>
                             <p className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                contact@example.com
+                                inf0@smjahangir.com
                             </p>
                         </div>
                     </div>
