@@ -344,3 +344,17 @@ export function uploadVolunteerPhoto(
 ): Promise<UploadResult> {
   return uploadFileWithMultipart(file, file.name, volunteerUploadConfig, options);
 }
+
+// Election 2026 uploads (public, supporter photos)
+export const electionUploadConfig: UploadConfig = {
+  regularEndpoint: '/api/election-2026/upload',
+  initiateEndpoint: '/api/election-2026/upload/multipart/initiate',
+  completeEndpoint: '/api/election-2026/upload/multipart/complete',
+};
+
+export function uploadSupporterPhoto(
+  file: File,
+  options: UploadOptions = {}
+): Promise<UploadResult> {
+  return uploadFileWithMultipart(file, file.name, electionUploadConfig, options);
+}

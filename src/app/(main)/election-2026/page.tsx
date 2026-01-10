@@ -3,31 +3,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/providers/LanguageProvider';
 import { useTheme } from '@/providers/ThemeProvider';
-import html2canvas from 'html2canvas-pro';
+import { uploadSupporterPhoto } from '@/lib/s3-multipart-upload';
 
-// Random profile images of SM Jahangir
-const profileImages = [
-  '/supportcard/proffile/1.jpg',
-  '/supportcard/proffile/2.jpg',
-  '/supportcard/proffile/1.png',
-  '/supportcard/proffile/2.png',
+// Card templates
+const cardTemplates = [
+  '/supportcard/card-1.png',
+  '/supportcard/card-2.png',
+  '/supportcard/card-3.png',
 ];
-
-// Random inspirational messages - focused on voting for SM Jahangir
-const inspirationalMessages = {
-  bn: [
-    'আপনার একটি ভোটই বদলে দিতে পারে একটি প্রজন্মের ভাগ্য',
-    'ধানের শীষে ভোট দিন, জাহাঙ্গীরকে এমপি করুন',
-    'ঢাকা-১৮ এর উন্নয়নে ভোট দিন এস এম জাহাঙ্গীরকে',
-    'গণতন্ত্র পুনরুদ্ধারে ভোট দিন ধানের শীষে',
-  ],
-  en: [
-    'Your one vote can change the destiny of a generation',
-    'Vote for Sheaf of Paddy, Make Jahangir the MP',
-    'Vote for S M Jahangir for the development of Dhaka-18',
-    'Vote for Sheaf of Paddy to restore democracy',
-  ],
-};
 
 // Social media sharing captions
 const socialCaptions = {
@@ -65,20 +48,28 @@ export default function Election2026Page() {
   const { language } = useLanguage();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-  const cardRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
+  const [position, setPosition] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [pledgeSuccess, setPledgeSuccess] = useState<PledgeData | null>(null);
   const [error, setError] = useState('');
   const [downloading, setDownloading] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Random selections for the card
-  const [randomProfile, setRandomProfile] = useState('');
-  const [randomMessage, setRandomMessage] = useState('');
+  // Photo upload state
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>('');
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedPhotoUrl, setUploadedPhotoUrl] = useState<string>('');
+
+  // Random card template selection
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [generatedCardUrl, setGeneratedCardUrl] = useState<string>('');
 
   // Translations
   const t = {
@@ -92,6 +83,12 @@ export default function Election2026Page() {
     todaySupporters: language === 'bn' ? 'আজকে যোগ দিয়েছেন' : 'Joined Today',
     name: language === 'bn' ? 'আপনার নাম' : 'Your Name',
     namePlaceholder: language === 'bn' ? 'আপনার পূর্ণ নাম লিখুন' : 'Enter your full name',
+    position: language === 'bn' ? 'রাজনৈতিক পদবি (ঐচ্ছিক)' : 'Political Position (Optional)',
+    positionPlaceholder: language === 'bn' ? 'যেমন: সভাপতি, সাধারণ সম্পাদক, সদস্য' : 'e.g., President, Secretary, Member',
+    photo: language === 'bn' ? 'আপনার ছবি' : 'Your Photo',
+    photoHint: language === 'bn' ? 'JPG বা PNG (সর্বোচ্চ 2MB)' : 'JPG or PNG (Max 2MB)',
+    choosePhoto: language === 'bn' ? 'ছবি নির্বাচন করুন' : 'Choose Photo',
+    uploadingPhoto: language === 'bn' ? 'আপলোড হচ্ছে...' : 'Uploading...',
     submitBtn: language === 'bn' ? 'আমি সমর্থন করি' : 'I Support S M Jahangir',
     submitting: language === 'bn' ? 'জমা হচ্ছে...' : 'Submitting...',
     successTitle: language === 'bn' ? 'ধন্যবাদ!' : 'Thank You!',
@@ -112,12 +109,8 @@ export default function Election2026Page() {
 
   useEffect(() => {
     fetchStats();
-    // Set random profile and message on mount
-    setRandomProfile(profileImages[Math.floor(Math.random() * profileImages.length)]);
-    setRandomMessage(language === 'bn'
-      ? inspirationalMessages.bn[Math.floor(Math.random() * inspirationalMessages.bn.length)]
-      : inspirationalMessages.en[Math.floor(Math.random() * inspirationalMessages.en.length)]
-    );
+    // Set random card template on mount
+    setSelectedTemplate(cardTemplates[Math.floor(Math.random() * cardTemplates.length)]);
   }, [language]);
 
   const fetchStats = async () => {
@@ -135,6 +128,219 @@ export default function Election2026Page() {
     }
   };
 
+  // Handle photo selection
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+      setError(language === 'bn' ? 'শুধুমাত্র JPG এবং PNG ফাইল গ্রহণযোগ্য' : 'Only JPG and PNG files are accepted');
+      return;
+    }
+
+    // Validate file size (2MB max)
+    if (file.size > 2 * 1024 * 1024) {
+      setError(language === 'bn' ? 'ফাইলের আকার সর্বোচ্চ ২ MB হতে পারে' : 'File size must be less than 2MB');
+      return;
+    }
+
+    setPhotoFile(file);
+    setError('');
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPhotoPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Upload photo to S3
+  const uploadPhoto = async (): Promise<string | null> => {
+    if (!photoFile) return null;
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const result = await uploadSupporterPhoto(photoFile, {
+        onProgress: (progress) => {
+          setUploadProgress(progress);
+        },
+      });
+
+      if (result.success && result.url) {
+        setUploadedPhotoUrl(result.url);
+        return result.url;
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      setError(language === 'bn' ? 'ছবি আপলোড করতে ব্যর্থ' : 'Failed to upload photo');
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Generate card with photo overlay
+  const generateCard = async (photoUrl: string, supporterName: string, supporterPosition: string): Promise<string | null> => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      console.error('Canvas ref not available');
+      return null;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('Canvas context not available');
+      return null;
+    }
+
+    try {
+      console.log('Starting card generation...');
+      console.log('Template:', selectedTemplate);
+      console.log('Photo URL:', photoUrl);
+      console.log('Supporter Name:', supporterName);
+
+      // Load template image
+      console.log('Loading template image...');
+      const templateImg = await loadImage(selectedTemplate);
+      console.log('Template loaded:', templateImg.width, 'x', templateImg.height);
+
+      // Set canvas dimensions to match template
+      canvas.width = templateImg.width;
+      canvas.height = templateImg.height;
+
+      // Draw template
+      ctx.drawImage(templateImg, 0, 0);
+      console.log('Template drawn on canvas');
+
+      // Load supporter photo
+      console.log('Loading supporter photo...');
+      const photoImg = await loadImage(photoUrl);
+      console.log('Photo loaded:', photoImg.width, 'x', photoImg.height);
+
+      // Calculate circle position and size based on actual template dimensions
+      // Template is 2040 x 2904-2907 pixels
+      // The circle is pre-drawn in the template - need to match its size and position
+      const circleRadius = Math.floor(canvas.width * 0.0375); // Small circle ~76px radius (1/4 of 306px)
+
+      // Position circle to match the pre-drawn circle in the template
+      // The circle appears to be in the lower-middle area of the card
+      const circleX = Math.floor(canvas.width * 0.19); // 19% from left (~388px)
+      const circleY = canvas.height - Math.floor(canvas.height * 0.12); // 12% from bottom (~2555px from top)
+
+      console.log('Circle position:', circleX, circleY, 'radius:', circleRadius);
+
+      // Draw supporter photo in circle
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+
+      // Calculate photo positioning to fill circle (crop from center)
+      const photoSize = circleRadius * 2;
+      const photoAspect = photoImg.width / photoImg.height;
+      let sx = 0, sy = 0, sw = photoImg.width, sh = photoImg.height;
+
+      if (photoAspect > 1) {
+        // Photo is wider - crop width
+        sw = photoImg.height;
+        sx = (photoImg.width - sw) / 2;
+      } else {
+        // Photo is taller - crop height
+        sh = photoImg.width;
+        sy = (photoImg.height - sh) / 2;
+      }
+
+      ctx.drawImage(
+        photoImg,
+        sx, sy, sw, sh,
+        circleX - circleRadius, circleY - circleRadius, photoSize, photoSize
+      );
+      ctx.restore();
+      console.log('Photo drawn in circle');
+
+      // Calculate text dimensions for centering
+      const fontSize = Math.floor(canvas.width * 0.04); // Larger font (~82px for 2040px width)
+      const positionFontSize = Math.floor(canvas.width * 0.03); // Slightly smaller ~61px
+      const textSpacing = Math.floor(canvas.width * 0.02); // Spacing between name and position (~41px)
+
+      // Calculate total height of text block (name + position if exists)
+      let totalTextHeight = fontSize;
+      if (supporterPosition && supporterPosition.trim()) {
+        totalTextHeight += textSpacing + positionFontSize;
+      }
+
+      // Position text to the right of the circle with some padding
+      const textX = circleX + circleRadius + Math.floor(canvas.width * 0.04); // 4% padding (~82px)
+
+      // Center the text block vertically at the same Y position as the circle
+      const textBlockStartY = circleY - (totalTextHeight / 2);
+      const nameTextY = textBlockStartY + (fontSize / 2);
+
+      // Add text shadow for better visibility
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+
+      // Draw supporter name
+      ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+      ctx.fillStyle = '#16a34a'; // Green color (#16a34a - green-600)
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(supporterName, textX, nameTextY);
+      console.log('Name text drawn at:', textX, nameTextY, 'with font size:', fontSize);
+
+      // Draw position text below name if provided
+      if (supporterPosition && supporterPosition.trim()) {
+        const positionTextY = nameTextY + (fontSize / 2) + textSpacing + (positionFontSize / 2);
+        ctx.font = `${positionFontSize}px Arial, sans-serif`; // Not bold
+        ctx.fillStyle = '#16a34a'; // Same green color
+        ctx.fillText(supporterPosition, textX, positionTextY);
+        console.log('Position text drawn at:', textX, positionTextY, 'with font size:', positionFontSize);
+      }
+
+      // Convert canvas to data URL
+      const dataUrl = canvas.toDataURL('image/png', 0.95);
+      console.log('Card generated successfully, data URL length:', dataUrl.length);
+      return dataUrl;
+    } catch (error) {
+      console.error('Card generation error:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      setError(language === 'bn' ? 'কার্ড তৈরি করতে ব্যর্থ' : 'Failed to generate card');
+      return null;
+    }
+  };
+
+  // Helper function to load images
+  const loadImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      // Don't use crossOrigin for same-origin images (relative paths or same domain)
+      if (src.startsWith('http') && typeof window !== 'undefined' && !src.startsWith(window.location.origin)) {
+        img.crossOrigin = 'anonymous';
+      }
+      img.onload = () => {
+        console.log('Image loaded successfully:', src);
+        resolve(img);
+      };
+      img.onerror = (error) => {
+        console.error('Image load error:', src, error);
+        reject(new Error(`Failed to load image: ${src}`));
+      };
+      img.src = src;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
@@ -142,17 +348,24 @@ export default function Election2026Page() {
       return;
     }
 
+    if (!photoFile) {
+      setError(language === 'bn' ? 'অনুগ্রহ করে আপনার ছবি আপলোড করুন' : 'Please upload your photo');
+      return;
+    }
+
     setSubmitting(true);
     setError('');
 
-    // Generate new random selections for the card
-    setRandomProfile(profileImages[Math.floor(Math.random() * profileImages.length)]);
-    setRandomMessage(language === 'bn'
-      ? inspirationalMessages.bn[Math.floor(Math.random() * inspirationalMessages.bn.length)]
-      : inspirationalMessages.en[Math.floor(Math.random() * inspirationalMessages.en.length)]
-    );
-
     try {
+      // Step 1: Upload photo to S3
+      const photoUrl = await uploadPhoto();
+      if (!photoUrl) {
+        setError(language === 'bn' ? 'ছবি আপলোড করতে ব্যর্থ' : 'Failed to upload photo');
+        setSubmitting(false);
+        return;
+      }
+
+      // Step 2: Submit pledge to database
       const res = await fetch('/api/election-2026/pledge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -160,14 +373,27 @@ export default function Election2026Page() {
       });
       const data = await res.json();
 
-      if (data.success) {
-        setPledgeSuccess(data.pledge);
-        setTotalCount(data.totalCount);
-        fetchStats();
-      } else {
+      if (!data.success) {
         setError(data.error);
+        setSubmitting(false);
+        return;
       }
-    } catch {
+
+      // Step 3: Generate card with photo overlay
+      const cardDataUrl = await generateCard(photoUrl, name.trim(), position.trim());
+      if (!cardDataUrl) {
+        setError(language === 'bn' ? 'কার্ড তৈরি করতে ব্যর্থ' : 'Failed to generate card');
+        setSubmitting(false);
+        return;
+      }
+
+      // Success - show card
+      setGeneratedCardUrl(cardDataUrl);
+      setPledgeSuccess(data.pledge);
+      setTotalCount(data.totalCount);
+      fetchStats();
+    } catch (error) {
+      console.error('Submission error:', error);
       setError(language === 'bn' ? 'একটি ত্রুটি হয়েছে' : 'An error occurred');
     } finally {
       setSubmitting(false);
@@ -175,21 +401,13 @@ export default function Election2026Page() {
   };
 
   const downloadCard = async () => {
-    if (!cardRef.current) return;
+    if (!generatedCardUrl) return;
     setDownloading(true);
 
     try {
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-      });
-
       const link = document.createElement('a');
-      link.download = `vote-for-jahangir-${pledgeSuccess?.pledge_id || 'smj'}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.download = `support-jahangir-${pledgeSuccess?.pledge_id || 'smj'}.png`;
+      link.href = generatedCardUrl;
       link.click();
     } catch (error) {
       console.error('Failed to download card:', error);
@@ -262,14 +480,16 @@ export default function Election2026Page() {
 
   const resetForm = () => {
     setName('');
+    setPosition('');
+    setPhotoFile(null);
+    setPhotoPreview('');
+    setUploadProgress(0);
+    setUploadedPhotoUrl('');
+    setGeneratedCardUrl('');
     setPledgeSuccess(null);
     setError('');
-    // Generate new random selections
-    setRandomProfile(profileImages[Math.floor(Math.random() * profileImages.length)]);
-    setRandomMessage(language === 'bn'
-      ? inspirationalMessages.bn[Math.floor(Math.random() * inspirationalMessages.bn.length)]
-      : inspirationalMessages.en[Math.floor(Math.random() * inspirationalMessages.en.length)]
-    );
+    // Generate new random template
+    setSelectedTemplate(cardTemplates[Math.floor(Math.random() * cardTemplates.length)]);
   };
 
   return (
@@ -360,208 +580,20 @@ export default function Election2026Page() {
                     {t.successMessage}
                   </p>
 
-                  {/* Beautiful Support Card - Responsive Version */}
+                  {/* Generated Support Card */}
                   <div className="mb-4 sm:mb-6 flex justify-center">
-                    <div
-                      ref={cardRef}
-                      className="w-full max-w-[340px]"
-                      style={{
-                        backgroundColor: '#ffffff',
-                        borderRadius: '16px',
-                        overflow: 'hidden',
-                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
-                        fontFamily: 'system-ui, -apple-system, sans-serif',
-                      }}
-                    >
-                      {/* Top Bar with BNP Logo and Slogan */}
-                      <div style={{
-                        background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-                        padding: '2px 14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}>
-                        <div style={{
-                          width: '42px',
-                          height: '42px',
-                          flexShrink: 0,
-                        }}>
-                          <img
-                            src="/supportcard/logo.png"
-                            alt="BNP Logo"
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                            crossOrigin="anonymous"
-                          />
+                    <div className="w-full max-w-[600px] rounded-xl overflow-hidden shadow-2xl">
+                      {generatedCardUrl ? (
+                        <img
+                          src={generatedCardUrl}
+                          alt={`Support Card - ${pledgeSuccess.name}`}
+                          className="w-full h-auto"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-64 bg-gray-200">
+                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
                         </div>
-                        <div style={{ textAlign: 'right', color: 'white' }}>
-                          <p style={{ fontSize: '14px', fontWeight: '600', margin: 0 }}>
-                            {language === 'bn' ? 'বাংলাদেশ জাতীয়তাবাদী দল' : 'Bangladesh Nationalist Party'}
-                          </p>
-                          <p style={{ fontSize: '10px', fontWeight: 'bold', margin: '2px 0 0 0' }}>
-                            {language === 'bn' ? 'দেশ বাঁচাও, মানুষ বাঁচাও' : 'Save the Country, Save the People'}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* National Election Banner */}
-                      <div style={{
-                        width: '100%',
-                        background: 'linear-gradient(90deg, #dc2626 0%, #b91c1c 100%)',
-                        paddingTop: '3px',
-                        paddingBottom: '3px',
-                        textAlign: 'center',
-                        overflow: 'hidden',
-                      }}>
-                        <span style={{
-                          color: 'white',
-                          fontSize: '11px',
-                          fontWeight: 'bold',
-                          letterSpacing: '0.5px',
-                          textTransform: 'uppercase',
-                          display: 'block',
-                          margin: '0',
-                          padding: '0',
-                        }}>
-                          {language === 'bn' ? 'বাংলাদেশ জাতীয় সংসদ নির্বাচন ২০২৬' : 'BANGLADESH NATIONAL PARLIAMENT ELECTION 2026'}
-                        </span>
-                      </div>
-
-                      {/* Inspirational Message */}
-                      <div style={{
-                        padding: '2px 14px',
-                        textAlign: 'center',
-                      }}>
-                        <p style={{
-                          color: '#047857',
-                          fontSize: '18px',
-                          fontWeight: '700',
-                          margin: 0,
-                          fontStyle: 'italic',
-                        }}>
-                          &ldquo;{randomMessage}&rdquo;
-                        </p>
-                      </div>
-
-                      {/* Main Content */}
-                      <div style={{
-                        padding: '16px',
-                        textAlign: 'center',
-                        background: 'linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%)',
-                      }}>
-                        {/* SM Jahangir Photo */}
-                        <div style={{
-                          width: '120px',
-                          height: '120px',
-                          borderRadius: '12px',
-                          margin: '0 auto 10px',
-                          overflow: 'hidden',
-                          boxShadow: '0 4px 15px rgba(5, 150, 105, 0.3)',
-                        }}>
-                          <img
-                            src={randomProfile}
-                            alt="S M Jahangir Hossain"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            crossOrigin="anonymous"
-                          />
-                        </div>
-
-                        {/* I Support Text */}
-                        <p style={{
-                          fontSize: '11px',
-                          color: '#6b7280',
-                          margin: '0 0 2px 0',
-                          textTransform: 'uppercase',
-                          letterSpacing: '1.5px',
-                        }}>
-                          {t.iSupport}
-                        </p>
-
-                        {/* S M Jahangir Hossain Name */}
-                        <h3 style={{
-                          fontSize: '22px',
-                          fontWeight: '800',
-                          color: '#047857',
-                          margin: '0 0 8px 0',
-                        }}>
-                          {t.smJahangir}
-                        </h3>
-
-                        {/* Dhaka-18 with Paddy - Using div for html2canvas compatibility */}
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          marginBottom: '12px',
-                        }}>
-                          <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: '#ecfdf5',
-                            padding: '6px 14px',
-                            borderRadius: '20px',
-                          }}>
-                            <img
-                              src="/supportcard/paddy.png"
-                              alt="Paddy"
-                              style={{ width: '40px', height: '40px', objectFit: 'contain', marginRight: '10px' }}
-                              crossOrigin="anonymous"
-                            />
-                            <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#047857' }}>
-                              {t.dhaka18}
-                            </span>
-                            <img
-                              src="/supportcard/paddy.png"
-                              alt="Paddy"
-                              style={{
-                                width: '40px',
-                                height: '40px',
-                                objectFit: 'contain',
-                                marginLeft: '10px',
-                                WebkitTransform: 'scaleX(-1)',
-                                transform: 'scaleX(-1)',
-                              }}
-                              crossOrigin="anonymous"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Supporter Name */}
-                        <div style={{
-                          background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
-                          borderRadius: '10px',
-                          padding: '10px 16px',
-                          border: '1px dashed #059669',
-                        }}>
-                          <p style={{
-                            fontSize: '16px',
-                            fontWeight: '600',
-                            color: '#059669',
-                            margin: '0',
-                          }}>
-                            <span style={{ fontWeight: '500', color: '#6b7280' }}>
-                              {language === 'bn' ? 'সমর্থক: ' : 'Supporter: '}
-                            </span>
-                            {pledgeSuccess.name}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Footer */}
-                      <div style={{
-                        background: 'linear-gradient(135deg, #059669 0%, #047857 50%, #dc2626 100%)',
-                        padding: '6px 12px',
-                        textAlign: 'center',
-                      }}>
-                        <p style={{
-                          color: 'white',
-                          fontSize: '9px',
-                          fontWeight: 'bold',
-                          margin: 0,
-                        }}>
-                          smjahangir.com
-                        </p>
-                      </div>
+                      )}
                     </div>
                   </div>
 
@@ -708,6 +740,90 @@ export default function Election2026Page() {
                     />
                   </div>
 
+                  {/* Position Input */}
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {t.position}
+                    </label>
+                    <input
+                      type="text"
+                      value={position}
+                      onChange={(e) => setPosition(e.target.value)}
+                      className={`w-full px-3 sm:px-4 py-3 sm:py-4 text-base sm:text-lg rounded-xl border ${
+                        isDark
+                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
+                          : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+                      } focus:ring-2 focus:ring-green-500 focus:border-transparent transition`}
+                      placeholder={t.positionPlaceholder}
+                    />
+                  </div>
+
+                  {/* Photo Upload */}
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {t.photo} <span className="text-red-500">*</span>
+                    </label>
+                    <p className={`text-xs mb-3 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {t.photoHint}
+                    </p>
+
+                    {/* Photo Preview */}
+                    {photoPreview && (
+                      <div className="mb-3 flex justify-center">
+                        <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-green-500 shadow-lg">
+                          <img
+                            src={photoPreview}
+                            alt="Preview"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* File Input */}
+                    <label
+                      className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition ${
+                        isDark
+                          ? 'border-gray-600 bg-gray-700 hover:bg-gray-600 text-gray-300'
+                          : 'border-gray-300 bg-gray-50 hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-sm font-medium">
+                        {photoFile ? photoFile.name : t.choosePhoto}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png"
+                        onChange={handlePhotoChange}
+                        className="hidden"
+                        required
+                      />
+                    </label>
+
+                    {/* Upload Progress */}
+                    {uploading && (
+                      <div className="mt-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {t.uploadingPhoto}
+                          </span>
+                          <span className={`text-xs font-medium ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                            {uploadProgress}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                          <div
+                            className="bg-green-500 h-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Submit Button */}
                   <button
                     type="submit"
@@ -814,6 +930,13 @@ export default function Election2026Page() {
           </div>
         </div>
       </div>
+
+      {/* Hidden Canvas for Card Generation - Always rendered */}
+      <canvas
+        ref={canvasRef}
+        style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}
+        aria-hidden="true"
+      />
     </div>
   );
 }

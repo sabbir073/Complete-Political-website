@@ -80,7 +80,9 @@
       "Bash(python scripts/research_bijoy_encoding.py:*)",
       "Bash(python extract_voter_sample.py:*)",
       "Bash(python import_all_voters.py:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(timeout 120 npm run build:*)",
+      "Bash(identify:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"
