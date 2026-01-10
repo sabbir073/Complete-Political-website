@@ -10,11 +10,14 @@ interface VoterMetadata {
   ward_no: string;
   voter_area_name: string;
   voter_area_no: string;
+  city_corporation_pourashava: string;
+  post_office: string;
+  post_code: string;
 }
 
 interface Voter {
   id: string;
-  serial_no: number;
+  serial_no: string;
   voter_no: string;
   voter_name: string;
   father_name: string;

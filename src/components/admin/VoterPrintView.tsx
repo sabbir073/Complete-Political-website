@@ -16,7 +16,7 @@ interface VoterMetadata {
 
 interface Voter {
   id: string;
-  serial_no: number;
+  serial_no: string;
   voter_no: string;
   voter_name: string;
   father_name: string;
