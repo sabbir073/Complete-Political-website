@@ -82,7 +82,9 @@
       "Bash(python import_all_voters.py:*)",
       "Bash(tee:*)",
       "Bash(timeout 120 npm run build:*)",
-      "Bash(identify:*)"
+      "Bash(identify:*)",
+      "Bash(npx supabase db reset:*)",
+      "Bash(move:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

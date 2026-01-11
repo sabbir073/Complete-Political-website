@@ -339,6 +339,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      ),
+      label: 'NFC / QR',
+      href: '/admin/nfc-analytics',
+      access: 'moderator+',
+      show: canAccessContent,
+    },
+    {
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
@@ -746,8 +757,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     pathname === '/admin/content' ? 'Content Management' :
                       pathname === '/admin/media' ? 'Media Manager' :
                         pathname === '/admin/analytics' ? 'Analytics' :
-                          pathname === '/admin/profile' ? 'My Profile' :
-                            pathname.startsWith('/admin/settings') ? 'Settings' : 'Admin Panel'}
+                          pathname === '/admin/nfc-analytics' ? 'NFC / QR Analytics' :
+                            pathname === '/admin/profile' ? 'My Profile' :
+                              pathname.startsWith('/admin/settings') ? 'Settings' : 'Admin Panel'}
               </h1>
             </div>
 
