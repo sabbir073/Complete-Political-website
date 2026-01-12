@@ -130,6 +130,7 @@ export default function NFCPage() {
 
   const trackVisit = async (sid: string) => {
     try {
+      console.log('[NFC Tracking] Attempting to track visit with session:', sid);
       const response = await fetch('/api/nfc/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -139,18 +140,25 @@ export default function NFCPage() {
         }),
       });
 
+      console.log('[NFC Tracking] Visit response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('[NFC Tracking] Visit tracked successfully:', data);
         setVisitId(data.visitId);
+      } else {
+        const errorData = await response.json().catch(() => null);
+        console.error('[NFC Tracking] Failed to track visit:', response.status, errorData);
       }
     } catch (error) {
-      console.error('Failed to track visit:', error);
+      console.error('[NFC Tracking] Error tracking visit:', error);
     }
   };
 
   const trackClick = async (linkName: string, linkUrl: string) => {
     try {
-      await fetch('/api/nfc/track', {
+      console.log('[NFC Tracking] Tracking click:', linkName, 'visitId:', visitId);
+      const response = await fetch('/api/nfc/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -160,8 +168,15 @@ export default function NFCPage() {
           linkUrl,
         }),
       });
+
+      if (response.ok) {
+        console.log('[NFC Tracking] Click tracked successfully');
+      } else {
+        const errorData = await response.json().catch(() => null);
+        console.error('[NFC Tracking] Failed to track click:', response.status, errorData);
+      }
     } catch (error) {
-      console.error('Failed to track click:', error);
+      console.error('[NFC Tracking] Error tracking click:', error);
     }
   };
 

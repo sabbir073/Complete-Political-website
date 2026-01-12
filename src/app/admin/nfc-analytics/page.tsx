@@ -37,13 +37,19 @@ export default function NFCAnalyticsPage() {
 
   const fetchStats = async () => {
     try {
+      console.log('[NFC Analytics] Fetching stats...');
       const response = await fetch('/api/admin/nfc/analytics?action=overview');
+      console.log('[NFC Analytics] Response status:', response.status);
       const data = await response.json();
+      console.log('[NFC Analytics] Response data:', data);
       if (data.success) {
         setStats(data.stats);
+        console.log('[NFC Analytics] Stats set:', data.stats);
+      } else {
+        console.error('[NFC Analytics] API returned success=false:', data);
       }
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      console.error('[NFC Analytics] Failed to fetch stats:', error);
     } finally {
       setLoading(false);
     }

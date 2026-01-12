@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 // GET - Fetch NFC analytics data
 export async function GET(request: NextRequest) {
   try {
+    console.log('[NFC Analytics API] Request received');
     const supabase = await createClient();
 
     // Check if user is authenticated admin
@@ -14,23 +15,31 @@ export async function GET(request: NextRequest) {
       error: authError,
     } = await supabase.auth.getUser();
 
+    console.log('[NFC Analytics API] Auth check:', { userId: user?.id, authError: authError?.message });
+
     if (authError || !user) {
+      console.error('[NFC Analytics API] Authentication failed');
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Verify admin status
-    const { data: adminData, error: adminError } = await supabase
-      .from('admin_users')
-      .select('is_active')
-      .eq('user_id', user.id)
+    // Verify admin/moderator status
+    const { data: profileData, error: profileError } = await supabase
+      .from('profiles')
+      .select('role, is_active')
+      .eq('id', user.id)
       .single();
 
-    if (adminError || !adminData?.is_active) {
+    console.log('[NFC Analytics API] Profile check:', { role: profileData?.role, isActive: profileData?.is_active, error: profileError?.message });
+
+    if (profileError || !profileData?.is_active ||
+        !['admin', 'moderator'].includes(profileData.role)) {
+      console.error('[NFC Analytics API] Authorization failed');
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
     const action = searchParams.get('action') || 'overview';
+    console.log('[NFC Analytics API] Action:', action);
 
     if (action === 'overview') {
       // Get total visits
@@ -142,20 +151,24 @@ export async function GET(request: NextRequest) {
         {} as Record<string, number>
       );
 
+      const statsResponse = {
+        totalVisits: totalVisits || 0,
+        uniqueVisitors: uniqueVisitors || 0,
+        totalClicks: totalClicks || 0,
+        visitsToday: visitsToday || 0,
+        visitsThisWeek: visitsThisWeek || 0,
+        visitsThisMonth: visitsThisMonth || 0,
+        deviceBreakdown: deviceBreakdown || {},
+        browserBreakdown: browserBreakdown || {},
+        osBreakdown: osBreakdown || {},
+        topLinks: topLinks || [],
+      };
+
+      console.log('[NFC Analytics API] Returning stats:', statsResponse);
+
       return NextResponse.json({
         success: true,
-        stats: {
-          totalVisits: totalVisits || 0,
-          uniqueVisitors: uniqueVisitors || 0,
-          totalClicks: totalClicks || 0,
-          visitsToday: visitsToday || 0,
-          visitsThisWeek: visitsThisWeek || 0,
-          visitsThisMonth: visitsThisMonth || 0,
-          deviceBreakdown: deviceBreakdown || {},
-          browserBreakdown: browserBreakdown || {},
-          osBreakdown: osBreakdown || {},
-          topLinks: topLinks || [],
-        },
+        stats: statsResponse,
       });
     } else if (action === 'timeline') {
       // Get visits grouped by date for the last 30 days
