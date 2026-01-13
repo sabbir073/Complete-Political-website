@@ -934,8 +934,8 @@ export default function BloodHubPage() {
                             </h3>
                             <p className={`text-sm ${isDark ? 'text-red-300' : 'text-red-700'}`}>
                                 {language === 'bn'
-                                    ? 'রক্তদান একটি মহৎ কাজ। একজন সুস্থ মানুষ প্রতি ৩ মাস পরপর রক্তদান করতে পারেন। রক্তদানে কোনো ক্ষতি নেই, বরং এটি শরীরের জন্য উপকারী।'
-                                    : 'Blood donation is a noble act. A healthy person can donate blood every 3 months. There is no harm in donating blood; rather, it is beneficial for the body.'}
+                                    ? 'রক্তদান একটি মহৎ কাজ। একজন সুস্থ পুরুষ প্রতি ৩ মাস পরপর এবং একজন সুস্থ মহিলা প্রতি ৪ মাস পরপর রক্তদান করতে পারেন। রক্তদানে কোনো ক্ষতি নেই, বরং এটি শরীরের জন্য উপকারী।'
+                                    : 'Blood donation is a noble act. A healthy male can donate blood every 3 months; a healthy female can donate blood every 4 months. There is no harm in donating blood; rather, it is beneficial for the body.'}
                             </p>
                         </div>
                     </div>
