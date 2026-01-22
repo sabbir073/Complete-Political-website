@@ -206,6 +206,20 @@ export default function EventsPage() {
                                 {tab.label}
                             </button>
                         ))}
+                        {/* Meetings Calendar Link */}
+                        <Link
+                            href="/events/calendar"
+                            className={`px-6 py-2.5 rounded-full font-semibold transition-all duration-300 whitespace-nowrap flex items-center gap-2 ${
+                                isDark
+                                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {language === 'bn' ? 'মিটিং ক্যালেন্ডার' : 'Meetings Calendar'}
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -85,7 +85,9 @@
       "Bash(identify:*)",
       "Bash(npx supabase db reset:*)",
       "Bash(move:*)",
-      "Bash(node scripts/generate-favicon.js:*)"
+      "Bash(node scripts/generate-favicon.js:*)",
+      "Bash(tree:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "defaultMode": "acceptEdits"

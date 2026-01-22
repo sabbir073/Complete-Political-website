@@ -60,6 +60,7 @@ interface LanguageData {
     promiseTracker: string;
     achievements: string;
     testimonials: string;
+    feedback: string;
   };
   more: {
     digitalTools: string;
