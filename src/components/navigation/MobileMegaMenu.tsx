@@ -370,19 +370,17 @@ export default function MobileMegaMenu({
           }`}
         >
           <div className="space-y-3">
-            {showWhatsAppButton && whatsAppNumber && (
-              <a
-                href={`https://wa.me/${whatsAppNumber.replace(/[^\d+]/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-3 rounded-xl font-semibold text-[15px] transition-all duration-300 hover:from-green-600 hover:to-green-700 shadow-lg"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 2.006c-5.516 0-9.999 4.481-9.999 9.996 0 1.746.444 3.388 1.234 4.815L2.003 21.99l5.245-1.238c1.391.745 2.977 1.143 4.769 1.143 5.515 0 9.998-4.481 9.998-9.996S17.532 2.006 12.017 2.006zm5.818 14.186c-.244.687-1.213 1.266-1.973 1.43-.511.11-1.18.195-3.426-.731-2.871-1.184-4.727-4.073-4.871-4.26-.144-.187-1.174-1.563-1.174-2.982 0-1.419.744-2.118 1.008-2.407.264-.289.576-.361.768-.361.192 0 .384.009.552.017.177.008.414-.067.648.495.239.576.816 1.991.888 2.135.072.144.12.313.024.5-.096.187-.144.304-.288.472-.144.168-.304.374-.433.5-.144.144-.288.304-.12.6.168.296.744 1.227 1.596 1.986 1.092.973 2.016 1.274 2.304 1.418.288.144.456.12.624-.072.168-.192.72-.839.912-1.127.192-.288.384-.24.648-.144.264.096 1.68.792 1.968.936.288.144.48.216.552.336.072.12.072.697-.168 1.385z" />
-                </svg>
-                <span>{whatsAppButtonText}</span>
-              </a>
-            )}
+            {/* Emergency SOS Button */}
+            <Link
+              href="/emergency/sos"
+              onClick={handleNavigate}
+              className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-5 py-3 rounded-xl font-semibold text-[15px] transition-all duration-300 hover:from-orange-600 hover:to-orange-700 shadow-lg"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>{language === 'bn' ? 'জরুরি SOS' : 'Emergency SOS'}</span>
+            </Link>
             {showContactButton && contactButtonLink && (
               <Link
                 href={contactButtonLink}
