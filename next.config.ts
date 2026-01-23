@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://apis.google.com https://*.firebaseapp.com https://*.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com",
-              "frame-src 'self' https://www.google.com https://*.firebaseapp.com https://*.googleapis.com",
+              "frame-src 'self' https://www.google.com https://*.firebaseapp.com https://*.googleapis.com https://www.youtube.com https://www.youtube-nocookie.com https://youtube.com",
               "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://identitytoolkit.googleapis.com https://securetoken.googleapis.com wss://*.firebaseio.com https://www.google.com https://www.gstatic.com https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
