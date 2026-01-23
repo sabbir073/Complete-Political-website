@@ -96,6 +96,22 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
     }
   }, [settings]);
 
+  // Handle PWA install prompt
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    try {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsAppInstalled(true);
+      }
+      setDeferredPrompt(null);
+    } catch (error) {
+      console.error('Install prompt error:', error);
+    }
+  };
+
   // Show loading or fallback if settings are not available
   if (!settings) {
     return (
@@ -144,7 +160,12 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
             </Link>
 
             {/* Desktop Navigation - New Mega Menu */}
-            <FullWidthMegaMenu language={language} isDark={isDark} />
+            <FullWidthMegaMenu
+              language={language}
+              isDark={isDark}
+              deferredPrompt={deferredPrompt}
+              onInstallClick={handleInstallClick}
+            />
 
             {/* Desktop Controls */}
             <div className="hidden lg:flex items-center space-x-3">
@@ -283,6 +304,8 @@ export default function Header({ initialSettings }: HeaderProps = {}) {
         contactButtonLink={settings.contact_button_link}
         contactButtonText={getText(settings.contact_button_text)}
         contactButtonBackground={settings.contact_button_background}
+        deferredPrompt={deferredPrompt}
+        onInstallClick={handleInstallClick}
       />
 
       {/* Spacer for fixed/sticky header */}

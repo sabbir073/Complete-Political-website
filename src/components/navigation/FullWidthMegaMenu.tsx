@@ -15,12 +15,20 @@ import {
   MegaMenuSubCategory,
 } from './NavigationConfig';
 
+// BeforeInstallPromptEvent interface for TypeScript
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 interface FullWidthMegaMenuProps {
   language: 'en' | 'bn';
   isDark: boolean;
+  deferredPrompt?: BeforeInstallPromptEvent | null;
+  onInstallClick?: () => void;
 }
 
-export default function FullWidthMegaMenu({ language, isDark }: FullWidthMegaMenuProps) {
+export default function FullWidthMegaMenu({ language, isDark, deferredPrompt, onInstallClick }: FullWidthMegaMenuProps) {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -110,17 +118,8 @@ export default function FullWidthMegaMenu({ language, isDark }: FullWidthMegaMen
   const renderMegaMenuItem = (item: MegaMenuItem) => {
     const Icon = item.icon;
 
-    return (
-      <Link
-        key={item.key}
-        href={item.href}
-        onClick={() => setIsMegaMenuOpen(false)}
-        className={`group flex items-start gap-3 p-3 rounded-xl transition-all duration-200 ${
-          isDark
-            ? 'hover:bg-gray-700/50'
-            : 'hover:bg-gray-50'
-        }`}
-      >
+    const itemContent = (
+      <>
         <div
           className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
             isDark
@@ -148,6 +147,44 @@ export default function FullWidthMegaMenu({ language, isDark }: FullWidthMegaMen
             {getNavDescription(item, language)}
           </span>
         </div>
+      </>
+    );
+
+    // Handle Install App action
+    if (item.isInstallAction) {
+      return (
+        <button
+          key={item.key}
+          onClick={() => {
+            setIsMegaMenuOpen(false);
+            if (onInstallClick) {
+              onInstallClick();
+            }
+          }}
+          disabled={!deferredPrompt}
+          className={`group flex items-start gap-3 p-3 rounded-xl transition-all duration-200 w-full text-left ${
+            isDark
+              ? 'hover:bg-gray-700/50'
+              : 'hover:bg-gray-50'
+          } ${!deferredPrompt ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {itemContent}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        key={item.key}
+        href={item.href}
+        onClick={() => setIsMegaMenuOpen(false)}
+        className={`group flex items-start gap-3 p-3 rounded-xl transition-all duration-200 ${
+          isDark
+            ? 'hover:bg-gray-700/50'
+            : 'hover:bg-gray-50'
+        }`}
+      >
+        {itemContent}
       </Link>
     );
   };

@@ -16,6 +16,12 @@ import {
   MegaMenuSubCategory,
 } from './NavigationConfig';
 
+// BeforeInstallPromptEvent interface for TypeScript
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 // Helper function to flatten categories for mobile (subCategories become separate categories)
 const getMobileMegaMenuCategories = (): (MegaMenuCategory | MegaMenuSubCategory)[] => {
   const flattenedCategories: (MegaMenuCategory | MegaMenuSubCategory)[] = [];
@@ -54,6 +60,8 @@ interface MobileMegaMenuProps {
   contactButtonLink?: string;
   contactButtonText?: string;
   contactButtonBackground?: string;
+  deferredPrompt?: BeforeInstallPromptEvent | null;
+  onInstallClick?: () => void;
 }
 
 export default function MobileMegaMenu({
@@ -70,6 +78,8 @@ export default function MobileMegaMenu({
   contactButtonLink,
   contactButtonText,
   contactButtonBackground,
+  deferredPrompt,
+  onInstallClick,
 }: MobileMegaMenuProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [showMegaMenuContent, setShowMegaMenuContent] = useState(false);
@@ -170,17 +180,8 @@ export default function MobileMegaMenu({
   const renderMegaMenuItem = (item: MegaMenuItem) => {
     const Icon = item.icon;
 
-    return (
-      <Link
-        key={item.key}
-        href={item.href}
-        onClick={handleNavigate}
-        className={`flex items-center gap-3 px-5 py-3 pl-8 transition-all duration-200 ${
-          isDark
-            ? 'text-gray-300 hover:text-white hover:bg-gray-800'
-            : 'text-gray-600 hover:text-green-600 hover:bg-gray-100'
-        }`}
-      >
+    const itemContent = (
+      <>
         <div
           className={`w-9 h-9 rounded-lg flex items-center justify-center ${
             isDark ? 'bg-gray-700 text-green-400' : 'bg-white text-green-500 shadow-sm'
@@ -194,6 +195,44 @@ export default function MobileMegaMenu({
             {getNavDescription(item, language)}
           </span>
         </div>
+      </>
+    );
+
+    // Handle Install App action
+    if (item.isInstallAction) {
+      return (
+        <button
+          key={item.key}
+          onClick={() => {
+            handleNavigate();
+            if (onInstallClick) {
+              onInstallClick();
+            }
+          }}
+          disabled={!deferredPrompt}
+          className={`flex items-center gap-3 px-5 py-3 pl-8 transition-all duration-200 w-full text-left ${
+            isDark
+              ? 'text-gray-300 hover:text-white hover:bg-gray-800'
+              : 'text-gray-600 hover:text-green-600 hover:bg-gray-100'
+          } ${!deferredPrompt ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {itemContent}
+        </button>
+      );
+    }
+
+    return (
+      <Link
+        key={item.key}
+        href={item.href}
+        onClick={handleNavigate}
+        className={`flex items-center gap-3 px-5 py-3 pl-8 transition-all duration-200 ${
+          isDark
+            ? 'text-gray-300 hover:text-white hover:bg-gray-800'
+            : 'text-gray-600 hover:text-green-600 hover:bg-gray-100'
+        }`}
+      >
+        {itemContent}
       </Link>
     );
   };
