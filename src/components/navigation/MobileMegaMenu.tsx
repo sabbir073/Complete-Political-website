@@ -252,7 +252,7 @@ export default function MobileMegaMenu({
 
       {/* Mobile Menu Panel */}
       <div
-        className={`fixed inset-0 z-[99999] transform transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed top-0 left-0 right-0 bottom-0 w-screen max-w-[100vw] overflow-x-hidden z-[99999] transform transition-transform duration-300 ease-out lg:hidden ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         } ${isDark ? 'bg-gray-900' : 'bg-white'}`}
         role="dialog"

@@ -57,6 +57,15 @@ const categoryColors: Record<string, string> = {
     disaster: 'from-red-500 to-red-600',
 };
 
+const categoryLabels: Record<string, { en: string; bn: string }> = {
+    all: { en: 'All', bn: 'সব' },
+    guide: { en: 'Guide', bn: 'গাইড' },
+    tips: { en: 'Tips', bn: 'টিপস' },
+    legal: { en: 'Legal', bn: 'আইনি' },
+    health: { en: 'Health', bn: 'স্বাস্থ্য' },
+    disaster: { en: 'Disaster', bn: 'দুর্যোগ' },
+};
+
 // Default safety resources (hardcoded for now)
 const defaultResources: SafetyResource[] = [
     {
@@ -385,8 +394,8 @@ export default function SafetyResourcesPage() {
                                         : 'bg-white text-gray-700 hover:bg-gray-100 shadow'
                             }`}
                         >
-                            {category === 'all'
-                                ? (language === 'bn' ? 'সব' : 'All')
+                            {categoryLabels[category]
+                                ? (language === 'bn' ? categoryLabels[category].bn : categoryLabels[category].en)
                                 : category.charAt(0).toUpperCase() + category.slice(1)
                             }
                         </button>
@@ -410,7 +419,9 @@ export default function SafetyResourcesPage() {
                                     </div>
                                     <div>
                                         <span className="text-xs uppercase tracking-wide opacity-80">
-                                            {resource.category}
+                                            {categoryLabels[resource.category]
+                                                ? (language === 'bn' ? categoryLabels[resource.category].bn : categoryLabels[resource.category].en)
+                                                : resource.category}
                                         </span>
                                         <h3 className="font-bold">
                                             {getText(resource.title_en, resource.title_bn)}
