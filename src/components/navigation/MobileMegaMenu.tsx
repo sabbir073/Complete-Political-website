@@ -27,13 +27,15 @@ const getMobileMegaMenuCategories = (): (MegaMenuCategory | MegaMenuSubCategory)
   const flattenedCategories: (MegaMenuCategory | MegaMenuSubCategory)[] = [];
 
   megaMenuCategories.forEach((category) => {
-    // Add the main category (without subCategories in the object we push)
-    flattenedCategories.push({
-      key: category.key,
-      labelEn: category.labelEn,
-      labelBn: category.labelBn,
-      items: category.items,
-    });
+    // Add the main category only if it has items
+    if (category.items.length > 0) {
+      flattenedCategories.push({
+        key: category.key,
+        labelEn: category.labelEn,
+        labelBn: category.labelBn,
+        items: category.items,
+      });
+    }
 
     // Add subCategories as separate categories
     if (category.subCategories) {

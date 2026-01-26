@@ -210,19 +210,21 @@ export default function FullWidthMegaMenu({ language, isDark, deferredPrompt, on
   const renderMegaMenuCategory = (category: MegaMenuCategory) => {
     return (
       <div key={category.key}>
-        {/* Main Category */}
-        <div className="space-y-2">
-          <h3
-            className={`text-sm font-bold uppercase tracking-wider px-3 py-2 border-b-2 ${
-              isDark ? 'text-gray-300 border-gray-700' : 'text-gray-600 border-gray-200'
-            }`}
-          >
-            {getNavLabel(category, language)}
-          </h3>
-          <div className="space-y-1">
-            {category.items.map(renderMegaMenuItem)}
+        {/* Main Category - only show title and items if items exist */}
+        {category.items.length > 0 && (
+          <div className="space-y-2">
+            <h3
+              className={`text-sm font-bold uppercase tracking-wider px-3 py-2 border-b-2 ${
+                isDark ? 'text-gray-300 border-gray-700' : 'text-gray-600 border-gray-200'
+              }`}
+            >
+              {getNavLabel(category, language)}
+            </h3>
+            <div className="space-y-1">
+              {category.items.map(renderMegaMenuItem)}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Sub Categories (like Gallery under Participate) */}
         {category.subCategories?.map(renderSubCategory)}
