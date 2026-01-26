@@ -217,11 +217,13 @@ const AboutMe: React.FC = () => {
                   <h3 className={`text-xl font-bold mb-2 ${
                     isDark ? "text-white" : "text-gray-900"
                   }`}>
-                    {t.aboutMe?.videoTitle || "Watch Our Story"}
+                    {t.aboutMe?.videoTitle ?? "Watch Our Story"}
                   </h3>
-                  <p className={isDark ? "text-gray-400" : "text-gray-600"}>
-                    {t.aboutMe?.videoSubtitle || "Discover the journey of community transformation"}
-                  </p>
+                  {t.aboutMe?.videoSubtitle && (
+                    <p className={isDark ? "text-gray-400" : "text-gray-600"}>
+                      {t.aboutMe.videoSubtitle}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
