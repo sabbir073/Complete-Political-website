@@ -140,7 +140,13 @@ export default function FindVoterPage() {
   const [selectedVoter, setSelectedVoter] = useState<Voter | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [errors, setErrors] = useState<{ dob?: string; ward?: string }>({});
+  const [smsPhone, setSmsPhone] = useState('');
+  const [showSmsInput, setShowSmsInput] = useState(false);
+  const [smsSending, setSmsSending] = useState(false);
+  const [smsError, setSmsError] = useState('');
+  const [smsSuccess, setSmsSuccess] = useState('');
   const printRef = useRef<HTMLDivElement>(null);
+  const downloadRef = useRef<HTMLDivElement>(null);
   const dateInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch wards on mount
@@ -291,80 +297,230 @@ export default function FindVoterPage() {
   const handleViewVoter = (voter: Voter) => {
     setSelectedVoter(voter);
     setShowModal(true);
+    setShowSmsInput(false);
+    setSmsPhone('');
+    setSmsError('');
+    setSmsSuccess('');
   };
 
   const handlePrint = () => {
-    if (printRef.current) {
-      const printContent = printRef.current.innerHTML;
-      const printWindow = window.open('', '_blank');
-      if (printWindow) {
-        printWindow.document.write(`
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>ভোটার তথ্য</title>
-            <style>
-              body { font-family: 'SolaimanLipi', 'Noto Sans Bengali', Arial, sans-serif; padding: 20px; }
-              .print-container { max-width: 600px; margin: 0 auto; border: 3px solid #1e5631; padding: 20px; }
-              .header { text-align: center; border-bottom: 2px solid #1e5631; padding-bottom: 15px; margin-bottom: 15px; }
-              .header img { max-width: 100%; height: auto; }
-              .slogan { background: #fff3cd; border: 2px solid #1e5631; padding: 10px; text-align: center; font-weight: bold; margin: 15px 0; }
-              .center-info { background: #1e5631; color: white; padding: 10px; text-align: center; font-weight: bold; margin-bottom: 15px; }
-              .info-row { display: flex; margin-bottom: 8px; }
-              .info-label { font-weight: bold; min-width: 120px; }
-              .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
-            </style>
-          </head>
-          <body>
-            ${printContent}
-          </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.print();
-      }
+    if (!selectedVoter) return;
+
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>ভোটার তথ্য - ${selectedVoter.voter_name}</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap');
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+              font-family: 'Noto Sans Bengali', 'SolaimanLipi', Arial, sans-serif;
+              padding: 40px;
+              background: #fff;
+              color: #000;
+            }
+            .container {
+              max-width: 500px;
+              margin: 0 auto;
+              border: 2px solid #000;
+              border-radius: 8px;
+              overflow: hidden;
+            }
+            .header {
+              background: #fff;
+              color: #000;
+              padding: 20px;
+              text-align: center;
+              border-bottom: 2px solid #000;
+            }
+            .header h1 { font-size: 24px; margin-bottom: 5px; font-weight: 700; }
+            .header p { font-size: 14px; }
+            .center-info {
+              background: #fff;
+              color: #000;
+              padding: 12px;
+              text-align: center;
+              font-weight: 700;
+              font-size: 15px;
+              border-bottom: 2px solid #000;
+            }
+            .info-section { padding: 25px; }
+            .info-row {
+              display: flex;
+              border-bottom: 1px solid #ccc;
+              padding: 12px 0;
+            }
+            .info-row:last-child { border-bottom: none; }
+            .info-label {
+              font-weight: 700;
+              color: #000;
+              min-width: 140px;
+              font-size: 14px;
+            }
+            .info-value {
+              font-size: 14px;
+              color: #000;
+            }
+            .info-value.highlight { font-weight: 600; }
+            .footer {
+              background: #fff;
+              padding: 15px;
+              text-align: center;
+              font-size: 12px;
+              color: #000;
+              border-top: 1px solid #ccc;
+            }
+            @media print {
+              body { padding: 20px; }
+              .container { border-width: 2px; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>ভোটার তথ্য স্লিপ</h1>
+              <p>ঢাকা-১৮ আসন</p>
+            </div>
+            <div class="center-info">
+              ভোট কেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_no}. ${selectedVoter.voter_metadata?.voter_area_name}
+            </div>
+            <div class="info-section">
+              <div class="info-row">
+                <span class="info-label">নাম:</span>
+                <span class="info-value highlight">${selectedVoter.voter_name}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">সিরিয়াল নং:</span>
+                <span class="info-value">${selectedVoter.serial_no}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">ভোটার নং:</span>
+                <span class="info-value">${selectedVoter.voter_no}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">জন্ম তারিখ:</span>
+                <span class="info-value">${formatDateBengali(selectedVoter.date_of_birth)}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">পিতা/স্বামী:</span>
+                <span class="info-value">${selectedVoter.father_name || '-'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">মাতা:</span>
+                <span class="info-value">${selectedVoter.mother_name || '-'}</span>
+              </div>
+              ${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `
+              <div class="info-row">
+                <span class="info-label">ওয়ার্ড:</span>
+                <span class="info-value">${selectedVoter.voter_metadata.union_pouro_ward_cant_board}</span>
+              </div>
+              ` : ''}
+            </div>
+            <div class="footer">
+              এস এম জাহাঙ্গীর হোসেন | ঢাকা-১৮ আসন প্রার্থী
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+      setTimeout(() => printWindow.print(), 250);
     }
   };
 
-  const handleDownload = () => {
-    if (!selectedVoter) return;
+  const handleDownload = async () => {
+    if (!selectedVoter || !downloadRef.current) return;
 
-    const content = `
-ভোটার তথ্য
-━━━━━━━━━━━━━━━━━━━━━━
+    try {
+      // Dynamically import html2canvas
+      const html2canvas = (await import('html2canvas')).default;
 
-কেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_name || ''} কেন্দ্র-${selectedVoter.voter_metadata?.voter_area_no || ''}
+      const canvas = await html2canvas(downloadRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+      });
 
-নাম: ${selectedVoter.voter_name}
-সিরিয়াল নাম্বার: ${selectedVoter.serial_no}
-ভোটার নং: ${selectedVoter.voter_no}
-জন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}
-পিতা/স্বামী: ${selectedVoter.father_name || '-'}
-মাতা: ${selectedVoter.mother_name || '-'}
-${selectedVoter.voter_metadata?.voter_area_name ? `এলাকা: ${selectedVoter.voter_metadata.voter_area_name}` : ''}
-${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}` : ''}
+      const link = document.createElement('a');
+      link.download = `voter-slip-${selectedVoter.voter_no}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Download error:', error);
+      // Fallback to text download if html2canvas fails
+      const content = `ভোটার তথ্য স্লিপ\n${'═'.repeat(30)}\n\nকেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_no}. ${selectedVoter.voter_metadata?.voter_area_name}\n\nনাম: ${selectedVoter.voter_name}\nসিরিয়াল নং: ${selectedVoter.serial_no}\nভোটার নং: ${selectedVoter.voter_no}\nজন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}\nপিতা/স্বামী: ${selectedVoter.father_name || '-'}\nমাতা: ${selectedVoter.mother_name || '-'}\n${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}\n` : ''}\n${'═'.repeat(30)}\nএস এম জাহাঙ্গীর হোসেন | ঢাকা-১৮`;
 
-━━━━━━━━━━━━━━━━━━━━━━
-এইসি, আইটি, ঢাকা।
-    `;
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `voter-${selectedVoter.voter_no}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `voter-slip-${selectedVoter.voter_no}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   };
 
   const handleSMS = () => {
+    setShowSmsInput(true);
+    setSmsError('');
+    setSmsSuccess('');
+  };
+
+  const validateBDPhone = (phone: string): boolean => {
+    // Bangladesh phone number validation: 01XXXXXXXXX (11 digits)
+    const cleaned = phone.replace(/\D/g, '');
+    return /^01[3-9]\d{8}$/.test(cleaned);
+  };
+
+  const sendSMS = async () => {
     if (!selectedVoter) return;
 
-    const message = `ভোটার তথ্য: ${selectedVoter.voter_name}, ভোটার নং: ${selectedVoter.voter_no}, কেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_name || ''} কেন্দ্র-${selectedVoter.voter_metadata?.voter_area_no || ''}`;
-    const smsUrl = `sms:?body=${encodeURIComponent(message)}`;
-    window.location.href = smsUrl;
+    const cleanPhone = smsPhone.replace(/\D/g, '');
+
+    if (!validateBDPhone(cleanPhone)) {
+      setSmsError('সঠিক বাংলাদেশী মোবাইল নম্বর দিন (01XXXXXXXXX)');
+      return;
+    }
+
+    setSmsSending(true);
+    setSmsError('');
+
+    try {
+      const message = `ভোটার তথ্য:\nনাম: ${selectedVoter.voter_name}\nসিরিয়াল নং: ${selectedVoter.serial_no}\nভোটার নং: ${selectedVoter.voter_no}\nজন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}\nভোট কেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_no}. ${selectedVoter.voter_metadata?.voter_area_name}${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `\nওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}` : ''}`;
+
+      const response = await fetch('/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: cleanPhone,
+          message: message,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSmsSuccess('এসএমএস সফলভাবে পাঠানো হয়েছে!');
+        setSmsPhone('');
+        setTimeout(() => {
+          setShowSmsInput(false);
+          setSmsSuccess('');
+        }, 2000);
+      } else {
+        setSmsError(data.error || 'এসএমএস পাঠাতে সমস্যা হয়েছে');
+      }
+    } catch (error) {
+      console.error('SMS error:', error);
+      setSmsError('এসএমএস পাঠাতে সমস্যা হয়েছে');
+    } finally {
+      setSmsSending(false);
+    }
   };
 
   const formatDateBengali = (dateString: string) => {
@@ -385,31 +541,33 @@ ${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার�
         <div className="max-w-6xl mx-auto px-4">
           <div className={`${isDark ? 'bg-gray-900' : 'bg-white'} rounded-2xl shadow-xl overflow-hidden`}>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-              {/* Left - Campaign Image */}
-              <div className="p-4 md:p-6 lg:p-8">
-                <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-lg">
+              {/* Left - Campaign Image (Full image, no cropping) */}
+              <div className="p-4 md:p-6 lg:p-8 flex items-center justify-center">
+                <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
                   <Image
                     src="/vote.jpg"
                     alt="এস এম জাহাঙ্গীর হোসেন"
-                    fill
-                    className="object-cover object-top"
+                    width={600}
+                    height={450}
+                    className="w-full h-auto object-contain"
                     priority
                   />
                 </div>
               </div>
 
-              {/* Right - Search Form */}
-              <div className="p-4 md:p-6 lg:p-8 flex flex-col justify-center">
-                <div className="mb-6">
-                  <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#1e5631]'}`}>
-                    ভোটার তথ্য অনুসন্ধান
-                  </h1>
-                  <p className={`text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    আপনার ভোট কেন্দ্রের নাম জানতে নিচের তথ্য প্রদান করুন
-                  </p>
-                </div>
+              {/* Right - Search Form (Centered) */}
+              <div className="p-4 md:p-6 lg:p-8 flex flex-col justify-center items-center">
+                <div className="w-full max-w-md">
+                  <div className="mb-6 text-center">
+                    <h1 className={`text-xl md:text-2xl lg:text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#1e5631]'}`}>
+                      ভোটার তথ্য অনুসন্ধান
+                    </h1>
+                    <p className={`text-sm md:text-base ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                      আপনার ভোট কেন্দ্রের নাম জানতে নিচের তথ্য প্রদান করুন
+                    </p>
+                  </div>
 
-                <form onSubmit={handleSearch} className="space-y-4">
+                  <form onSubmit={handleSearch} className="space-y-4">
                   {/* Row 1: Voter Name & Date of Birth */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Voter Name */}
@@ -466,10 +624,10 @@ ${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার�
                         }}
                         className={`w-full px-4 py-3 rounded-lg border-2 ${errors.ward ? 'border-red-400 bg-red-50' : isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-200 bg-gray-50 text-gray-900'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all`}
                       >
-                        <option value="">ওয়ার্ড/ইউনিয়ন/এলাকা সিলেক্ট করুন</option>
+                        <option value="">ইউনিয়ন/পৌর ওয়ার্ড/ক্যান্টনমেন্ট বোর্ড সিলেক্ট করুন</option>
                         {wards.map((ward) => (
                           <option key={ward.id} value={ward.id}>
-                            {ward.voter_area_no}. {ward.voter_area_name}
+                            {ward.union_pouro_ward_cant_board || ward.voter_area_name}
                           </option>
                         ))}
                       </select>
@@ -523,6 +681,7 @@ ${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার�
                     </button>
                   </div>
                 </form>
+                </div>
               </div>
             </div>
           </div>
@@ -620,131 +779,138 @@ ${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার�
 
       {/* Voter Details Modal */}
       {showModal && selectedVoter && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl`}>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+          <div className={`${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl max-w-lg w-full max-h-[90vh] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200`}>
             {/* Modal Header */}
-            <div className={`flex items-center justify-between px-6 py-4 border-b ${isDark ? 'border-gray-700 bg-gray-900' : 'border-gray-200 bg-gray-50'}`}>
-              <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-r from-[#1e5631] to-[#2d7a4a] px-5 py-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-white">ভোটার তথ্য স্লিপ</h2>
                 <button
                   onClick={() => setShowModal(false)}
-                  className={`p-2 rounded-lg ${isDark ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-600'} transition-colors`}
+                  className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
                 >
-                  <FaArrowLeft className="w-5 h-5" />
+                  <FaXmark className="w-5 h-5" />
                 </button>
-                <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  ভোটারের তথ্য
-                </h2>
               </div>
-              <button
-                onClick={() => setShowModal(false)}
-                className={`p-2 rounded-lg ${isDark ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-200 text-gray-600'} transition-colors`}
-              >
-                <FaXmark className="w-5 h-5" />
-              </button>
+              <p className="text-green-100 text-sm mt-1">ঢাকা-১৮ আসন</p>
             </div>
 
+            {/* Voter Info Card - For Download as PNG (Black & White only with inline styles) */}
+            <div className="overflow-y-auto max-h-[calc(90vh-280px)]">
+              <div
+                ref={downloadRef}
+                style={{ padding: '16px', backgroundColor: '#ffffff', fontFamily: 'Noto Sans Bengali, SolaimanLipi, Arial, sans-serif' }}
+              >
+                <div style={{ border: '2px solid #000000', borderRadius: '8px', overflow: 'hidden' }}>
+                  {/* Header */}
+                  <div style={{ backgroundColor: '#ffffff', padding: '16px', textAlign: 'center', borderBottom: '2px solid #000000' }}>
+                    <p style={{ fontWeight: '700', fontSize: '18px', color: '#000000', margin: '0 0 4px 0' }}>ভোটার তথ্য স্লিপ</p>
+                    <p style={{ fontSize: '14px', color: '#000000', margin: 0 }}>ঢাকা-১৮ আসন</p>
+                  </div>
+
+                  {/* Center Info */}
+                  <div style={{ backgroundColor: '#ffffff', padding: '12px', textAlign: 'center', borderBottom: '2px solid #000000' }}>
+                    <p style={{ fontWeight: '700', fontSize: '14px', color: '#000000', margin: '0 0 4px 0' }}>ভোট কেন্দ্র</p>
+                    <p style={{ fontWeight: '700', fontSize: '16px', color: '#000000', margin: 0 }}>{selectedVoter.voter_metadata?.voter_area_no}. {selectedVoter.voter_metadata?.voter_area_name}</p>
+                  </div>
+
+                  {/* Voter Details */}
+                  <div style={{ padding: '20px', backgroundColor: '#ffffff' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>নাম:</span>
+                      <span style={{ fontWeight: '700', color: '#000000', fontSize: '14px' }}>{selectedVoter.voter_name}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>সিরিয়াল নং:</span>
+                      <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.serial_no}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>ভোটার নং:</span>
+                      <span style={{ color: '#000000', fontSize: '14px', fontFamily: 'monospace' }}>{selectedVoter.voter_no}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>জন্ম তারিখ:</span>
+                      <span style={{ color: '#000000', fontSize: '14px' }}>{formatDateBengali(selectedVoter.date_of_birth)}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>পিতা/স্বামী:</span>
+                      <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.father_name || '-'}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>মাতা:</span>
+                      <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.mother_name || '-'}</span>
+                    </div>
+                    {selectedVoter.voter_metadata?.union_pouro_ward_cant_board && (
+                      <div style={{ display: 'flex', alignItems: 'center', padding: '12px 0' }}>
+                        <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>ওয়ার্ড:</span>
+                        <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.voter_metadata.union_pouro_ward_cant_board}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{ backgroundColor: '#ffffff', padding: '12px', textAlign: 'center', fontSize: '12px', color: '#000000', borderTop: '1px solid #cccccc' }}>
+                    এস এম জাহাঙ্গীর হোসেন | ঢাকা-১৮ আসন প্রার্থী
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SMS Input Section */}
+            {showSmsInput && (
+              <div className={`px-4 py-3 border-t ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <input
+                      type="tel"
+                      value={smsPhone}
+                      onChange={(e) => setSmsPhone(e.target.value)}
+                      placeholder="01XXXXXXXXX"
+                      className={`w-full px-4 py-2.5 rounded-lg border-2 ${isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-200 bg-white text-gray-900'} focus:border-[#1e5631] focus:outline-none`}
+                    />
+                  </div>
+                  <button
+                    onClick={sendSMS}
+                    disabled={smsSending}
+                    className="px-5 py-2.5 bg-[#1e5631] hover:bg-[#164425] text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {smsSending ? 'পাঠানো হচ্ছে...' : 'পাঠান'}
+                  </button>
+                  <button
+                    onClick={() => setShowSmsInput(false)}
+                    className={`px-3 py-2.5 rounded-lg ${isDark ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'} transition-colors`}
+                  >
+                    <FaXmark className="w-4 h-4" />
+                  </button>
+                </div>
+                {smsError && <p className="text-red-500 text-sm mt-2">{smsError}</p>}
+                {smsSuccess && <p className="text-green-500 text-sm mt-2">{smsSuccess}</p>}
+              </div>
+            )}
+
             {/* Action Buttons */}
-            <div className="flex gap-3 p-4 bg-gradient-to-r from-[#1e5631] to-[#2d7a4a]">
+            <div className={`flex gap-2 p-4 border-t ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-100 bg-gray-50'}`}>
               <button
                 onClick={handleDownload}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all border border-white/20"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#2196F3] hover:bg-[#1976D2] text-white font-medium rounded-xl transition-colors"
               >
                 <FaDownload className="w-4 h-4" />
                 ডাউনলোড
               </button>
               <button
                 onClick={handlePrint}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all border border-white/20"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#1e5631] hover:bg-[#164425] text-white font-medium rounded-xl transition-colors"
               >
                 <FaPrint className="w-4 h-4" />
                 প্রিন্ট
               </button>
               <button
                 onClick={handleSMS}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#e74c3c] hover:bg-[#c0392b] text-white font-medium rounded-xl transition-all"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-[#e74c3c] hover:bg-[#c0392b] text-white font-medium rounded-xl transition-colors"
               >
                 <FaCommentSms className="w-4 h-4" />
                 এসএমএস
               </button>
-            </div>
-
-            {/* Printable Content */}
-            <div ref={printRef} className="overflow-y-auto max-h-[calc(90vh-200px)]">
-              <div className="p-4">
-                <div className="border-4 border-[#1e5631] rounded-xl overflow-hidden">
-                  {/* Campaign Header Image */}
-                  <div className="relative w-full aspect-[16/9]">
-                    <Image
-                      src="/vote.jpg"
-                      alt="এস এম জাহাঙ্গীর হোসেন"
-                      fill
-                      className="object-cover object-top"
-                    />
-                  </div>
-
-                  {/* Slogan */}
-                  <div className="bg-[#fff3cd] border-y-2 border-[#1e5631] px-4 py-3 text-center">
-                    <p className="font-bold text-[#1e5631] text-sm md:text-base">
-                      এস এম জাহাঙ্গীর হোসেন এর সালাম নিন, ধানের শীষে ভোট দিন।
-                    </p>
-                    <p className="font-bold text-[#1e5631] text-sm md:text-base">
-                      তারুণ্যের প্রথম ভোট, ধানের শীষের পক্ষে হোক।
-                    </p>
-                  </div>
-
-                  {/* Center Info */}
-                  <div className="bg-[#1e5631] text-white px-4 py-3 text-center font-bold">
-                    কেন্দ্র: {selectedVoter.voter_metadata?.voter_area_no}. {selectedVoter.voter_metadata?.voter_area_name} কেন্দ্র-{selectedVoter.voter_metadata?.voter_area_no}
-                  </div>
-
-                  {/* Voter Details */}
-                  <div className={`p-5 ${isDark ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-800'}`}>
-                    <div className="space-y-3">
-                      <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                        <span className="font-bold min-w-[140px] text-[#1e5631]">নাম:</span>
-                        <span className="font-semibold">{selectedVoter.voter_name}</span>
-                      </div>
-                      <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                        <span className="font-bold min-w-[140px] text-[#1e5631]">সিরিয়াল নাম্বার:</span>
-                        <span>{selectedVoter.serial_no}</span>
-                      </div>
-                      <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                        <span className="font-bold min-w-[140px] text-[#1e5631]">ভোটার নং:</span>
-                        <span className="font-mono">{selectedVoter.voter_no}</span>
-                      </div>
-                      <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                        <span className="font-bold min-w-[140px] text-[#1e5631]">জন্ম তারিখ:</span>
-                        <span>{formatDateBengali(selectedVoter.date_of_birth)}</span>
-                      </div>
-                      <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                        <span className="font-bold min-w-[140px] text-[#1e5631]">পিতা/স্বামী:</span>
-                        <span>{selectedVoter.father_name || '-'}</span>
-                      </div>
-                      <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                        <span className="font-bold min-w-[140px] text-[#1e5631]">মাতা:</span>
-                        <span>{selectedVoter.mother_name || '-'}</span>
-                      </div>
-                      {selectedVoter.voter_metadata?.voter_area_name && (
-                        <div className="flex border-b border-gray-200 dark:border-gray-700 pb-2">
-                          <span className="font-bold min-w-[140px] text-[#1e5631]">এলাকা:</span>
-                          <span>{selectedVoter.voter_metadata.voter_area_name}</span>
-                        </div>
-                      )}
-                      {selectedVoter.voter_metadata?.union_pouro_ward_cant_board && (
-                        <div className="flex">
-                          <span className="font-bold min-w-[140px] text-[#1e5631]">ওয়ার্ড:</span>
-                          <span>{selectedVoter.voter_metadata.union_pouro_ward_cant_board}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className={`px-4 py-3 text-center text-sm ${isDark ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-600'} border-t border-gray-200`}>
-                    এইসি, আইটি, ঢাকা।
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
