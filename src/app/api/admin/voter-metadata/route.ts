@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
     const { data: metadata, error } = await supabase
       .from('voter_metadata')
       .select('*')
-      .order('created_at', { ascending: false });
+      .select('*')
+      .order('serial_no', { ascending: true });
 
     if (error) {
       console.error('Error fetching voter metadata:', error);

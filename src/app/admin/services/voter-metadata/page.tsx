@@ -5,6 +5,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 
 interface VoterMetadata {
   id: string;
+  serial_no?: number;
   area?: string;
   district: string;
   upazila_thana: string;
@@ -19,6 +20,7 @@ interface VoterMetadata {
   total_female_voter: string;  // Changed to string for Bengali numerals
   total_male_voter: string;  // Changed to string for Bengali numerals
   voter_list_announce_date: string;
+  voteCenter?: string;
   created_at: string;
   updated_at?: string;
   voter_list?: Array<{ count: number }>;
@@ -145,6 +147,20 @@ export default function VoterMetadataPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* ক্রমিক নং */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    ক্রমিক নং (Serial No)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.serial_no || ''}
+                    onChange={(e) => setFormData({ ...formData, serial_no: parseInt(e.target.value) || undefined })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="Example: 1"
+                  />
+                </div>
+
                 {/* এলাকা */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -294,6 +310,20 @@ export default function VoterMetadataPage() {
                   />
                 </div>
 
+                {/* ভোট কেন্দ্র */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    ভোট কেন্দ্র
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.voteCenter || ''}
+                    onChange={(e) => setFormData({ ...formData, voteCenter: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="ভোট কেন্দ্রের নাম"
+                  />
+                </div>
+
                 {/* মোট মহিলা ভোটার সংখ্যা */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -370,7 +400,10 @@ export default function VoterMetadataPage() {
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  ID
+                  {language === 'bn' ? 'ক্রমিক' : 'SL'}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {language === 'bn' ? 'কেন্দ্রের নাম' : 'Center Name'}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   {language === 'bn' ? 'এলাকা' : 'Area'}
@@ -392,21 +425,24 @@ export default function VoterMetadataPage() {
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                     {language === 'bn' ? 'লোড হচ্ছে...' : 'Loading...'}
                   </td>
                 </tr>
               ) : metadata.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                     {language === 'bn' ? 'কোন ডেটা পাওয়া যায়নি' : 'No data found'}
                   </td>
                 </tr>
               ) : (
                 metadata.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500 dark:text-gray-400">
-                      {item.id.slice(0, 8)}...
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-gray-100 font-bold">
+                      {item.serial_no || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 max-w-xs truncate" title={item.voteCenter}>
+                      {item.voteCenter || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       <div className="font-medium">{item.voter_area_name}</div>
