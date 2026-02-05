@@ -2,14 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
-import { useLanguage } from "@/providers/LanguageProvider";
 import { FaLocationDot, FaArrowRight } from "react-icons/fa6";
 
 const WelcomePopup: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const { isDark } = useTheme();
-  const { language } = useLanguage();
 
   useEffect(() => {
     // Check if popup has been shown in this session
@@ -124,18 +122,14 @@ const WelcomePopup: React.FC = () => {
             <h2 className={`text-2xl font-bold mb-2 ${
               isDark ? "text-white" : "text-gray-900"
             }`}>
-              {language === 'bn'
-                ? "আপনার ভোট কেন্দ্র খুঁজছেন?"
-                : "Looking for your Vote Center?"}
+              আপনার ভোট কেন্দ্র খুঁজছেন?
             </h2>
 
             {/* Subtitle */}
             <p className={`text-sm ${
               isDark ? "text-gray-400" : "text-gray-500"
             }`}>
-              {language === 'bn'
-                ? "সহজেই আপনার ভোট কেন্দ্রের তথ্য জানুন"
-                : "Easily find your voting center information"}
+              সহজেই আপনার ভোট কেন্দ্রের তথ্য জানুন
             </p>
           </div>
 
@@ -146,13 +140,13 @@ const WelcomePopup: React.FC = () => {
               onClick={handleButtonClick}
               className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-base rounded-lg transition-colors duration-200"
             >
-              {language === 'bn' ? "ভোট কেন্দ্র খুঁজুন" : "Find Vote Center"}
+              ভোট কেন্দ্র খুঁজুন
               <FaArrowRight className="w-4 h-4" />
             </button>
 
             {/* Dhaka-18 Badge */}
             <p className={`mt-4 text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-              {language === 'bn' ? "ঢাকা-১৮ আসন" : "Dhaka-18 Constituency"}
+              ঢাকা-১৮ আসন
             </p>
           </div>
 
