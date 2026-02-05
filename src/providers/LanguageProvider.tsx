@@ -363,7 +363,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en');
+  const [language, setLanguage] = useState<Language>('bn');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -373,12 +373,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (savedLanguage && ['bn', 'en'].includes(savedLanguage)) {
       setLanguage(savedLanguage);
     } else {
-      // Set default language based on browser preference
+      // Default to Bengali, allow English if browser explicitly prefers it
       const browserLanguage = navigator.language.toLowerCase();
-      if (browserLanguage.includes('bn') || browserLanguage.includes('bd')) {
-        setLanguage('bn');
-      } else {
+      if (browserLanguage.includes('en')) {
         setLanguage('en');
+      } else {
+        setLanguage('bn');
       }
     }
   }, []);
@@ -399,15 +399,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     isRTL: language === 'bn',
   };
 
-  // Don't block rendering - use default language until mounted
+  // Don't block rendering - use default language (Bengali) until mounted
   if (!mounted) {
     const defaultValue = {
-      language: 'en' as Language,
+      language: 'bn' as Language,
       changeLanguage: () => {},
-      t: translations['en'],
-      isRTL: false,
+      t: translations['bn'],
+      isRTL: true,
     };
-    
+
     return (
       <LanguageContext.Provider value={defaultValue}>
         {children}

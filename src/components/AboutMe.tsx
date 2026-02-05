@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useLanguage } from "@/providers/LanguageProvider";
 import { useTheme } from "@/providers/ThemeProvider";
@@ -9,10 +8,10 @@ import { useTheme } from "@/providers/ThemeProvider";
 interface VideoPlayerProps {
   isOpen: boolean;
   onClose: () => void;
-  videoId: string;
+  videoUrl: string;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoId }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoUrl }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { isDark } = useTheme();
 
@@ -43,13 +42,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoId }) =
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
               </div>
             )}
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`}
+            <video
+              src={videoUrl}
               className="absolute inset-0 w-full h-full"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              onLoad={() => setIsLoading(false)}
+              controls
+              autoPlay
+              onLoadedData={() => setIsLoading(false)}
             />
           </div>
         </div>
@@ -61,11 +59,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ isOpen, onClose, videoId }) =
 const AboutMe: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
+  const thumbnailRef = useRef<HTMLVideoElement>(null);
   const { t } = useLanguage();
   const { isDark } = useTheme();
 
-  // Sample YouTube video ID - replace with actual video
-  const videoId = "dQw4w9WgXcQ"; // Sample video ID
+  // MP4 video URL from CloudFront
+  const videoUrl = "https://dahf45b8zc9m5.cloudfront.net/media/videos/2026/02/1770271780596-100618f1-TVC-Final-with-Color-Correction.mp4";
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -169,36 +169,53 @@ const AboutMe: React.FC = () => {
             {/* Right Video Section */}
             <div className={`transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
               <div className="relative">
-                {/* Video Thumbnail */}
-                <div 
+                {/* Video Thumbnail - Generated from video */}
+                <div
                   className={`relative rounded-2xl overflow-hidden shadow-2xl group cursor-pointer h-full ${
                     isDark ? "shadow-gray-800/50" : "shadow-gray-500/30"
-                  }`} 
+                  }`}
                   onClick={openVideo}
                 >
                   <div className={`relative h-96 ${
-                    isDark ? "bg-gray-800" : "bg-white"
+                    isDark ? "bg-gray-800" : "bg-gray-200"
                   }`}>
-                    <Image
-                      src="/events/event1.jpg"
-                      alt="About Video Thumbnail"
-                      width={800}
-                      height={600}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      unoptimized={true}
+                    {/* Loading spinner while video thumbnail loads */}
+                    {!thumbnailLoaded && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+                      </div>
+                    )}
+
+                    {/* Video element as thumbnail - paused at first frame */}
+                    <video
+                      ref={thumbnailRef}
+                      src={videoUrl}
+                      className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+                        thumbnailLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      onLoadedData={() => {
+                        setThumbnailLoaded(true);
+                        // Seek to 1 second to get a better frame (skip black intro if any)
+                        if (thumbnailRef.current) {
+                          thumbnailRef.current.currentTime = 1;
+                        }
+                      }}
                     />
-                    
+
                     {/* Play Button */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="relative">
                         {/* Pulsing Ring */}
                         <div className="absolute inset-0 rounded-full border-4 border-white border-opacity-30 animate-ping"></div>
                         <div className="absolute inset-2 rounded-full border-2 border-white border-opacity-50 animate-pulse"></div>
-                        
+
                         {/* Play Button */}
                         <div className={`relative w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 ${
-                          isDark 
-                            ? "bg-gray-800 bg-opacity-90 group-hover:bg-opacity-100" 
+                          isDark
+                            ? "bg-gray-800 bg-opacity-90 group-hover:bg-opacity-100"
                             : "bg-white bg-opacity-90 group-hover:bg-opacity-100"
                         }`}>
                           <svg className={`w-8 h-8 ml-1 ${
@@ -235,7 +252,7 @@ const AboutMe: React.FC = () => {
       <VideoPlayer
         isOpen={isVideoOpen}
         onClose={closeVideo}
-        videoId={videoId}
+        videoUrl={videoUrl}
       />
     </>
   );

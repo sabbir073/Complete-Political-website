@@ -108,12 +108,12 @@ export const useLanguage = () => {
     if (savedLanguage && ['bn', 'en'].includes(savedLanguage)) {
       setLanguage(savedLanguage);
     } else {
-      // Set default language based on browser preference
+      // Default to Bengali, allow English only if browser explicitly prefers it
       const browserLanguage = navigator.language.toLowerCase();
-      if (browserLanguage.includes('bn') || browserLanguage.includes('bd')) {
-        setLanguage('bn');
-      } else {
+      if (browserLanguage.includes('en')) {
         setLanguage('en');
+      } else {
+        setLanguage('bn');
       }
     }
   }, []);
