@@ -31,6 +31,7 @@ import {
   FaFileContract,
   FaUniversalAccess,
   FaSitemap,
+  FaBookOpen,
 } from 'react-icons/fa6';
 
 // Main navigation items (top level)
@@ -71,6 +72,13 @@ export const mainNavItems: MainNavItem[] = [
     labelEn: 'News',
     labelBn: 'সংবাদ',
     icon: FaNewspaper,
+  },
+  {
+    key: 'manifesto',
+    href: '/manifesto',
+    labelEn: 'Manifesto',
+    labelBn: 'ইশতেহার',
+    icon: FaBookOpen,
   },
   {
     key: 'more',
