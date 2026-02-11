@@ -10,22 +10,31 @@ export async function GET(request: NextRequest) {
     const voterName = searchParams.get('voterName') || '';
     const dateOfBirth = searchParams.get('dateOfBirth') || '';
     const wardId = searchParams.get('wardId') || '';
+    const wardName = searchParams.get('wardName') || '';
     const areaId = searchParams.get('areaId') || '';
 
-    // Validate required fields - dateOfBirth and wardId are mandatory
-    if (!dateOfBirth || !wardId) {
+    // Validate required fields - dateOfBirth and ward (Id or Name) are mandatory
+    if (!dateOfBirth || (!wardId && !wardName)) {
       return NextResponse.json({
         error: 'জন্ম তারিখ এবং ওয়ার্ড নির্বাচন আবশ্যক'
       }, { status: 400 });
     }
 
     // Build query
+    // Note: We need !inner join to filter by metadata column if using wardName
+    let selectQuery = '*, voter_metadata(*)';
+    if (wardName) {
+      selectQuery = '*, voter_metadata!inner(*)';
+    }
+
     let query = supabase
       .from('voter_list')
-      .select('*, voter_metadata(*)', { count: 'exact' });
+      .select(selectQuery); // Removed count: 'exact' for performance
 
     // Apply ward filter (metadata)
-    if (wardId) {
+    if (wardName) {
+      query = query.eq('voter_metadata.union_pouro_ward_cant_board', wardName);
+    } else if (wardId) {
       query = query.eq('voter_metadata_id', wardId);
     }
 
@@ -39,17 +48,12 @@ export async function GET(request: NextRequest) {
       query = query.ilike('voter_name', `%${voterName}%`);
     }
 
-    // Apply area filter (optional) - this filters by voter_area_no within metadata
+    // Apply area filter (optional)
     if (areaId) {
-      // We need to filter voters whose metadata has this area
       query = query.eq('voter_metadata_id', areaId);
     }
 
-    // Order by serial number
-    query = query.order('serial_no', { ascending: true });
-
-    // Limit results
-    query = query.limit(100);
+    // Removed default sorting by serial_no to avoid full table scan/sort overhead
 
     const { data: voters, error, count } = await query;
 

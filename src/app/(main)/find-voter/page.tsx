@@ -103,6 +103,7 @@ interface VoterMetadata {
   cc_pourosova?: string;
   post_office?: string;
   postal_code?: string;
+  voteCenter?: string;
 }
 
 interface Voter {
@@ -132,7 +133,6 @@ export default function FindVoterPage() {
   const [dateOfBirthDisplay, setDateOfBirthDisplay] = useState(''); // Bengali formatted dd/mm/yyyy
   const [dateOfBirth, setDateOfBirth] = useState(''); // API format YYYY-MM-DD
   const [selectedWard, setSelectedWard] = useState('');
-  const [selectedArea, setSelectedArea] = useState('');
   const [wards, setWards] = useState<Ward[]>([]);
   const [voters, setVoters] = useState<Voter[]>([]);
   const [loading, setLoading] = useState(false);
@@ -255,15 +255,16 @@ export default function FindVoterPage() {
     try {
       const params = new URLSearchParams({
         dateOfBirth,
-        wardId: selectedWard,
       });
+
+      // Send wardName if selectedWard is a name (deduplicated), otherwise wardId if we had IDs
+      // Since we switched to names for deduplication, we send wardName
+      if (selectedWard) {
+        params.append('wardName', selectedWard);
+      }
 
       if (voterName) {
         params.append('voterName', voterName);
-      }
-
-      if (selectedArea) {
-        params.append('areaId', selectedArea);
       }
 
       const response = await fetch(`/api/voters/search?${params}`);
@@ -288,7 +289,6 @@ export default function FindVoterPage() {
     setDateOfBirthDisplay('');
     setDateOfBirth('');
     setSelectedWard('');
-    setSelectedArea('');
     setVoters([]);
     setSearched(false);
     setErrors({});
@@ -386,7 +386,7 @@ export default function FindVoterPage() {
               <p>ঢাকা-১৮ আসন</p>
             </div>
             <div class="center-info">
-              ভোট কেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_no}. ${selectedVoter.voter_metadata?.voter_area_name}
+              ভোট কেন্দ্র: ${toBengaliDigits(selectedVoter.voter_metadata?.voter_area_no || '')}. ${selectedVoter.voter_metadata?.voteCenter || selectedVoter.voter_metadata?.voter_area_name}
             </div>
             <div class="info-section">
               <div class="info-row">
@@ -395,11 +395,11 @@ export default function FindVoterPage() {
               </div>
               <div class="info-row">
                 <span class="info-label">সিরিয়াল নং:</span>
-                <span class="info-value">${selectedVoter.serial_no}</span>
+                <span class="info-value">${toBengaliDigits(selectedVoter.serial_no)}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">ভোটার নং:</span>
-                <span class="info-value">${selectedVoter.voter_no}</span>
+                <span class="info-value">${toBengaliDigits(selectedVoter.voter_no)}</span>
               </div>
               <div class="info-row">
                 <span class="info-label">জন্ম তারিখ:</span>
@@ -412,6 +412,10 @@ export default function FindVoterPage() {
               <div class="info-row">
                 <span class="info-label">মাতা:</span>
                 <span class="info-value">${selectedVoter.mother_name || '-'}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">ঠিকানা:</span>
+                <span class="info-value">${selectedVoter.address || '-'}</span>
               </div>
               ${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `
               <div class="info-row">
@@ -452,7 +456,7 @@ export default function FindVoterPage() {
     } catch (error) {
       console.error('Download error:', error);
       // Fallback to text download if html2canvas fails
-      const content = `ভোটার তথ্য স্লিপ\n${'═'.repeat(30)}\n\nকেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_no}. ${selectedVoter.voter_metadata?.voter_area_name}\n\nনাম: ${selectedVoter.voter_name}\nসিরিয়াল নং: ${selectedVoter.serial_no}\nভোটার নং: ${selectedVoter.voter_no}\nজন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}\nপিতা/স্বামী: ${selectedVoter.father_name || '-'}\nমাতা: ${selectedVoter.mother_name || '-'}\n${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}\n` : ''}\n${'═'.repeat(30)}\nএস এম জাহাঙ্গীর হোসেন | ঢাকা-১৮`;
+      const content = `ভোটার তথ্য স্লিপ\n${'═'.repeat(30)}\n\nকেন্দ্র: ${toBengaliDigits(selectedVoter.voter_metadata?.voter_area_no || '')}. ${selectedVoter.voter_metadata?.voteCenter || selectedVoter.voter_metadata?.voter_area_name}\n\nনাম: ${selectedVoter.voter_name}\nসিরিয়াল নং: ${toBengaliDigits(selectedVoter.serial_no)}\nভোটার নং: ${toBengaliDigits(selectedVoter.voter_no)}\nজন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}\nপিতা/স্বামী: ${selectedVoter.father_name || '-'}\nমাতা: ${selectedVoter.mother_name || '-'}\nঠিকানা: ${selectedVoter.address || '-'}\n${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `ওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}\n` : ''}\n${'═'.repeat(30)}\nএস এম জাহাঙ্গীর হোসেন | ঢাকা-১৮`;
 
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -492,7 +496,7 @@ export default function FindVoterPage() {
     setSmsError('');
 
     try {
-      const message = `ভোটার তথ্য:\nনাম: ${selectedVoter.voter_name}\nসিরিয়াল নং: ${selectedVoter.serial_no}\nভোটার নং: ${selectedVoter.voter_no}\nজন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}\nভোট কেন্দ্র: ${selectedVoter.voter_metadata?.voter_area_no}. ${selectedVoter.voter_metadata?.voter_area_name}${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `\nওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}` : ''}`;
+      const message = `ভোটার তথ্য:\nনাম: ${selectedVoter.voter_name}\nসিরিয়াল নং: ${toBengaliDigits(selectedVoter.serial_no)}\nভোটার নং: ${toBengaliDigits(selectedVoter.voter_no)}\nজন্ম তারিখ: ${formatDateBengali(selectedVoter.date_of_birth)}\nভোট কেন্দ্র: ${toBengaliDigits(selectedVoter.voter_metadata?.voter_area_no || '')}. ${selectedVoter.voter_metadata?.voteCenter || selectedVoter.voter_metadata?.voter_area_name}${selectedVoter.voter_metadata?.union_pouro_ward_cant_board ? `\nওয়ার্ড: ${selectedVoter.voter_metadata.union_pouro_ward_cant_board}` : ''}`;
 
       const response = await fetch('/api/sms/send', {
         method: 'POST',
@@ -532,7 +536,9 @@ export default function FindVoterPage() {
     return toBengaliDigits(`${day}/${month}/${year}`);
   };
 
-  const selectedWardData = wards.find(w => w.id === selectedWard);
+
+  // Deduplicate wards for display: Create unique list of ward names
+  const uniqueWardNames = Array.from(new Set(wards.map(w => w.union_pouro_ward_cant_board || w.voter_area_name).filter(Boolean))) as string[];
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
@@ -568,119 +574,97 @@ export default function FindVoterPage() {
                   </div>
 
                   <form onSubmit={handleSearch} className="space-y-4">
-                  {/* Row 1: Voter Name & Date of Birth */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Voter Name */}
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        ভোটার নাম
-                      </label>
-                      <input
-                        type="text"
-                        value={voterName}
-                        onChange={(e) => setVoterName(e.target.value)}
-                        placeholder="ভোটার নাম প্রবেশ করুন"
-                        className={`w-full px-4 py-3 rounded-lg border-2 ${isDark ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-500' : 'border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all`}
-                      />
-                    </div>
+                    {/* Row 1: Voter Name & Date of Birth */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Voter Name */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                          ভোটার নাম
+                        </label>
+                        <input
+                          type="text"
+                          value={voterName}
+                          onChange={(e) => setVoterName(e.target.value)}
+                          placeholder="ভোটার নাম প্রবেশ করুন"
+                          className={`w-full px-4 py-3 rounded-lg border-2 ${isDark ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-500' : 'border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all`}
+                        />
+                      </div>
 
-                    {/* Date of Birth */}
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        জন্ম তারিখ (দিন/মাস/বছর) <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        ref={dateInputRef}
-                        type="text"
-                        inputMode="numeric"
-                        value={dateOfBirthDisplay}
-                        onChange={handleDateInput}
-                        onKeyDown={handleDateKeyDown}
-                        placeholder="দিন/মাস/বছর"
-                        maxLength={10}
-                        className={`w-full px-4 py-3 rounded-lg border-2 ${errors.dob ? 'border-red-400 bg-red-50' : isDark ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-500' : 'border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all text-lg tracking-wider`}
-                      />
-                      {errors.dob && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                          <FaCircleExclamation className="w-3 h-3" /> {errors.dob}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Row 2: Ward & Area Selection */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Ward Selection */}
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        ওয়ার্ড নির্বাচন করুন <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        value={selectedWard}
-                        onChange={(e) => {
-                          setSelectedWard(e.target.value);
-                          setSelectedArea('');
-                          if (errors.ward) setErrors({ ...errors, ward: undefined });
-                        }}
-                        className={`w-full px-4 py-3 rounded-lg border-2 ${errors.ward ? 'border-red-400 bg-red-50' : isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-200 bg-gray-50 text-gray-900'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all`}
-                      >
-                        <option value="">ইউনিয়ন/পৌর ওয়ার্ড/ক্যান্টনমেন্ট বোর্ড সিলেক্ট করুন</option>
-                        {wards.map((ward) => (
-                          <option key={ward.id} value={ward.id}>
-                            {ward.union_pouro_ward_cant_board || ward.voter_area_name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.ward && (
-                        <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
-                          <FaCircleExclamation className="w-3 h-3" /> {errors.ward}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Area Selection */}
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        এলাকা নির্বাচন করুন (ঐচ্ছিক)
-                      </label>
-                      <select
-                        value={selectedArea}
-                        onChange={(e) => setSelectedArea(e.target.value)}
-                        disabled={!selectedWard}
-                        className={`w-full px-4 py-3 rounded-lg border-2 ${isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-200 bg-gray-50 text-gray-900'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        <option value="">প্রথমে ওয়ার্ড নির্বাচন করুন</option>
-                        {selectedWardData && (
-                          <option value={selectedWardData.id}>
-                            {selectedWardData.voter_area_name}
-                          </option>
+                      {/* Date of Birth */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                          জন্ম তারিখ (দিন/মাস/বছর) <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          ref={dateInputRef}
+                          type="text"
+                          inputMode="numeric"
+                          value={dateOfBirthDisplay}
+                          onChange={handleDateInput}
+                          onKeyDown={handleDateKeyDown}
+                          placeholder="দিন/মাস/বছর"
+                          maxLength={10}
+                          className={`w-full px-4 py-3 rounded-lg border-2 ${errors.dob ? 'border-red-400 bg-red-50' : isDark ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-500' : 'border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all text-lg tracking-wider`}
+                        />
+                        {errors.dob && (
+                          <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                            <FaCircleExclamation className="w-3 h-3" /> {errors.dob}
+                          </p>
                         )}
-                      </select>
-                      <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                        (ওয়ার্ড নির্বাচনের পর এলাকা সিলেক্ট করুন)
-                      </p>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className={`flex-1 px-6 py-3 border-2 font-semibold rounded-lg transition-all flex items-center justify-center gap-2 ${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
-                    >
-                      <FaRotateRight className="w-4 h-4" />
-                      রিসেট
-                    </button>
-                    <button
-                      type="submit"
-                      className="flex-1 px-6 py-3 bg-[#1e5631] hover:bg-[#164425] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg"
-                    >
-                      <FaMagnifyingGlass className="w-4 h-4" />
-                      অনুসন্ধান
-                    </button>
-                  </div>
-                </form>
+                    {/* Row 2: Ward Selection */}
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* Ward Selection */}
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                          ওয়ার্ড নির্বাচন করুন <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={selectedWard}
+                          onChange={(e) => {
+                            setSelectedWard(e.target.value);
+                            if (errors.ward) setErrors({ ...errors, ward: undefined });
+                          }}
+                          className={`w-full px-4 py-3 rounded-lg border-2 ${errors.ward ? 'border-red-400 bg-red-50' : isDark ? 'border-gray-600 bg-gray-800 text-white' : 'border-gray-200 bg-gray-50 text-gray-900'} focus:border-[#1e5631] focus:ring-2 focus:ring-[#1e5631]/20 focus:outline-none transition-all`}
+                        >
+                          <option value="">ইউনিয়ন/পৌর ওয়ার্ড/ক্যান্টনমেন্ট বোর্ড সিলেক্ট করুন</option>
+                          {uniqueWardNames.map((name, idx) => (
+                            <option key={idx} value={name}>
+                              {name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.ward && (
+                          <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+                            <FaCircleExclamation className="w-3 h-3" /> {errors.ward}
+                          </p>
+                        )}
+                      </div>
+
+
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        type="button"
+                        onClick={handleReset}
+                        className={`flex-1 px-6 py-3 border-2 font-semibold rounded-lg transition-all flex items-center justify-center gap-2 ${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}`}
+                      >
+                        <FaRotateRight className="w-4 h-4" />
+                        রিসেট
+                      </button>
+                      <button
+                        type="submit"
+                        className="flex-1 px-6 py-3 bg-[#1e5631] hover:bg-[#164425] text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2 shadow-lg"
+                      >
+                        <FaMagnifyingGlass className="w-4 h-4" />
+                        অনুসন্ধান
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -750,9 +734,9 @@ export default function FindVoterPage() {
                           key={voter.id}
                           className={`border-b ${isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'} transition-colors`}
                         >
-                          <td className="px-4 py-4 text-sm font-medium">{voter.serial_no}</td>
+                          <td className="px-4 py-4 text-sm font-medium">{toBengaliDigits(voter.serial_no)}</td>
                           <td className="px-4 py-4 text-sm">
-                            <span className="font-medium">{voter.voter_metadata?.voter_area_no}.</span> {voter.voter_metadata?.voter_area_name}
+                            <span className="font-medium">{toBengaliDigits(voter.voter_metadata?.voter_area_no || '')}.</span> {voter.voter_metadata?.voteCenter || voter.voter_metadata?.voter_area_name}
                           </td>
                           <td className="px-4 py-4 text-sm font-semibold">{voter.voter_name}</td>
                           <td className="px-4 py-4 text-sm">{voter.mother_name || '-'}</td>
@@ -811,7 +795,7 @@ export default function FindVoterPage() {
                   {/* Center Info */}
                   <div style={{ backgroundColor: '#ffffff', padding: '12px', textAlign: 'center', borderBottom: '2px solid #000000' }}>
                     <p style={{ fontWeight: '700', fontSize: '14px', color: '#000000', margin: '0 0 4px 0' }}>ভোট কেন্দ্র</p>
-                    <p style={{ fontWeight: '700', fontSize: '16px', color: '#000000', margin: 0 }}>{selectedVoter.voter_metadata?.voter_area_no}. {selectedVoter.voter_metadata?.voter_area_name}</p>
+                    <p style={{ fontWeight: '700', fontSize: '16px', color: '#000000', margin: 0 }}>{toBengaliDigits(selectedVoter.voter_metadata?.voter_area_no || '')}. {selectedVoter.voter_metadata?.voteCenter || selectedVoter.voter_metadata?.voter_area_name}</p>
                   </div>
 
                   {/* Voter Details */}
@@ -822,11 +806,11 @@ export default function FindVoterPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
                       <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>সিরিয়াল নং:</span>
-                      <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.serial_no}</span>
+                      <span style={{ color: '#000000', fontSize: '14px' }}>{toBengaliDigits(selectedVoter.serial_no)}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
                       <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>ভোটার নং:</span>
-                      <span style={{ color: '#000000', fontSize: '14px', fontFamily: 'monospace' }}>{selectedVoter.voter_no}</span>
+                      <span style={{ color: '#000000', fontSize: '14px', fontFamily: 'monospace' }}>{toBengaliDigits(selectedVoter.voter_no)}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
                       <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>জন্ম তারিখ:</span>
@@ -839,6 +823,10 @@ export default function FindVoterPage() {
                     <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
                       <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>মাতা:</span>
                       <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.mother_name || '-'}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #cccccc', padding: '12px 0' }}>
+                      <span style={{ fontWeight: '700', minWidth: '120px', color: '#000000', fontSize: '14px' }}>ঠিকানা:</span>
+                      <span style={{ color: '#000000', fontSize: '14px' }}>{selectedVoter.address || '-'}</span>
                     </div>
                     {selectedVoter.voter_metadata?.union_pouro_ward_cant_board && (
                       <div style={{ display: 'flex', alignItems: 'center', padding: '12px 0' }}>
