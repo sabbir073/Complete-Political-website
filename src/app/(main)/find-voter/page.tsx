@@ -28,7 +28,9 @@ const toBengaliDigits = (str: string): string => {
 
 // Format date string as dd/mm/yyyy with Bengali numbers
 // Adds slash immediately after 2 digits (day) and after 4 digits (month)
-const formatDateInput = (value: string): string => {
+// Format date string as dd/mm/yyyy with Bengali numbers
+// Adds slash immediately after 2 digits (day) and after 4 digits (month)
+const formatDateInput = (value: string, isDeleting: boolean = false): string => {
   // Convert any Bengali digits to English for processing
   const englishValue = toEnglishDigits(value);
 
@@ -38,26 +40,31 @@ const formatDateInput = (value: string): string => {
   // Limit to 8 digits (ddmmyyyy)
   const limited = digitsOnly.slice(0, 8);
 
-  // Format as dd/mm/yyyy - add slash after 2nd and 4th digit
+  // Format as dd/mm/yyyy
   let formatted = '';
   for (let i = 0; i < limited.length; i++) {
     formatted += limited[i];
-    // Add slash after 2nd digit (day) and 4th digit (month)
-    if (i === 1 && limited.length > 2) {
-      formatted += '/';
-    } else if (i === 1 && limited.length === 2) {
-      formatted += '/'; // Add slash immediately after typing 2nd digit
-    } else if (i === 3 && limited.length > 4) {
-      formatted += '/';
-    } else if (i === 3 && limited.length === 4) {
-      formatted += '/'; // Add slash immediately after typing 4th digit
+    // Add slash after 2nd digit (day)
+    if (i === 1) {
+      if (limited.length > 2) {
+        formatted += '/';
+      } else if (limited.length === 2 && !isDeleting) {
+        formatted += '/'; // Add slash only if typing (not deleting)
+      }
+    }
+    // Add slash after 4th digit (month)
+    else if (i === 3) {
+      if (limited.length > 4) {
+        formatted += '/';
+      } else if (limited.length === 4 && !isDeleting) {
+        formatted += '/'; // Add slash only if typing
+      }
     }
   }
 
   // Convert to Bengali digits for display
   return toBengaliDigits(formatted);
 };
-
 // Convert dd/mm/yyyy (Bengali) to YYYY-MM-DD (English) for API
 const convertToApiFormat = (bengaliDate: string): string => {
   const englishDate = toEnglishDigits(bengaliDate);
@@ -169,8 +176,10 @@ export default function FindVoterPage() {
   // Handle date input with auto-formatting and cursor positioning
   const handleDateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
+    const nativeEvent = e.nativeEvent as InputEvent;
+    const isDeleting = nativeEvent.inputType === 'deleteContentBackward' || nativeEvent.inputType === 'deleteContentForward';
 
-    const formatted = formatDateInput(inputValue);
+    const formatted = formatDateInput(inputValue, isDeleting);
     setDateOfBirthDisplay(formatted);
 
     // Convert to API format if valid
