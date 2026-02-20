@@ -1,6 +1,6 @@
 import DynamicHeader from "@/components/DynamicHeader";
 import Footer from "@/components/Footer";
-import WelcomePopup from "@/components/WelcomePopup";
+// import WelcomePopup from "@/components/WelcomePopup";
 
 export default function MainLayout({
   children,
@@ -9,7 +9,7 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <WelcomePopup />
+      {/* <WelcomePopup /> */}
       <DynamicHeader />
       <main className="flex-1">{children}</main>
       <Footer />
