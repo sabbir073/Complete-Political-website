@@ -6,7 +6,6 @@ import {
   FaNewspaper,
   FaHandHoldingHeart,
   FaBars,
-  FaHeadset,
   FaLocationDot,
   FaImages,
   FaVideo,
@@ -87,13 +86,6 @@ export const mainNavItems: MainNavItem[] = [
     labelBn: 'আরও',
     icon: FaBars,
     isMegaMenu: true,
-  },
-  {
-    key: 'support',
-    href: '/election-2026',
-    labelEn: 'Support',
-    labelBn: 'সমর্থন',
-    icon: FaHeadset,
   },
 ];
 

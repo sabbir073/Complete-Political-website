@@ -181,8 +181,8 @@
     "sectionLabel": "A leader forged through struggle",
     "title": "S M Jahangir",
     "titleHighlight": "Hossain",
-    "paragraph1": "S M Jahangir Hossain stands as a symbol of unwavering dedication to the people of Dhaka-18. As Joint Convener of Dhaka North BNP and a leader who endured over 329 cases and imprisonment for his political beliefs, he has proven that no sacrifice is too great when fighting for democracy, justice, and the rights of ordinary citizens.",
-    "paragraph2": "Nominated by BNP for the upcoming national election, S M Jahangir Hossain carries the vision of building a humane, just, and welfare-oriented Bangladesh. His commitment extends beyond politics — it is a promise to serve the communities of Uttara, Uttarkhan, Dakkhinkhan, Turag, Khilkhet, and Vatara (partial) with integrity, ensuring every voice is heard and every need is addressed.",
+    "paragraph1": "S M Jahangir Hossain stands as a symbol of unwavering dedication to the people of 191, Dhaka-18. Elected as Member of Parliament in the 12 February 2026 National Election, and serving as Joint Convener of Dhaka North BNP, he endured over 329 cases and imprisonment for his political beliefs — proving that no sacrifice is too great when fighting for democracy, justice, and the rights of ordinary citizens.",
+    "paragraph2": "As the elected Member of Parliament for 191, Dhaka-18 constituency, S M Jahangir Hossain is committed to building a humane, just, and welfare-oriented Bangladesh. His dedication extends beyond politics — it is a promise to serve the communities of Uttara, Uttarkhan, Dakkhinkhan, Turag, Khilkhet, and Vatara (partial) with integrity, ensuring every voice is heard and every need is addressed.",
     "learnMore": "Learn More",
     "videoTitle": "Let's build a better Dhaka-18 together",
     "videoSubtitle": ""
@@ -328,31 +328,31 @@
   },
   "aboutPage": {
     "hero": {
-      "badge": "BNP Nominated MP Candidate | Dhaka-18",
+      "badge": "Member of Parliament | 191, Dhaka-18 Constituency",
       "name": "S M Jahangir",
       "lastName": "Hossain",
       "position": "Joint Convener",
       "organization": "BNP Dhaka Metropolitan North",
-      "description": "Nominated by Bangladesh Nationalist Party for the 2026 National Election from Dhaka-18 constituency. A dedicated leader with 35+ years of political experience, 329+ legal cases faced, and imprisonment for democratic ideals.",
+      "description": "Elected Member of Parliament from 191, Dhaka-18 constituency in the 12 February 2026 National Election. A dedicated leader with 35+ years of political experience, 329+ legal cases faced, and imprisonment for democratic ideals.",
       "detailsButton": "View Details",
       "contactButton": "Contact",
       "experienceYears": "35+",
       "experienceLabel": "Years of Experience",
       "currentYear": "2026",
-      "currentLabel": "MP Candidate"
+      "currentLabel": "Elected MP"
     },
     "electionBanner": {
-      "title": "BNP Nominated MP Candidate",
-      "subtitle": "National Election 2026",
-      "constituency": "Dhaka-18 Constituency",
+      "title": "Elected Member of Parliament",
+      "subtitle": "12 February 2026 National Election",
+      "constituency": "191, Dhaka-18 Constituency",
       "areas": "Uttara, Uttarkhan, Dakshinkhan, Turag, Khilkhet, Airport, Vatara (Partial)",
-      "slogan": "Vote for Change | Vote for Development | Vote for Dhaka-18"
+      "slogan": "Serving the People | Developing Dhaka-18 | Building a Better Bangladesh"
     },
     "stats": [
       { "number": "35+", "label": "Years in Politics" },
       { "number": "329+", "label": "Cases Faced" },
       { "number": "10+", "label": "Leadership Positions" },
-      { "number": "2026", "label": "MP Candidate" }
+      { "number": "2026", "label": "Elected MP" }
     ],
     "biography": {
       "title": "Biography & Life Story",
@@ -394,7 +394,7 @@
     "vision": {
       "title": "Vision for Dhaka-18",
       "subtitle": "A Promise for a Better Tomorrow",
-      "intro": "As the BNP nominated candidate for Dhaka-18 in the 2026 National Election, S M Jahangir Hossain presents a comprehensive vision for the development and welfare of his constituency.",
+      "intro": "As the elected Member of Parliament for 191, Dhaka-18 constituency since the 12 February 2026 National Election, S M Jahangir Hossain is committed to the comprehensive development and welfare of his constituency.",
       "areas": [
         {
           "icon": "🏗️",
@@ -449,12 +449,12 @@
           "description": "Active participant in all major democratic movements, standing for voting rights and fair elections."
         },
         {
-          "title": "2020 By-Election",
-          "description": "Contested as BNP candidate in Dhaka-18 by-election, receiving overwhelming public support."
-        },
-        {
           "title": "Current Leadership",
           "description": "Serving as Joint Convener of BNP Dhaka Metropolitan North since 2024, leading the party's activities."
+        },
+        {
+          "title": "Elected MP – 2026",
+          "description": "Won the 12 February 2026 National Election from 191, Dhaka-18 constituency and became Member of Parliament of Bangladesh."
         }
       ]
     },
@@ -485,13 +485,13 @@
         { "year": "1991", "event": "Student Parliament V.P", "details": "Elected by direct vote of students" },
         { "year": "2001", "event": "Chhatra Dal Leadership", "details": "President Dhaka Metropolitan North & Central Joint Secretary" },
         { "year": "2017", "event": "Jubo Dal President", "details": "Dhaka Metropolitan North & Central Co-President" },
-        { "year": "2020", "event": "MP Candidate", "details": "Dhaka-18 constituency by-election, BNP nominated" },
+        { "year": "2020", "event": "MP Candidate", "details": "191, Dhaka-18 constituency by-election, BNP nominated" },
         { "year": "2024", "event": "Joint Convener", "details": "BNP Dhaka Metropolitan North" },
-        { "year": "2026", "event": "MP Candidate (Upcoming)", "details": "BNP nominated for Dhaka-18, National Election 2026" }
+        { "year": "2026", "event": "Elected Member of Parliament", "details": "Won 191, Dhaka-18 constituency in the 12 February 2026 National Election" }
       ]
     },
     "quote": {
-      "text": "My fight has never been for personal gain. It has always been for the people of Bangladesh — for their rights, their dignity, and their future. The 329+ cases and years in prison have only strengthened my resolve to serve Dhaka-18 and our nation.",
+      "text": "My fight has never been for personal gain. It has always been for the people of Bangladesh — for their rights, their dignity, and their future. Winning the trust of the people of Dhaka-18 in the 2026 election was not just a victory — it was a responsibility I carry every day.",
       "author": "— S M Jahangir Hossain"
     },
     "familyLife": {
@@ -500,7 +500,7 @@
     },
     "message": {
       "title": "Message to the People of Dhaka-18",
-      "content": "To my brothers and sisters of Dhaka-18 — I have dedicated my life to serving you. I have faced imprisonment, countless cases, and persecution, but I have never wavered. As your MP candidate for 2026, I promise to bring real change to our constituency. Together, we will build better roads, better schools, better hospitals, and a better future. Your vote is not just for me — it is for the development and dignity of Dhaka-18. Let us unite for change."
+      "content": "To my brothers and sisters of Dhaka-18 — I have dedicated my life to serving you. I have faced imprisonment, countless cases, and persecution, but I have never wavered. The mandate you gave me in the 12 February 2026 election is a trust I hold sacred. As your elected Member of Parliament, I remain committed to bringing real change to our constituency. Together, we will build better roads, better schools, better hospitals, and a better future for Dhaka-18."
     },
     "contact": {
       "title": "Connect with S M Jahangir Hossain",
