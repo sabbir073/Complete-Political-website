@@ -341,6 +341,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                     </button>
                   </div>
                 ) : (
+                  <>
                   {/* Anonymous Toggle */}
                   <div className={`mb-4 p-4 rounded-lg border ${isDark ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
                     <label className="flex items-center justify-between cursor-pointer">
@@ -550,6 +551,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                       )}
                     </button>
                   </form>
+                  </>
                 )}
               </div>
             )}
