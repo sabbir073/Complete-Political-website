@@ -9,13 +9,16 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { challenge_id, name, mobile, description, files } = body;
 
-    if (!challenge_id || !name || !mobile) {
-      return NextResponse.json({ success: false, error: 'challenge_id, name, and mobile are required' }, { status: 400 });
+    if (!challenge_id || !mobile) {
+      return NextResponse.json({ success: false, error: 'challenge_id and mobile are required' }, { status: 400 });
     }
-    if (!files || !Array.isArray(files) || files.length === 0) {
-      return NextResponse.json({ success: false, error: 'At least one file is required' }, { status: 400 });
+    if (!description || !description.trim()) {
+      return NextResponse.json({ success: false, error: 'Description is required' }, { status: 400 });
     }
-    if (files.length > 5) {
+    if (description.trim().length > 500) {
+      return NextResponse.json({ success: false, error: 'Description must be 500 characters or less' }, { status: 400 });
+    }
+    if (files && Array.isArray(files) && files.length > 5) {
       return NextResponse.json({ success: false, error: 'Maximum 5 files allowed' }, { status: 400 });
     }
 
@@ -42,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await serviceClient
       .from('challenge_submissions')
-      .insert({ challenge_id, name: name.trim(), mobile: mobile.trim(), description: description ? description.trim() : null, files })
+      .insert({ challenge_id, name: name ? name.trim() : null, mobile: mobile.trim(), description: description.trim(), files: files && files.length > 0 ? files : null })
       .select()
       .single();
 

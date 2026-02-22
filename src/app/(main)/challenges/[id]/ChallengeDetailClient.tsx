@@ -66,6 +66,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
   const [notFound, setNotFound] = useState(false);
 
   // Form state
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [description, setDescription] = useState('');
@@ -169,16 +170,16 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!challenge) return;
-    if (!name.trim()) {
-      setSubmitError(getText('Please enter your name', 'আপনার নাম লিখুন'));
-      return;
-    }
     if (!mobile.trim() || mobile.replace(/\D/g, '').length < 10) {
       setSubmitError(getText('Please enter a valid mobile number', 'সঠিক মোবাইল নম্বর দিন'));
       return;
     }
-    if (files.length === 0) {
-      setSubmitError(getText('Please upload at least one photo or video', 'অন্তত একটি ছবি বা ভিডিও আপলোড করুন'));
+    if (!description.trim()) {
+      setSubmitError(getText('Please enter a description', 'বিবরণ লিখুন'));
+      return;
+    }
+    if (description.trim().length > 500) {
+      setSubmitError(getText('Description must be 500 characters or less', 'বিবরণ ৫০০ অক্ষরের মধ্যে হতে হবে'));
       return;
     }
 
@@ -186,14 +187,14 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
     setSubmitError('');
 
     try {
-      const uploadedFiles = await uploadFiles();
+      const uploadedFiles = files.length > 0 ? await uploadFiles() : [];
 
       const res = await fetch('/api/challenges/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           challenge_id: challenge.id,
-          name: name.trim(),
+          name: name.trim() || null,
           mobile: mobile.trim(),
           description: description.trim(),
           files: uploadedFiles,
@@ -207,6 +208,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
         setMobile('');
         setDescription('');
         setFiles([]);
+        setIsAnonymous(false);
       } else {
         setSubmitError(data.error || getText('Submission failed. Please try again.', 'জমা দিতে ব্যর্থ হয়েছে'));
       }
@@ -339,6 +341,34 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                     </button>
                   </div>
                 ) : (
+                  {/* Anonymous Toggle */}
+                  <div className={`mb-4 p-4 rounded-lg border ${isDark ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'}`}>
+                    <label className="flex items-center justify-between cursor-pointer">
+                      <div>
+                        <p className={`text-sm font-medium ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
+                          {getText('Submit Anonymously', 'বেনামে জমা দিন')}
+                        </p>
+                        <p className={`text-xs mt-0.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {getText('Your name will not be shared', 'আপনার নাম প্রকাশ করা হবে না')}
+                        </p>
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={isAnonymous}
+                          onChange={(e) => {
+                            setIsAnonymous(e.target.checked);
+                            if (e.target.checked) setName('');
+                          }}
+                          className="sr-only"
+                        />
+                        <div className={`w-14 h-7 rounded-full transition-colors ${isAnonymous ? 'bg-green-600' : isDark ? 'bg-gray-600' : 'bg-gray-300'}`}>
+                          <div className={`w-5 h-5 rounded-full bg-white shadow transform transition-transform absolute top-1 ${isAnonymous ? 'translate-x-8' : 'translate-x-1'}`}></div>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+
                   <form onSubmit={handleSubmit} className="space-y-5">
                     {submitError && (
                       <div className="p-3 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm">
@@ -346,20 +376,22 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                       </div>
                     )}
 
-                    {/* Name */}
-                    <div>
-                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {getText('Your Name', 'আপনার নাম')} *
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder={getText('Enter your full name', 'পূর্ণ নাম লিখুন')}
-                        className={`w-full px-4 py-3 rounded-lg border ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
-                        disabled={submitting}
-                      />
-                    </div>
+                    {/* Name - hidden when anonymous */}
+                    {!isAnonymous && (
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                          {getText('Your Name', 'আপনার নাম')}
+                        </label>
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder={getText('Enter your full name', 'পূর্ণ নাম লিখুন')}
+                          className={`w-full px-4 py-3 rounded-lg border ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                          disabled={submitting}
+                        />
+                      </div>
+                    )}
 
                     {/* Mobile */}
                     <div>
@@ -379,22 +411,28 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                     {/* Description */}
                     <div>
                       <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {getText('Description', 'বিবরণ')}
+                        {getText('Description', 'বিবরণ')} *
                       </label>
                       <textarea
                         value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 500) setDescription(e.target.value);
+                        }}
                         placeholder={getText('Describe what you are doing / your activity for this challenge...', 'এই চ্যালেঞ্জে আপনি কী করছেন তা লিখুন...')}
                         rows={4}
-                        className={`w-full px-4 py-3 rounded-lg border resize-none ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                        maxLength={500}
+                        className={`w-full px-4 py-3 rounded-lg border resize-none ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'} ${description.length >= 500 ? 'border-red-500' : ''}`}
                         disabled={submitting}
                       />
+                      <div className={`flex justify-end mt-1 text-xs ${description.length >= 500 ? 'text-red-500' : description.length >= 450 ? 'text-yellow-500' : isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        {description.length}/500
+                      </div>
                     </div>
 
                     {/* File Upload */}
                     <div>
                       <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {getText(`Photos / Videos (max ${MAX_FILES})`, `ছবি / ভিডিও (সর্বোচ্চ ${MAX_FILES}টি)`)} *
+                        {getText(`Photos / Videos (max ${MAX_FILES})`, `ছবি / ভিডিও (সর্বোচ্চ ${MAX_FILES}টি)`)}
                       </label>
 
                       {/* Drop area */}
@@ -491,7 +529,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                     {/* Submit Button */}
                     <button
                       type="submit"
-                      disabled={submitting || files.length === 0}
+                      disabled={submitting}
                       className="w-full py-3 px-6 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2"
                     >
                       {submitting ? (
