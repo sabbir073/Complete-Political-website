@@ -21,6 +21,7 @@ interface Submission {
   challenge_id: string;
   name: string;
   mobile: string;
+  description?: string;
   files: FileItem[];
   created_at: string;
   challenges?: { title_en: string; title_bn: string };
@@ -263,6 +264,16 @@ export default function ChallengeSubmissionsPage() {
                   </div>
                 )}
               </div>
+
+              {/* Description */}
+              {selectedSubmission.description && (
+                <div>
+                  <p className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Description</p>
+                  <div className={`p-3 rounded-lg text-sm whitespace-pre-line ${isDark ? 'bg-gray-700/50 text-gray-300' : 'bg-gray-50 text-gray-700'}`}>
+                    {selectedSubmission.description}
+                  </div>
+                </div>
+              )}
 
               {/* Files */}
               <div>

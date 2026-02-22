@@ -68,6 +68,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
   // Form state
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [description, setDescription] = useState('');
   const [files, setFiles] = useState<FileWithProgress[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -194,6 +195,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
           challenge_id: challenge.id,
           name: name.trim(),
           mobile: mobile.trim(),
+          description: description.trim(),
           files: uploadedFiles,
         }),
       });
@@ -203,6 +205,7 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
         setSubmitSuccess(true);
         setName('');
         setMobile('');
+        setDescription('');
         setFiles([]);
       } else {
         setSubmitError(data.error || getText('Submission failed. Please try again.', 'জমা দিতে ব্যর্থ হয়েছে'));
@@ -369,6 +372,21 @@ export default function ChallengeDetailClient({ challengeId }: { challengeId: st
                         onChange={(e) => setMobile(e.target.value)}
                         placeholder="01XXXXXXXXX"
                         className={`w-full px-4 py-3 rounded-lg border ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                        disabled={submitting}
+                      />
+                    </div>
+
+                    {/* Description */}
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {getText('Description', 'বিবরণ')}
+                      </label>
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder={getText('Describe what you are doing / your activity for this challenge...', 'এই চ্যালেঞ্জে আপনি কী করছেন তা লিখুন...')}
+                        rows={4}
+                        className={`w-full px-4 py-3 rounded-lg border resize-none ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                         disabled={submitting}
                       />
                     </div>

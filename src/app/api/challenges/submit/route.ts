@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { challenge_id, name, mobile, files } = body;
+    const { challenge_id, name, mobile, description, files } = body;
 
     if (!challenge_id || !name || !mobile) {
       return NextResponse.json({ success: false, error: 'challenge_id, name, and mobile are required' }, { status: 400 });
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const { data, error } = await serviceClient
       .from('challenge_submissions')
-      .insert({ challenge_id, name: name.trim(), mobile: mobile.trim(), files })
+      .insert({ challenge_id, name: name.trim(), mobile: mobile.trim(), description: description ? description.trim() : null, files })
       .select()
       .single();
 
