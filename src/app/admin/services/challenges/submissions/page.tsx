@@ -19,10 +19,10 @@ interface FileItem {
 interface Submission {
   id: string;
   challenge_id: string;
-  name: string;
+  name?: string | null;
   mobile: string;
-  description?: string;
-  files: FileItem[];
+  description: string;
+  files?: FileItem[] | null;
   created_at: string;
   challenges?: { title_en: string; title_bn: string };
 }
@@ -80,7 +80,7 @@ export default function ChallengeSubmissionsPage() {
   };
 
   const handleDelete = async (submission: Submission) => {
-    const result = await showDeleteConfirm(`submission by ${submission.name}`);
+    const result = await showDeleteConfirm(`submission by ${submission.name || 'Anonymous'}`);
     if (!result.isConfirmed) return;
     try {
       const res = await fetch(`/api/admin/challenges/submissions?id=${submission.id}`, { method: 'DELETE' });
@@ -170,7 +170,7 @@ export default function ChallengeSubmissionsPage() {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1 min-w-0">
-                      <p className={`font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{submission.name}</p>
+                      <p className={`font-medium truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{submission.name || 'Anonymous'}</p>
                       <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{submission.mobile}</p>
                       {submission.challenges && (
                         <p className={`text-xs mt-1 truncate ${isDark ? 'text-green-400' : 'text-green-600'}`}>
@@ -245,7 +245,7 @@ export default function ChallengeSubmissionsPage() {
               <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-50'} space-y-2`}>
                 <div className="flex justify-between">
                   <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Name</span>
-                  <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedSubmission.name}</span>
+                  <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedSubmission.name || 'Anonymous'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Mobile</span>
